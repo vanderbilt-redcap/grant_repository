@@ -56,10 +56,10 @@ $sql = "SELECT e.ts, e.user, e.pk, u.firstName, u.lastName
 			FROM redcap_data u
 			LEFT JOIN redcap_data u2 ON (u2.project_id = u.project_id AND u.record = u2.record AND u2.field_name = 'first_name')
 			LEFT JOIN redcap_data u3 ON (u3.project_id = u.project_id AND u.record = u3.record AND u3.field_name = 'last_name')
-			WHERE u.project_id = $userProjectId
-				AND u.field_name = 'vunet_id') u ON e.user = u.vunet
-		WHERE e.project_id = $grantsProjectId
-			AND e.description = 'Download uploaded document'
+            WHERE u.project_id = $userProjectId
+                AND u.field_name = 'vunet_id') u ON e.user = u.vunet
+        WHERE e.project_id = $grantsProjectId
+            AND e.description = 'Download uploaded document'
 			$filterLogSql
 		ORDER BY e.ts DESC";
 $result = db_query($sql);
