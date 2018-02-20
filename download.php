@@ -99,4 +99,5 @@ if ($edoc_storage_option == '0') {
 // Do logging
 // When downloading edoc files on a data entry form/survey
 // log_event($sql,"redcap_edocs_metadata","MANAGE",$_GET['record'],$_GET['field_name'],"Download uploaded document", );
-\REDCap::log_event("Download uploaded document", "", $sql, $_GET['record'], "", $project_id);
+REDCap::logEvent("Download uploaded document", "", $sql, $_GET['record'], "", $project_id);
+
