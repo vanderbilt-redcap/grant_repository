@@ -1,9 +1,7 @@
 <script>
 $(document).ready(function() {
-	console.log("Included");
 	$('[name=grants_number]').blur(function() {
 		var val = $('[name=grants_number]').val();
-		console.log("blur with "+val);
 		if (val.match(/K\d\d/)) {
 			$('#k_awards-tr').show();
 			$('#r01_awards-tr').hide();
