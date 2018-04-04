@@ -1,5 +1,6 @@
 <script>
 $(document).ready(function() {
+	console.log("Included");
 	$('[name=grants_number]').blur(function() {
 		var val = $('[name=grants_number]').val();
 		console.log("blur with "+val);
