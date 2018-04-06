@@ -1,6 +1,9 @@
 <script>
 $(document).ready(function() {
 	$('[name=grants_number]').blur(function() {
+		showCheckboxes();
+	});
+	function showCheckboxes() {
 		var val = $('[name=grants_number]').val();
 		if (val.match(/K\d\d/)) {
 			$('#k_awards-tr').show();
@@ -33,6 +36,8 @@ $(document).ready(function() {
 			$('#lrp_awards-tr').hide();
 			$('#va_merit_awards-tr').hide();
 		}
-	});
+	}
+
+	showCheckboxes();
 });
 </script>
