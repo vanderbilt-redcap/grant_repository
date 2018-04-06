@@ -6,6 +6,8 @@ if (!isset($_COOKIE['grant_repo'])) {
 
 require_once("base.php");
 
+$awards = array("k_awards", "r_awards", "misc_awards", "lrp_awards", "va_merit_awards");
+
 # get query string variables
 $search = (isset($_GET['s'])) ? preg_replace('#[^a-z 0-9?!]#i', '', $_GET['s']) : "";
 $sort = (isset($_GET['o'])) ? $_GET['o'] : "pi";
@@ -44,6 +46,15 @@ elseif ($sort == 'format') {
 	$sortSql = "ORDER BY d6.value";
 }
 
+$awardClause = "";
+foreach ($awards as $award) {
+	if (isset($_GET[$award]) && $_GET[$award]) {
+		$awardValue = $_GET[$award];
+		$awardField = $award."___".$awardValue;
+		$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value = '1')";
+	}
+}
+
 # Get the list of grants
 $sql = "SELECT d.record, d.value as 'title', d2.value as 'pi', d3.value as 'number', d4.value as 'file', d5.value as 'date', d6.value as 'format'
 		FROM redcap_data d
@@ -52,6 +63,7 @@ $sql = "SELECT d.record, d.value as 'title', d2.value as 'pi', d3.value as 'numb
 		JOIN redcap_data d4
 		LEFT JOIN redcap_data d5 ON (d5.project_id =d.project_id AND d5.record = d.record AND d5.field_name = 'nih_submission_date')
 		LEFT JOIN redcap_data d6 ON (d6.project_id =d.project_id AND d6.record = d.record AND d6.field_name = 'nih_format')
+		$awardClause
 		WHERE d.project_id = $grantsProjectId
 			$searchSql
 			AND d.field_name = 'grants_title'
@@ -71,6 +83,11 @@ if ($search == "")
 	$message = "Displaying all $grantCount grants";
 else
 	$message = "Displaying $grantCount grants for: $search";
+
+# get metadata
+$metadata = \REDCap::getDataDictionary("json");
+$choices = getChoices($metadata);
+
 ?>
 
 <html>
@@ -129,6 +146,49 @@ else
 							<input type="hidden" name="s" value="" />
 							<input type="hidden" name="o" value="<?= $sort ?>" />
 						</form>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Filter By: <select id='award_type' onchange='displayAwardList();'>
+							<option value=''>---SELECT---</option>
+							<option value='k_awards'>K Awards</option>
+							<option value='r_awards'>R Awards</option>
+							<option value='misc_awards'>Misc. Awards</option>
+							<option value='lrp_awards'>LRP Awards</option>
+							<option value='va_merit_awards'>VA Merit Awards</option>
+						</select>
+					</td>
+					<td colspan='2'>
+<?php
+echo "<form method='get'>";
+foreach($awards as $award) {
+	echo "<select name='$award' id='$award' style='display: none;'>";
+	echo "<option value=''>---SELECT---</option>";
+	foreach ($choices[$award] as $value => $label) {
+		echo "<option value='$value'>$label</option>";
+	}
+	echo "</select>";
+}
+echo "<input type='submit' id='filter' value='Filter'>";
+echo "<input type='hidden' name='s' value='' />";
+echo "<input type='hidden' name='o' value='<?= $sort ?>' />";
+echo "</form>";
+?>
+<script>
+	function displayAwardList() {
+		var items = <?= json_encode($awards) ?>;
+		for (var i = 0; i < items.length; i++) {
+			$('#'+items[i]).hide();
+		}
+		$('#filter').hide();
+		var item = $('#award_type').val();
+		if (item !== "") {
+			$('#'+item).show();
+			$('#filter').show();
+		}
+	}
+</script>
 					</td>
 				</tr>
 				</table>
