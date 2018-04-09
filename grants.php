@@ -6,7 +6,13 @@ if (!isset($_COOKIE['grant_repo'])) {
 
 require_once("base.php");
 
-$awards = array("k_awards", "r_awards", "misc_awards", "lrp_awards", "va_merit_awards");
+$awards = array(
+		"k_awards" => "K Awards",
+		"r_awards" => "R Awards",
+		"misc_awards" => "Misc. Awards",
+		"lrp_awards" => "LRP Awards",
+		"va_merit_awards" => "VA Merit Awards"
+		);
 
 # get query string variables
 $search = (isset($_GET['s'])) ? preg_replace('#[^a-z 0-9?!]#i', '', $_GET['s']) : "";
@@ -51,12 +57,12 @@ elseif ($sort == 'format') {
 }
 
 $awardClause = "";
-foreach ($awards as $award) {
+foreach ($awards as $award => $awardTitle) {
 	if (isset($_GET[$award]) && $_GET[$award]) {
 		$awardValue = $_GET[$award];
 		$awardField = $award;
 		$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value='$awardValue')";
-		$search = $award." as ".$choices[$award][$awardValue];
+		$search = $awardTitle." as ".$choices[$award][$awardValue];
 	}
 }
 
@@ -153,17 +159,16 @@ else
 					<td style='vertical-align: middle;'>
 						Filter By: <select id='award_type' onchange='displayAwardList();'>
 							<option value=''>---SELECT---</option>
-							<option value='k_awards'>K Awards</option>
-							<option value='r_awards'>R Awards</option>
-							<option value='misc_awards'>Misc. Awards</option>
-							<option value='lrp_awards'>LRP Awards</option>
-							<option value='va_merit_awards'>VA Merit Awards</option>
+							?>
+							foreach ($awards as $award => $awardTitle) {
+								echo "<option value='$award'>$awardTitle</option>";
+							<?php
 						</select>
 					</td>
 					<td colspan='2' style='vertical-align: middle;'>
 <?php
 echo "<form style='margin-bottom: 0px;' method='get'>";
-foreach($awards as $award) {
+foreach($awards as $award => $awardTitle) {
 	echo "<select name='$award' id='$award' onchange='displayFilterButton();' style='display: none;'>";
 	echo "<option value=''>---SELECT---</option>";
 	foreach ($choices[$award] as $value => $label) {
@@ -190,10 +195,11 @@ echo "</form>";
 
 	function displayAwardList() {
 		var items = <?= json_encode($awards) ?>;
-		for (var i = 0; i < items.length; i++) {
-			$('#'+items[i]).hide();
+		var item;
+		for (item in items) {
+			$('#'+item).hide();
 		}
-		var item = $('#award_type').val();
+		item = $('#award_type').val();
 		if (item !== "") {
 			$('#'+item).show();
 		}
