@@ -161,7 +161,7 @@ $choices = getChoices($metadata);
 					</td>
 					<td colspan='2' style='vertical-align: middle;'>
 <?php
-echo "<form method='get'>";
+echo "<form style='margin-bottom: 0px;' method='get'>";
 foreach($awards as $award) {
 	echo "<select name='$award' id='$award' style='display: none;'>";
 	echo "<option value=''>---SELECT---</option>";
