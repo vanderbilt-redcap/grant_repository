@@ -15,6 +15,10 @@ $sort = (isset($_GET['o'])) ? $_GET['o'] : "pi";
 $sortSql = "";
 $searchSql = "";
 
+# get metadata
+$metadataJSON = \REDCap::getDataDictionary($grantsProjectId, "json");
+$choices = getChoices(json_decode($metadataJSON, true));
+
 # get event_id
 $sql = "SELECT event_id
 		FROM redcap_events_metadata           
@@ -52,6 +56,7 @@ foreach ($awards as $award) {
 		$awardValue = $_GET[$award];
 		$awardField = $award;
 		$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value='$awardValue')";
+		$search = $award." as ".$choices[$award][$awardValue];
 	}
 }
 
@@ -83,10 +88,6 @@ if ($search == "")
 	$message = "Displaying all $grantCount grants";
 else
 	$message = "Displaying $grantCount grants for: $search";
-
-# get metadata
-$metadataJSON = \REDCap::getDataDictionary($grantsProjectId, "json");
-$choices = getChoices(json_decode($metadataJSON, true));
 
 ?>
 
