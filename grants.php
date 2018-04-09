@@ -87,7 +87,6 @@ else
 # get metadata
 $metadataJSON = \REDCap::getDataDictionary($grantsProjectId, "json");
 $choices = getChoices(json_decode($metadataJSON, true));
-echo json_encode($choices);
 
 ?>
 
@@ -179,13 +178,13 @@ echo "</form>";
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
 	function displayAwardList() {
-		console.log('displayAwardList');
 		var items = <?= json_encode($awards) ?>;
 		for (var i = 0; i < items.length; i++) {
 			$('#'+items[i]).hide();
 		}
 		$('#filter').hide();
 		var item = $('#award_type').val();
+		console.log('displayAwardList '+item);
 		if (item !== "") {
 			$('#'+item).show();
 			$('#filter').show();
