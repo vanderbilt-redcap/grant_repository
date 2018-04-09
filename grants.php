@@ -86,7 +86,7 @@ else
 
 # get metadata
 $metadataJSON = \REDCap::getDataDictionary($grantsProjectId, "json");
-$choices = getChoices(json_decode($metadata, true));
+$choices = getChoices(json_decode($metadataJSON, true));
 echo json_encode($choices);
 
 ?>
