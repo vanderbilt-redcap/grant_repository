@@ -170,7 +170,7 @@ foreach($awards as $award) {
 	}
 	echo "</select>";
 }
-echo "<input type='submit' id='filter' value='Filter'>";
+echo "<input type='submit' style='display: none;' id='filter' value='Filter'>";
 echo "<input type='hidden' name='s' value='' />";
 echo "<input type='hidden' name='o' value='<?= $sort ?>' />";
 echo "</form>";
