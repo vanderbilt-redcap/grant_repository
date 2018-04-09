@@ -179,7 +179,7 @@ echo "</form>";
 <script>
 	function displayFilterButton() {
 		var item = $('#award_type').val();
-		var sel = $('#'+item').val();
+		var sel = $('#'+item).val();
 		if (sel !== "") {
 			console.log("display Filter Button "+sel+" show");
 			$('#filter').show();
