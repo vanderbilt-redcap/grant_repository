@@ -163,7 +163,7 @@ $choices = getChoices(json_decode($metadataJSON, true));
 <?php
 echo "<form style='margin-bottom: 0px;' method='get'>";
 foreach($awards as $award) {
-	echo "<select name='$award' id='$award' style='display: none;'>";
+	echo "<select name='$award' id='$award' onchange='displayFilterButton();' style='display: none;'>";
 	echo "<option value=''>---SELECT---</option>";
 	foreach ($choices[$award] as $value => $label) {
 		echo "<option value='$value'>$label</option>";
@@ -177,17 +177,26 @@ echo "</form>";
 ?>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
+	function displayFilterButton() {
+		var item = $('#award_type').val();
+		var sel = $('#'+item').val();
+		if (sel !== "") {
+			console.log("display Filter Button "+sel+" show");
+			$('#filter').show();
+		} else {
+			console.log("display Filter Button "+sel+" hide");
+			$('#filter').hide();
+		}
+	}
+
 	function displayAwardList() {
 		var items = <?= json_encode($awards) ?>;
 		for (var i = 0; i < items.length; i++) {
 			$('#'+items[i]).hide();
 		}
-		$('#filter').hide();
 		var item = $('#award_type').val();
-		console.log('displayAwardList '+item);
 		if (item !== "") {
 			$('#'+item).show();
-			$('#filter').show();
 		}
 	}
 </script>
