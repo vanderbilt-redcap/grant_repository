@@ -51,7 +51,7 @@ foreach ($awards as $award) {
 	if (isset($_GET[$award]) && $_GET[$award]) {
 		$awardValue = $_GET[$award];
 		$awardField = $award."___".$awardValue;
-		$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField')";
+		$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record)"; // AND d7.field_name = '$awardField')";
 	}
 }
 
