@@ -149,7 +149,7 @@ $choices = getChoices($metadata);
 					</td>
 				</tr>
 				<tr>
-					<td>
+					<td style='vertical-align: middle;'>
 						Filter By: <select id='award_type' onchange='displayAwardList();'>
 							<option value=''>---SELECT---</option>
 							<option value='k_awards'>K Awards</option>
@@ -159,7 +159,7 @@ $choices = getChoices($metadata);
 							<option value='va_merit_awards'>VA Merit Awards</option>
 						</select>
 					</td>
-					<td colspan='2'>
+					<td colspan='2' style='vertical-align: middle;'>
 <?php
 echo "<form method='get'>";
 foreach($awards as $award) {
@@ -177,6 +177,7 @@ echo "</form>";
 ?>
 <script>
 	function displayAwardList() {
+		console.log('displayAwardList');
 		var items = <?= json_encode($awards) ?>;
 		for (var i = 0; i < items.length; i++) {
 			$('#'+items[i]).hide();
