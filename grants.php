@@ -159,10 +159,11 @@ else
 					<td style='vertical-align: middle;'>
 						Filter By: <select id='award_type' onchange='displayAwardList();'>
 							<option value=''>---SELECT---</option>
-							?>
+							<?php
 							foreach ($awards as $award => $awardTitle) {
 								echo "<option value='$award'>$awardTitle</option>";
-							<?php
+							}
+							?>
 						</select>
 					</td>
 					<td colspan='2' style='vertical-align: middle;'>
