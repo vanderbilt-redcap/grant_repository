@@ -30,6 +30,7 @@ function getChoices($metadata) {
 	}
 	$choices = array();
 	foreach ($choicesStrs as $fieldName => $choicesStr) {
+		echo $choicesStr."<br>";
 		$choicePairs = preg_split("/\s*\n\s*/", $choicesStr);
 		$choices[$fieldName] = array();
 		foreach ($choicePairs as $pair) {
