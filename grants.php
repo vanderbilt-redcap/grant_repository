@@ -170,7 +170,7 @@ foreach($awards as $award) {
 	}
 	echo "</select>";
 }
-echo "<input type='submit' style='display: none;' id='filter' value='Filter'>";
+echo "<input type='submit' style='display: none;' id='filterButton' value='Filter'>";
 echo "<input type='hidden' name='s' value='' />";
 echo "<input type='hidden' name='o' value='<?= $sort ?>' />";
 echo "</form>";
@@ -181,11 +181,9 @@ echo "</form>";
 		var item = $('#award_type').val();
 		var sel = $('#'+item).val();
 		if (sel !== "") {
-			console.log("display Filter Button "+sel+" show");
-			$('#filter').show();
+			$('#filterButton').show();
 		} else {
-			console.log("display Filter Button "+sel+" hide");
-			$('#filter').hide();
+			$('#filterButton').hide();
 		}
 	}
 
