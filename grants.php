@@ -85,7 +85,7 @@ $sql = "SELECT d.record, d.value as 'title', d2.value as 'pi', d3.value as 'numb
 			AND d4.record = d.record
 			AND d4.field_name = 'grants_file'
 		$sortSql";
-// echo "$sql<br/>";
+echo "$sql<br/>";
 $grants = db_query($sql);
 $grantCount = db_num_rows($grants);
 
