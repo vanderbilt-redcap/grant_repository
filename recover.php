@@ -92,18 +92,29 @@ foreach ($records as $record) {
 	$sqls2 = array_reverse($sqls);
 	$sqls = array();
 	$hasGrantFile = false;
+	$edocs = array();
 	foreach ($sqls2 as $sql) {
 		$sql = preg_replace("/heimer's/", "heimers", $sql);
 		$sql = preg_replace("/= '226 - .+?'/", "LIKE '226 - %'", $sql);
+		$edocID = preg_replace("/^_file', '/", "", $sql);
+		$edocID = preg_replace("/'.+$/", "", $edocID);
 		if (!$hasGrantFile && preg_match("/grants_file/", $sql)) {
 			$sqls[] = $sql;
 			$hasGrantFile = true;
+			$edocs[] = $edocID;
 		} else if (!preg_match("/grants_file/", $sql)) {
 			$sqls[] = $sql;
+			$edocs[] = $edocID;
 		}
 	}
 
 	foreach ($sqls as $sql) {
+		echo $sql."<br><br>";
+		$cntRecord++;
+		$cntTotal++;
+	}
+	foreach ($edocs as $edocID) {
+		$sql = "UPDATE redcap_edocs_metadata SET delete_date = '' WHERE doc_id = $edocID";
 		echo $sql."<br><br>";
 		$cntRecord++;
 		$cntTotal++;
