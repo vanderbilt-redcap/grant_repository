@@ -112,12 +112,16 @@ foreach ($records as $record) {
 
 	foreach ($sqls as $sql) {
 		echo $sql."<br><br>";
+		db_query($sql);
+		echo db_error();
 		$cntRecord++;
 		$cntTotal++;
 	}
 	foreach ($edocs as $edocID) {
 		$sql = "UPDATE redcap_edocs_metadata SET delete_date = '' WHERE doc_id = $edocID";
 		echo $sql."<br><br>";
+		db_query($sql);
+		echo db_error();
 		$cntRecord++;
 		$cntTotal++;
 	}
