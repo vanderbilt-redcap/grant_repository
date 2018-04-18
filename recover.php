@@ -82,9 +82,9 @@ foreach ($records as $record) {
 		}
 	}
 	foreach ($sqls as $sql) {
-		if (preg_match("/INSERT.+UPDATE/", $sql)) {
+		if (preg_match("/INSERT/", $sql) && preg_match("/UPDATE/", $sql)) {
 			$sqls2 = preg_split("/UPDATE/", $sql);
-			$sql = $sqls2[1];
+			$sql = "UPDATE".$sqls2[1];
 		}
 		// db_query($sql);
 		// echo db_error();
