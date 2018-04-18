@@ -115,6 +115,6 @@ foreach ($records as $record) {
 
 foreach ($records2 as $oldRecord => $newRecord) {
 	$sql = "UPDATE redcap_data SET record='$newRecord' WHERE record LIKE '".db_real_escape_string($oldRecord)."' AND project_id = 27635";
-	db_query($sql);
-	echo db_error();
+	// db_query($sql);
+	// echo db_error();
 }
