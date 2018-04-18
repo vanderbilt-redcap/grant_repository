@@ -96,35 +96,33 @@ foreach ($records as $record) {
 	foreach ($sqls2 as $sql) {
 		$sql = preg_replace("/heimer\\'s/", "heimers", $sql);
 		$sql = preg_replace("/= '226 - .+?'/", "LIKE '226 - %'", $sql);
-		if (preg_match("/230/", $sql)) {
-			$sql = preg_replace("/ - Hernandez A - Enhancement of innate anti-microbial immunity using novel/", "", $sql);
-			$edocID = "";
-			if (preg_match("/'\d+'/", $sql, $matches)) {
-				$edocID = preg_replace("/'/", "", $matches[0]);
-			}
-			if (!$hasGrantFile && preg_match("/grants_file/", $sql)) {
-				$sqls[] = $sql;
-				$hasGrantFile = true;
-				$edocs[] = $edocID;
-			} else if (!preg_match("/grants_file/", $sql)) {
-				$sqls[] = $sql;
-				$edocs[] = $edocID;
-			}
+		$sql = preg_replace("/ - Hernandez A - Enhancement of innate anti-microbial immunity using novel/", "", $sql);
+		$edocID = "";
+		if (preg_match("/'\d+'/", $sql, $matches)) {
+			$edocID = preg_replace("/'/", "", $matches[0]);
+		}
+		if (!$hasGrantFile && preg_match("/grants_file/", $sql)) {
+			$sqls[] = $sql;
+			$hasGrantFile = true;
+			$edocs[] = $edocID;
+		} else if (!preg_match("/grants_file/", $sql)) {
+			$sqls[] = $sql;
+			$edocs[] = $edocID;
 		}
 	}
 
 	foreach ($sqls as $sql) {
 		echo $sql."<br><br>";
-		db_query($sql);
-		echo db_error();
+		// db_query($sql);
+		// echo db_error();
 		$cntRecord++;
 		$cntTotal++;
 	}
 	foreach ($edocs as $edocID) {
 		$sql = "UPDATE redcap_edocs_metadata SET delete_date = '' WHERE doc_id = $edocID";
 		echo $sql."<br><br>";
-		db_query($sql);
-		echo db_error();
+		// db_query($sql);
+		// echo db_error();
 		$cntRecord++;
 		$cntTotal++;
 	}
