@@ -11,6 +11,7 @@ $records = array(
 '228 - Austin ED - Strogen signaling and energy metabolism in pulmonary arterial hypertension',
 '227 - Richmond BW',
 '226 - Stolldorf DP IMPLEMENTING AND SUSTAINING COMPLEX INTERDISCIPLINARY HEALTHCARE INTERVENTIONS',
+'226 - Stolldorf DP IMPLEMENTING AND SUSTAINING COMPLEX INTERDISCIPLINARY HEALTHCARE INTERVENTIONS',
 '225 Brittain EL - A Mobile Health Intervention in PAH',
 '224 - Gogliotti RG - Normalizing E:I imbalance in Rett Syndrome',
 '223 - Gaddy JA - Determining the contribution of zinc deficiency',
@@ -62,8 +63,8 @@ foreach ($records as $record) {
 		}
 	}
 }
-$record = 226;
-$sql = "SELECT pk, sql_log FROM redcap_log_event WHERE pk LIKE '%".db_real_escape_string($record)."%' AND project_id = 27635";
+$record = "226 - ";
+$sql = "SELECT pk, sql_log FROM redcap_log_event WHERE pk LIKE '".db_real_escape_string($record)."%' AND event = 'UPDATE' AND project_id = 27635";
 $q = db_query($sql);
 echo db_num_rows($q).": $record<br>";
 if (db_num_rows($q) > 1) {
