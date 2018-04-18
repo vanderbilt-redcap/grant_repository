@@ -94,10 +94,12 @@ foreach ($records as $record) {
 	$hasGrantFile = false;
 	$edocs = array();
 	foreach ($sqls2 as $sql) {
-		$sql = preg_replace("/heimer\'s/", "heimers", $sql);
+		$sql = preg_replace("/heimer\\'s/", "heimers", $sql);
 		$sql = preg_replace("/= '226 - .+?'/", "LIKE '226 - %'", $sql);
-		$edocID = preg_replace("/^.+_file',\s?'/", "", $sql);
-		$edocID = preg_replace("/'.*$/", "", $edocID);
+		$edocID = "";
+		if (preg_match("/'\d+'/", $sql, $matches)) {
+			$edocID = preg_replace("/'/", "", $matches[0]);
+		}
 		if (!$hasGrantFile && preg_match("/grants_file/", $sql)) {
 			$sqls[] = $sql;
 			$hasGrantFile = true;
