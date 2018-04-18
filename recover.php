@@ -82,6 +82,10 @@ foreach ($records as $record) {
 		}
 	}
 	foreach ($sqls as $sql) {
+		if (preg_match("/INSERT.+UPDATE/", $sql)) {
+			$sqls2 = preg_split("/UPDATE/", $sql);
+			$sql = $sqls2[1];
+		}
 		// db_query($sql);
 		// echo db_error();
 		echo $sql."<br><br>";
