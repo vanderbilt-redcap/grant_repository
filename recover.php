@@ -53,6 +53,6 @@ foreach ($records as $record) {
 	$q = db_query($sql);
 	echo db_num_rows($q).": $record<br>";
 	while ($row = db_fetch_assoc($q)) {
-		echo json_encode($row)."<br>";
+		// echo json_encode($row)."<br>";
 	}
 }
