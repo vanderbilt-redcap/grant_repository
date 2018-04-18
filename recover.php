@@ -48,6 +48,11 @@ $records = array(
 '173 - Interprofessional Perinatal Consults',
 );
 
+$records2 = array(
+		'226 %' => '226 - Stolldorf DP IMPLEMENTING AND SUSTAINING COMPLEX INTERDISCIPLINARY HEALTHCARE INTERVENTIONS',
+		'180 Monroe, T - Brain Activation and Pain Reports in People with Alzheimer\'s Disease' => '180 Monroe, T - Brain Activation and Pain Reports in People with Alzheimers Disease',
+		);
+
 $cntTotal = 0;
 foreach ($records as $record) {
 	$cntRecord = 0;
@@ -84,14 +89,14 @@ foreach ($records as $record) {
 	foreach ($sqls as $sql) {
 		if (preg_match("/INSERT/", $sql) && preg_match("/UPDATE/", $sql)) {
 			$sqls2 = preg_split("/UPDATE/", $sql);
-			echo $sqls2[0]."<br><br>";
+			// echo $sqls2[0]."<br><br>";
 			// db_query($sqls2[0]);
 			// echo db_error();
 			$cntRecord++;
 			$cntTotal++;
 
 			$sql = "UPDATE".$sqls2[1];
-			echo $sql."<br><br>";
+			// echo $sql."<br><br>";
 			// db_query($sql);
 			// echo db_error();
 			$cntRecord++;
@@ -103,7 +108,13 @@ foreach ($records as $record) {
 		}
 	}
 	if ($cntRecord > 0) {
-		echo $cntRecord." queries run for $record.<br>";
+		// echo $cntRecord." queries run for $record.<br>";
 	}
 }
-echo $cntTotal." queries run for all<br>";
+// echo $cntTotal." queries run for all<br>";
+
+foreach ($records2 as $oldRecord => $newRecord) {
+	$sql = "UPDATE redcap_data SET record='$newRecord' WHERE record LIKE '$oldRecord' AND project_id = 27635";
+	db_query($sql);
+	echo db_error();
+}
