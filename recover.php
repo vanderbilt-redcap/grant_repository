@@ -61,9 +61,23 @@ foreach ($records as $record) {
 		$q = db_query($sql);
 	}
 	echo db_num_rows($q).": $record<br>";
-	if (db_num_rows($q) > 1) {
-		while ($row = db_fetch_assoc($q)) {
-			// echo json_encode($row)."<br>";
+	$sqls = array();
+	while ($row = db_fetch_assoc($q)) {
+		if (preg_match("/INSERT/", $row['sql_log'])) {
+			$sqls2 = preg_split("/INSERT/", $row['sql_log']);
+			foreach ($sqls2 as $sql) {
+				if ($sql) {
+					$sqls[] = "INSERT".$sql;
+				}
+			}
+		} else if (preg_match("/UPDATE/", $row['sql_log'])) {
+			$sqls2 = preg_split("/UPDATE/", $row['sql_log']);
+			foreach ($sqls2 as $sql) {
+				if ($sql) {
+					$sqls[] = "UPDATE".$sql;
+				}
+			}
 		}
 	}
+	echo implode("<br>", $sqls)."<br><br>";
 }
