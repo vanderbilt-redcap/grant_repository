@@ -61,12 +61,12 @@ foreach ($records as $record) {
 	} else {
 		$sign = "=";
 	}
-	$sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND event = 'UPDATE' AND sql_log IS NOT NULL";
-	$q = db_query($sql);
-	if (db_num_rows($q) === 0 || preg_match("/186 /", $record)) {
-		$sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND sql_log IS NOT NULL";
-		$q = db_query($sql);
-	}
+	// $sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND event = 'UPDATE' AND sql_log IS NOT NULL";
+	// $q = db_query($sql);
+	// if (db_num_rows($q) === 0 || preg_match("/186 /", $record)) {
+		// $sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND sql_log IS NOT NULL";
+		// $q = db_query($sql);
+	// }
 	// echo db_num_rows($q).": $record<br>";
 	$sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND event = 'DOC_UPLOAD' AND sql_log IS NOT NULL";
 	$q = db_query($sql);
@@ -89,6 +89,18 @@ foreach ($records as $record) {
 			}
 		}
 	}
+	$sqls2 = array_reverse($sqls);
+	$sqls = array();
+	$hasGrantFile = false;
+	foreach ($sqls2 as $sql) {
+		if (!$hasGrantFile && preg_match("/grants_file/", $sql)) {
+			$sqls[] = $sql;
+			$hasGrantFile = true;
+		} else if (!preg_match("/grants_file/", $sql)) {
+			$sqls[] = $sql;
+		}
+	}
+
 	foreach ($sqls as $sql) {
 		echo $sql."<br><br>";
 		$cntRecord++;
