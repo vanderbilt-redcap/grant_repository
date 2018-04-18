@@ -93,6 +93,8 @@ foreach ($records as $record) {
 	$sqls = array();
 	$hasGrantFile = false;
 	foreach ($sqls2 as $sql) {
+		$sql = preg_replace("/heimer's/", "heimers", $sql);
+		$sql = preg_replace("/= '226 - .+?'/", 'LIKE '226 - %'", $sql);
 		if (!$hasGrantFile && preg_match("/grants_file/", $sql)) {
 			$sqls[] = $sql;
 			$hasGrantFile = true;
