@@ -67,7 +67,7 @@ foreach ($records as $record) {
 		$sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND sql_log IS NOT NULL";
 		$q = db_query($sql);
 	}
-	echo db_num_rows($q).": $record<br>";
+	// echo db_num_rows($q).": $record<br>";
 	$sqls = array();
 	while ($row = db_fetch_assoc($q)) {
 		if (preg_match("/INSERT/", $row['sql_log'])) {
@@ -102,7 +102,7 @@ foreach ($records as $record) {
 			$cntRecord++;
 			$cntTotal++;
 		} else {
-			echo $sql."<br><br>";
+			// echo $sql."<br><br>";
 			$cntRecord++;
 			$cntTotal++;
 		}
@@ -114,7 +114,7 @@ foreach ($records as $record) {
 // echo $cntTotal." queries run for all<br>";
 
 foreach ($records2 as $oldRecord => $newRecord) {
-	$sql = "UPDATE redcap_data SET record='$newRecord' WHERE record LIKE '$oldRecord' AND project_id = 27635";
+	$sql = "UPDATE redcap_data SET record='$newRecord' WHERE record LIKE '".db_real_escape_string($oldRecord)."' AND project_id = 27635";
 	db_query($sql);
 	echo db_error();
 }
