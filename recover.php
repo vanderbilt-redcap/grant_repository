@@ -42,7 +42,7 @@ $records = array(
 '185 Mayberry LS - Targeting Family Members',
 '184 Ward MJ - Enhancing Inter-FAcility Transfer for Patients with Acute Myocardial Infarction',
 '181 Kropski JA - DNA-Damage Repair in Pulmonary Fibrosis',
-'180 Monroe, T - Brain Activation and Pain Reports in People with Alzheimer's Disease',
+'180 Monroe, T - Brain Activation and Pain Reports in People with Alzheimer\'s Disease',
 '179 Page-McCaw, AW - WNT/WG Extracellular Ligand Distribution and Regulation',
 '178 - Reynolds WS - Afferent Hyperactivity Mechanisms in Overactive Bladder Syndrome',
 '173 - Interprofessional Perinatal Consults',
