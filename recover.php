@@ -49,7 +49,7 @@ $records = array(
 );
 
 foreach ($records as $record) {
-	$sql = "SELECT sql_log FROM redcap_log_event WHERE pk = '".db_real_escape_string($record)."' AND project_id = 27635 AND event = 'UPDATE'AND sql_log IS NOT NULL";
+	$sql = "SELECT sql_log FROM redcap_log_event WHERE pk = '".db_real_escape_string($record)."' AND project_id = 27635 AND event = 'UPDATE' AND sql_log IS NOT NULL";
 	$q = db_query($sql);
 	if (db_num_rows($q) === 0) {
 		$sql = "SELECT sql_log FROM redcap_log_event WHERE pk = '".db_real_escape_string($record)."' AND project_id = 27635 AND sql_log IS NOT NULL";
@@ -62,3 +62,7 @@ foreach ($records as $record) {
 		}
 	}
 }
+$record = 226;
+$sql = "SELECT sql_log FROM redcap_log_event WHERE pk LIKE '%".db_real_escape_string($record)."%' AND project_id = 27635";
+$q = db_query($sql);
+echo db_num_rows($q).": $record<br>";
