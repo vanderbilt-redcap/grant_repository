@@ -82,8 +82,9 @@ foreach ($records as $record) {
 		}
 	}
 	foreach ($sqls as $sql) {
-		db_query($sql);
-		echo db_error();
+		// db_query($sql);
+		// echo db_error();
+		echo $sql."<br><br>";
 		$cntRecord++;
 		$cntTotal++;
 	}
