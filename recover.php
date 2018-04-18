@@ -53,6 +53,7 @@ $records2 = array(
 		'180 Monroe, T - Brain Activation and Pain Reports in People with Alzheimer\'s Disease' => '180 Monroe, T - Brain Activation and Pain Reports in People with Alzheimers Disease',
 		);
 
+$allEdocs = array();
 $cntTotal = 0;
 foreach ($records as $record) {
 	$cntRecord = 0;
@@ -119,10 +120,11 @@ foreach ($records as $record) {
 		$cntTotal++;
 	}
 	foreach ($edocs as $edocID) {
+		$allEdocs[] = $edocID;
 		$sql = "UPDATE redcap_edocs_metadata SET delete_date = NULL, date_deleted_server = NULL WHERE doc_id = $edocID";
 		echo $sql."<br><br>";
-		db_query($sql);
-		echo db_error();
+		// db_query($sql);
+		// echo db_error();
 		$cntRecord++;
 		$cntTotal++;
 	}
@@ -131,3 +133,4 @@ foreach ($records as $record) {
 	}
 }
 echo $cntTotal." queries run for all<br>";
+echo "SELECT * FROM redcap_edocs_metadata WHERE doc_id IN (".implode(", ", $allEdocs).")<br>";
