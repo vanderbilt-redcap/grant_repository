@@ -61,7 +61,7 @@ foreach ($awards as $award => $awardTitle) {
 	if (isset($_GET[$award]) && $_GET[$award]) {
 		$awardValue = $_GET[$award];
 		$awardField = $award;
-		// $awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value='$awardValue')";
+		$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value='$awardValue')";
 		$search = $awardTitle." as ".$choices[$award][$awardValue];
 	}
 }
@@ -85,7 +85,7 @@ $sql = "SELECT d.record, d.value as 'title', d2.value as 'pi', d3.value as 'numb
 			AND d4.record = d.record
 			AND d4.field_name = 'grants_file'
 		$sortSql";
-echo "$sql<br/>";
+// echo "$sql<br/>";
 $grants = db_query($sql);
 $grantCount = db_num_rows($grants);
 
