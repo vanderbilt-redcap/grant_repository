@@ -10,8 +10,7 @@ $records = array(
 '229 - Pettit A - Multi-level social and behavioral determinants of health',
 '228 - Austin ED - Strogen signaling and energy metabolism in pulmonary arterial hypertension',
 '227 - Richmond BW',
-'226 - Stolldorf DP IMPLEMENTING AND SUSTAINING COMPLEX INTERDISCIPLINARY HEALTHCARE INTERVENTIONS',
-'226 - Stolldorf DP IMPLEMENTING AND SUSTAINING COMPLEX INTERDISCIPLINARY HEALTHCARE INTERVENTIONS',
+'226 - %',
 '225 Brittain EL - A Mobile Health Intervention in PAH',
 '224 - Gogliotti RG - Normalizing E:I imbalance in Rett Syndrome',
 '223 - Gaddy JA - Determining the contribution of zinc deficiency',
@@ -50,10 +49,15 @@ $records = array(
 );
 
 foreach ($records as $record) {
-	$sql = "SELECT sql_log FROM redcap_log_event WHERE pk = '".db_real_escape_string($record)."' AND project_id = 27635 AND event = 'UPDATE' AND sql_log IS NOT NULL";
+	if (preg_match("/\%/", $record)) {
+		$sign = "LIKE";
+	} else {
+		$sign = "=";
+	}
+	$sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND event = 'UPDATE' AND sql_log IS NOT NULL";
 	$q = db_query($sql);
 	if (db_num_rows($q) === 0) {
-		$sql = "SELECT sql_log FROM redcap_log_event WHERE pk = '".db_real_escape_string($record)."' AND project_id = 27635 AND sql_log IS NOT NULL";
+		$sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND sql_log IS NOT NULL";
 		$q = db_query($sql);
 	}
 	echo db_num_rows($q).": $record<br>";
@@ -61,14 +65,5 @@ foreach ($records as $record) {
 		while ($row = db_fetch_assoc($q)) {
 			// echo json_encode($row)."<br>";
 		}
-	}
-}
-$record = "226 - ";
-$sql = "SELECT pk, sql_log FROM redcap_log_event WHERE pk LIKE '".db_real_escape_string($record)."%' AND event = 'UPDATE' AND project_id = 27635";
-$q = db_query($sql);
-echo db_num_rows($q).": $record<br>";
-if (db_num_rows($q) > 1) {
-	while ($row = db_fetch_assoc($q)) {
-		echo json_encode($row)."<br>";
 	}
 }
