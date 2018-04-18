@@ -86,12 +86,14 @@ foreach ($records as $record) {
 			$sqls2 = preg_split("/UPDATE/", $sql);
 			$sql = "UPDATE".$sqls2[1];
 			echo $sql."<br><br>";
-			// db_query($sql);
-			// echo db_error();
+			db_query($sql);
+			echo db_error();
 			$cntRecord++;
 			$cntTotal++;
 		}
 	}
-	echo $cntRecord." queries run for $record.<br>";
+	if ($cntRecord > 0) {
+		echo $cntRecord." queries run for $record.<br>";
+	}
 }
 echo $cntTotal." queries run for all<br>";
