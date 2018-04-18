@@ -56,7 +56,7 @@ foreach ($records as $record) {
 	}
 	$sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND event = 'UPDATE' AND sql_log IS NOT NULL";
 	$q = db_query($sql);
-	if (db_num_rows($q) === 0) {
+	if (db_num_rows($q) === 0 || preg_match("/186 /", $record)) {
 		$sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND sql_log IS NOT NULL";
 		$q = db_query($sql);
 	}
