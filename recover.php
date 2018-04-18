@@ -1,5 +1,7 @@
 <?php
 
+require_once("../../redcap_connect.php");
+
 $records = array(
 	"187 France DJ - The Impact of Non-Routine Events on Neonatal Safety in the Perioperative Environment",
 );
