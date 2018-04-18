@@ -58,11 +58,16 @@ foreach ($records as $record) {
 	echo db_num_rows($q).": $record<br>";
 	if (db_num_rows($q) > 1) {
 		while ($row = db_fetch_assoc($q)) {
-			echo json_encode($row)."<br>";
+			// echo json_encode($row)."<br>";
 		}
 	}
 }
 $record = 226;
-$sql = "SELECT sql_log FROM redcap_log_event WHERE pk LIKE '%".db_real_escape_string($record)."%' AND project_id = 27635";
+$sql = "SELECT pk, sql_log FROM redcap_log_event WHERE pk LIKE '%".db_real_escape_string($record)."%' AND project_id = 27635";
 $q = db_query($sql);
 echo db_num_rows($q).": $record<br>";
+if (db_num_rows($q) > 1) {
+	while ($row = db_fetch_assoc($q)) {
+		echo json_encode($row)."<br>";
+	}
+}
