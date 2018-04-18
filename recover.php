@@ -84,10 +84,20 @@ foreach ($records as $record) {
 	foreach ($sqls as $sql) {
 		if (preg_match("/INSERT/", $sql) && preg_match("/UPDATE/", $sql)) {
 			$sqls2 = preg_split("/UPDATE/", $sql);
+			echo $sqls2[0]."<br><br>";
+			// db_query($sqls2[0]);
+			// echo db_error();
+			$cntRecord++;
+			$cntTotal++;
+
 			$sql = "UPDATE".$sqls2[1];
 			echo $sql."<br><br>";
-			db_query($sql);
-			echo db_error();
+			// db_query($sql);
+			// echo db_error();
+			$cntRecord++;
+			$cntTotal++;
+		} else {
+			echo $sql."<br><br>";
 			$cntRecord++;
 			$cntTotal++;
 		}
