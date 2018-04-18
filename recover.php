@@ -68,6 +68,9 @@ foreach ($records as $record) {
 		$q = db_query($sql);
 	}
 	// echo db_num_rows($q).": $record<br>";
+	$sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND event = 'DOC_UPLOAD' AND sql_log IS NOT NULL";
+	$q = db_query($sql);
+
 	$sqls = array();
 	while ($row = db_fetch_assoc($q)) {
 		if (preg_match("/INSERT/", $row['sql_log'])) {
@@ -87,34 +90,12 @@ foreach ($records as $record) {
 		}
 	}
 	foreach ($sqls as $sql) {
-		if (preg_match("/INSERT/", $sql) && preg_match("/UPDATE/", $sql)) {
-			$sqls2 = preg_split("/UPDATE/", $sql);
-			// echo $sqls2[0]."<br><br>";
-			// db_query($sqls2[0]);
-			// echo db_error();
-			$cntRecord++;
-			$cntTotal++;
-
-			$sql = "UPDATE".$sqls2[1];
-			// echo $sql."<br><br>";
-			// db_query($sql);
-			// echo db_error();
-			$cntRecord++;
-			$cntTotal++;
-		} else {
-			// echo $sql."<br><br>";
-			$cntRecord++;
-			$cntTotal++;
-		}
+		echo $sql."<br><br>";
+		$cntRecord++;
+		$cntTotal++;
 	}
 	if ($cntRecord > 0) {
-		// echo $cntRecord." queries run for $record.<br>";
+		echo $cntRecord." queries run for $record.<br>";
 	}
 }
-// echo $cntTotal." queries run for all<br>";
-
-foreach ($records2 as $oldRecord => $newRecord) {
-	$sql = "UPDATE redcap_data SET record='$newRecord' WHERE record LIKE '".db_real_escape_string($oldRecord)."' AND project_id = 27635";
-	// db_query($sql);
-	// echo db_error();
-}
+echo $cntTotal." queries run for all<br>";
