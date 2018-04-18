@@ -48,7 +48,9 @@ $records = array(
 '173 - Interprofessional Perinatal Consults',
 );
 
+$cntTotal = 0;
 foreach ($records as $record) {
+	$cntRecord = 0;
 	if (preg_match("/\%/", $record)) {
 		$sign = "LIKE";
 	} else {
@@ -79,5 +81,12 @@ foreach ($records as $record) {
 			}
 		}
 	}
-	echo implode("<br>", $sqls)."<br><br>";
+	foreach ($sqls as $sql) {
+		db_query($sql);
+		echo db_error();
+		$cntRecord++;
+		$cntTotal++;
+	}
+	echo $cntRecord." queries run for $record.<br>";
 }
+echo $cntTotal." queries run for all<br>";
