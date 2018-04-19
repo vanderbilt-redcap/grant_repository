@@ -120,8 +120,8 @@ foreach ($records3 as $record) {
 
 	foreach ($sqls as $sql) {
 		echo $sql."<br><br>";
-		// db_query($sql);
-		// echo db_error();
+		db_query($sql);
+		echo db_error();
 		$cntRecord++;
 		$cntTotal++;
 	}
@@ -129,8 +129,8 @@ foreach ($records3 as $record) {
 		$allEdocs[] = $edocID;
 		$sql = "UPDATE redcap_edocs_metadata SET delete_date = NULL, date_deleted_server = NULL WHERE doc_id = $edocID";
 		echo $sql."<br><br>";
-		// db_query($sql);
-		// echo db_error();
+		db_query($sql);
+		echo db_error();
 		$cntRecord++;
 		$cntTotal++;
 	}
