@@ -99,7 +99,7 @@ foreach ($records as $record) {
 		$sql = preg_replace("/= '226 - .+?'/", "LIKE '226 - %'", $sql);
 		$sql = preg_replace("/ - Hernandez A - Enhancement of innate anti-microbial immunity using novel/", "", $sql);
 		$edocID = "";
-		if (preg_match("/'\d+'/", $sql, $matches)) {
+		if (preg_match("/'\d\d\d\d\d\d\d'/", $sql, $matches)) {
 			$edocID = preg_replace("/'/", "", $matches[0]);
 		}
 		if (!$hasGrantFile && preg_match("/grants_file/", $sql)) {
