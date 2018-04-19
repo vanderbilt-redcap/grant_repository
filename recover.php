@@ -95,6 +95,7 @@ foreach ($records3 as $record) {
 		}
 	}
 	$sqls2 = array_reverse($sqls);
+	echo count($sqls2)." filtered out<br><br>";
 	$sqls = array();
 	$hasGrantFile = false;
 	$edocs = array();
