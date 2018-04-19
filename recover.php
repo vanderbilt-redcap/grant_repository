@@ -6,7 +6,7 @@ $records = array(
 '2018 - Williams DJ - Risk Stratification and Decision Support to Improve Care and Outcomes',
 '2015 - Cassat JE - The Impact of Hypoxia on Satphylococcus aureus metabolism',
 '231 - Georgiev I - Neutralization fingerprinting analysis of polyclonal antibody responses',
-'230 - Hernandez A - Enhancement of innate anti-microbial immunity using novel',
+'230%',
 '229 - Pettit A - Multi-level social and behavioral determinants of health',
 '228 - Austin ED - Strogen signaling and energy metabolism in pulmonary arterial hypertension',
 '227 - Richmond BW',
@@ -112,21 +112,23 @@ foreach ($records as $record) {
 		}
 	}
 
-	foreach ($sqls as $sql) {
-		echo $sql."<br><br>";
-		// db_query($sql);
-		// echo db_error();
-		$cntRecord++;
-		$cntTotal++;
-	}
-	foreach ($edocs as $edocID) {
-		$allEdocs[] = $edocID;
-		$sql = "UPDATE redcap_edocs_metadata SET delete_date = NULL, date_deleted_server = NULL WHERE doc_id = $edocID";
-		echo $sql."<br><br>";
-		// db_query($sql);
-		// echo db_error();
-		$cntRecord++;
-		$cntTotal++;
+	if (preg_match("/230/", $sql)) {
+		foreach ($sqls as $sql) {
+			echo $sql."<br><br>";
+			// db_query($sql);
+			// echo db_error();
+			$cntRecord++;
+			$cntTotal++;
+		}
+		foreach ($edocs as $edocID) {
+			$allEdocs[] = $edocID;
+			$sql = "UPDATE redcap_edocs_metadata SET delete_date = NULL, date_deleted_server = NULL WHERE doc_id = $edocID";
+			echo $sql."<br><br>";
+			// db_query($sql);
+			// echo db_error();
+			$cntRecord++;
+			$cntTotal++;
+		}
 	}
 	if ($cntRecord > 0) {
 		echo $cntRecord." queries run for $record.<br>";
