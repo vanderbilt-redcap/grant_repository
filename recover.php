@@ -54,7 +54,7 @@ $records2 = array(
 		);
 
 $records3 = array(
-		'1 READ ME FIRST',
+		'1 %',
 );
 
 $allEdocs = array();
