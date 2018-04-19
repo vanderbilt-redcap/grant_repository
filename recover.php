@@ -100,6 +100,7 @@ foreach ($records3 as $record) {
 	$hasGrantFile = false;
 	$edocs = array();
 	foreach ($sqls2 as $sql) {
+		echo "PROPOSED ".$sql."<br><br>";
 		$sql = preg_replace("/heimer\\'s/", "heimers", $sql);
 		$sql = preg_replace("/= '226 - .+?'/", "LIKE '226 - %'", $sql);
 		$sql = preg_replace("/ - Hernandez A - Enhancement of innate anti-microbial immunity using novel/", "", $sql);
