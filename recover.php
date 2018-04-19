@@ -53,22 +53,26 @@ $records2 = array(
 		'180 Monroe, T - Brain Activation and Pain Reports in People with Alzheimer\'s Disease' => '180 Monroe, T - Brain Activation and Pain Reports in People with Alzheimers Disease',
 		);
 
+$records3 = array(
+		'1 READ ME FIRST',
+);
+
 $allEdocs = array();
 $cntTotal = 0;
-foreach ($records as $record) {
+foreach ($records3 as $record) {
 	$cntRecord = 0;
 	if (preg_match("/\%/", $record)) {
 		$sign = "LIKE";
 	} else {
 		$sign = "=";
 	}
-	// $sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND event = 'UPDATE' AND sql_log IS NOT NULL";
-	// $q = db_query($sql);
-	// if (db_num_rows($q) === 0 || preg_match("/186 /", $record)) {
-		// $sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND sql_log IS NOT NULL";
-		// $q = db_query($sql);
-	// }
-	// echo db_num_rows($q).": $record<br>";
+	$sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND event = 'UPDATE' AND sql_log IS NOT NULL";
+	$q = db_query($sql);
+	if (db_num_rows($q) === 0 || preg_match("/186 /", $record)) {
+		$sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND sql_log IS NOT NULL";
+		$q = db_query($sql);
+	}
+	echo db_num_rows($q).": $record<br>";
 	$sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND event = 'DOC_UPLOAD' AND sql_log IS NOT NULL";
 	$q = db_query($sql);
 
@@ -115,8 +119,8 @@ foreach ($records as $record) {
 	if (preg_match("/230/", $sql)) {
 		foreach ($sqls as $sql) {
 			echo $sql."<br><br>";
-			db_query($sql);
-			echo db_error();
+			// db_query($sql);
+			// echo db_error();
 			$cntRecord++;
 			$cntTotal++;
 		}
@@ -124,8 +128,8 @@ foreach ($records as $record) {
 			$allEdocs[] = $edocID;
 			$sql = "UPDATE redcap_edocs_metadata SET delete_date = NULL, date_deleted_server = NULL WHERE doc_id = $edocID";
 			echo $sql."<br><br>";
-			db_query($sql);
-			echo db_error();
+			// db_query($sql);
+			// echo db_error();
 			$cntRecord++;
 			$cntTotal++;
 		}
