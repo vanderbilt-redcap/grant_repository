@@ -115,8 +115,8 @@ foreach ($records as $record) {
 	if (preg_match("/230/", $sql)) {
 		foreach ($sqls as $sql) {
 			echo $sql."<br><br>";
-			// db_query($sql);
-			// echo db_error();
+			db_query($sql);
+			echo db_error();
 			$cntRecord++;
 			$cntTotal++;
 		}
@@ -124,8 +124,8 @@ foreach ($records as $record) {
 			$allEdocs[] = $edocID;
 			$sql = "UPDATE redcap_edocs_metadata SET delete_date = NULL, date_deleted_server = NULL WHERE doc_id = $edocID";
 			echo $sql."<br><br>";
-			// db_query($sql);
-			// echo db_error();
+			db_query($sql);
+			echo db_error();
 			$cntRecord++;
 			$cntTotal++;
 		}
