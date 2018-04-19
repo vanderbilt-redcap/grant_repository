@@ -116,23 +116,21 @@ foreach ($records3 as $record) {
 		}
 	}
 
-	if (preg_match("/230/", $sql)) {
-		foreach ($sqls as $sql) {
-			echo $sql."<br><br>";
-			// db_query($sql);
-			// echo db_error();
-			$cntRecord++;
-			$cntTotal++;
-		}
-		foreach ($edocs as $edocID) {
-			$allEdocs[] = $edocID;
-			$sql = "UPDATE redcap_edocs_metadata SET delete_date = NULL, date_deleted_server = NULL WHERE doc_id = $edocID";
-			echo $sql."<br><br>";
-			// db_query($sql);
-			// echo db_error();
-			$cntRecord++;
-			$cntTotal++;
-		}
+	foreach ($sqls as $sql) {
+		echo $sql."<br><br>";
+		// db_query($sql);
+		// echo db_error();
+		$cntRecord++;
+		$cntTotal++;
+	}
+	foreach ($edocs as $edocID) {
+		$allEdocs[] = $edocID;
+		$sql = "UPDATE redcap_edocs_metadata SET delete_date = NULL, date_deleted_server = NULL WHERE doc_id = $edocID";
+		echo $sql."<br><br>";
+		// db_query($sql);
+		// echo db_error();
+		$cntRecord++;
+		$cntTotal++;
 	}
 	if ($cntRecord > 0) {
 		echo $cntRecord." queries run for $record.<br>";
