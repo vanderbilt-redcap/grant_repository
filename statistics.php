@@ -50,14 +50,20 @@ while ($row = db_fetch_array($result)) {
 }
 
 # get all log events for file downloads
-$sql = "SELECT e.ts, e.user, e.pk, u.firstName, u.lastName
-		FROM redcap_log_event e
-		JOIN (SELECT u.value as vunet, u2.value as firstName, u3.value as lastName
-			FROM redcap_data u
-			LEFT JOIN redcap_data u2 ON (u2.project_id = u.project_id AND u.record = u2.record AND u2.field_name = 'first_name')
-			LEFT JOIN redcap_data u3 ON (u3.project_id = u.project_id AND u.record = u3.record AND u3.field_name = 'last_name')
+$sql = "SELECT u.value as vunet, u2.value as firstName, u3.value as lastName
+                        FROM redcap_data u
+                        LEFT JOIN redcap_data u2 ON (u2.project_id = u.project_id AND u.record = u2.record AND u2.field_name = 'first_name')
+                        LEFT JOIN redcap_data u3 ON (u3.project_id = u.project_id AND u.record = u3.record AND u3.field_name = 'last_name')
             WHERE u.project_id = $userProjectId
-                AND u.field_name = 'vunet_id') u ON e.user = u.vunet
+                AND u.field_name = 'vunet_id'";
+$result = db_query($sql);
+$vuNets = array();
+while ($row = db_fetch_assoc($result)) {
+	$vuNets[$row['vunet']] = array($row['firstName'], $row['lastName']);
+}
+
+$sql = "SELECT e.ts, e.user, e.pk
+		FROM redcap_log_event e
         WHERE e.project_id = $grantsProjectId
             AND e.description = 'Download uploaded document'
 			$filterLogSql
@@ -66,9 +72,9 @@ $result = db_query($sql);
 //echo "$sql<br/>";
 
 while ($row = db_fetch_array($result)) {
-	if ($row['firstName'] != "")
-		$name = $row['firstName'] . " " . $row['lastName'] . " (" . $row['user'] . ")";
-	else
+	if ($vuNets[$row['user']] && $vuNets[$row['user']][0])
+		$name = $vuNets[$row['user']][0] . " " . $vuNets[$row['user']][1] . " (" . $row['user'] . ")";
+	else if ($vuNets[$row['user']])
 		$name = $row['user'];
 
 	$downloads[$row['pk']]['hits'][] = array('ts' => $row['ts'], 'user' => $name);
