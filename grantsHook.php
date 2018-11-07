@@ -5,7 +5,6 @@ $(document).ready(function() {
 	});
 	function showCheckboxes() {
 		var val = $('[name=grants_number]').val();
-		console.log("showCheckboxes with "+val);
 		if (val.match(/K\d\d/)) {
 			$('#k_awards-tr').show();
 			$('#r_awards-tr').hide();
