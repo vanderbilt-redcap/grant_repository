@@ -67,9 +67,10 @@ curl_close($ch);
 
 $upload = array();
 $redcapData = json_decode($output, true);
-$matches = 0;
+$matches = array();
 foreach ($redcapData as $row) {
 	$found = FALSE;
+	$i = 1;
 	foreach ($lines as $line) {
 		$name = "";
 		$project = "";
@@ -91,13 +92,21 @@ foreach ($redcapData as $row) {
 		if (($name == $row['grants_pi']) && ($title == $row['grants_title'])) {
 			echo "MATCH $name\n";
 			$found = TRUE;
-			$matches++;
+			array_push($matches, $i);
 			break;
 		}
 	}
 	if (!$found) {
-		echo "NO MATCH {$row['grants_pi']}\n";
+		// echo "NO MATCH {$row['grants_pi']}\n";
 	}
+	$i++;
 } 
 
 echo "$matches matches of ".count($lines)." lines\n";
+$i = 1;
+foreach ($lines as $line) {
+	if (!in_array($i, $matches)) {
+		echo "Missing line $i: ".$line[0]."\n";
+	}
+	$i++;
+}
