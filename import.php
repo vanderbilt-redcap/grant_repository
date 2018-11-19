@@ -87,6 +87,7 @@ foreach ($redcapData as $row) {
 			if ($header == "Title") {
 				$title = $item;
 			}
+			$j++;
 		}
 		if (($name == $row['grants_pi']) && ($title == $row['grants_title'])) {
 			echo "MATCH $name\n";
