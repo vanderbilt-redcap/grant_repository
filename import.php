@@ -95,6 +95,7 @@ foreach ($redcapData as $row) {
 			array_push($matches, $i);
 			break;
 		}
+		$i++;
 	}
 	if (!$found) {
 		// echo "NO MATCH {$row['grants_pi']}\n";
@@ -102,7 +103,7 @@ foreach ($redcapData as $row) {
 	$i++;
 } 
 
-echo "$matches matches of ".count($lines)." lines\n";
+echo count($matches)." matches of ".count($lines)." lines\n";
 $i = 1;
 foreach ($lines as $line) {
 	if (!in_array($i, $matches)) {
