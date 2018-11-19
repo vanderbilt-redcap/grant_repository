@@ -69,7 +69,6 @@ $upload = array();
 $redcapData = json_decode($output, true);
 $matches = 0;
 foreach ($redcapData as $row) {
-	echo "Looking for ".json_encode($row)."\n";
 	$found = FALSE;
 	foreach ($lines as $line) {
 		$name = "";
@@ -97,7 +96,7 @@ foreach ($redcapData as $row) {
 		}
 	}
 	if (!$found) {
-		echo "NO MATCH {$row['grants_pi']}\n";
+		// echo "NO MATCH {$row['grants_pi']}\n";
 	}
 } 
 
