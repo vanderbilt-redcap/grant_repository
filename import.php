@@ -69,6 +69,7 @@ $upload = array();
 $redcapData = json_decode($output, true);
 $matches = 0;
 foreach ($redcapData as $row) {
+	echo "Looking for ".json_encode($row)."\n";
 	$found = FALSE;
 	foreach ($lines as $line) {
 		$name = "";
