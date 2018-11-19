@@ -96,7 +96,7 @@ foreach ($redcapData as $row) {
 		}
 	}
 	if (!$found) {
-		// echo "NO MATCH {$row['grants_pi']}\n";
+		echo "NO MATCH {$row['grants_pi']}\n";
 	}
 } 
 
