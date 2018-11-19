@@ -95,12 +95,11 @@ foreach ($redcapData as $row) {
 			$matches[$line_i] = $row['record_id'];
 			break;
 		}
-		$i++;
+		$line_i++;
 	}
 	if (!$found) {
 		// echo "NO MATCH {$row['grants_pi']}\n";
 	}
-	$i++;
 } 
 
 echo count($matches)." matches of ".count($lines)." lines\n";
