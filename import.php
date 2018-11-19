@@ -89,7 +89,7 @@ foreach ($redcapData as $row) {
 			}
 			$j++;
 		}
-		if (($name == $row['grants_pi']) && ($title == $row['grants_title'])) {
+		if ((strtolower($name) == strtolower($row['grants_pi'])) && (strtolower($title) == strtolower($row['grants_title']))) {
 			echo "MATCH $name\n";
 			$found = TRUE;
 			array_push($matches, $i);
