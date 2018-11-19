@@ -70,7 +70,7 @@ $redcapData = json_decode($output, true);
 $matches = array();
 foreach ($redcapData as $row) {
 	$found = FALSE;
-	$i = 1;
+	$line_i = 1;
 	foreach ($lines as $line) {
 		$name = "";
 		$project = "";
@@ -90,9 +90,9 @@ foreach ($redcapData as $row) {
 			$j++;
 		}
 		if ((strtolower($name) == strtolower($row['grants_pi'])) && (strtolower($title) == strtolower($row['grants_title']))) {
-			echo "MATCH $name\n";
+			// echo "MATCH $name\n";
 			$found = TRUE;
-			array_push($matches, $i);
+			$matches[$line_i] = $row['record_id'];
 			break;
 		}
 		$i++;
@@ -104,10 +104,51 @@ foreach ($redcapData as $row) {
 } 
 
 echo count($matches)." matches of ".count($lines)." lines\n";
-$i = 1;
+$line_i = 1;
 foreach ($lines as $line) {
-	if (!in_array($i, $matches)) {
-		echo "Missing line $i: ".$line[0]."\n";
+	if (!in_array($line_i, array_keys($matches))) {
+		echo "Missing line $line_i: ".$line[0]."\n";
 	}
-	$i++;
+	$line_i++;
 }
+
+$header2Variable = array();
+$skip = array("Name", "Project Number", "Title");
+foreach ($headers as $header) {
+	if (!in_array($header, $skip)) {
+		foreach ($choices['r_awards'] as $value => $text) {
+			if ($text == $header) {
+				$variable = "r_awards___".$value;
+				$header2Variable[$header] = $variable;
+				break;
+			}
+		}
+	}
+}
+
+$line_i = 1;
+foreach ($lines as $line) {
+	$j = 0;
+	$recordId = $matches[$line_i];
+	$row = array("record_id" => $recordId);
+	foreach ($line as $item) {
+		$header = $headers[$j];
+		$variable = "";
+		if (isset($header2Variable[$header])) {
+			$variable = $header2Variable[$header];
+		}
+		if ($line[$j] == 'Y') {
+			$value = '1';
+		} else {
+			$value = '0';
+		}
+		if ($variable) {
+			$row[$variable] = $value;
+		}
+		$j++;
+	}
+	array_push($upload, $row);
+	$line_i++;
+}
+echo json_encode($upload)."\n";
+echo count($upload)." rows\n";
