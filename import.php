@@ -149,5 +149,32 @@ foreach ($lines as $line) {
 	array_push($upload, $row);
 	$line_i++;
 }
-echo json_encode($upload)."\n";
+// echo json_encode($upload)."\n";
 echo count($upload)." rows\n";
+
+$data = array(
+	'token' => '89E246CC671A93F9ECC3180B1EFACE76',
+	'content' => 'record',
+	'format' => 'json',
+	'type' => 'flat',
+	'overwriteBehavior' => 'normal',
+	'forceAutoNumber' => 'false',
+	'data' => json_encode($upload),
+	'returnContent' => 'count',
+	'returnFormat' => 'json'
+);
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'https://redcap.vanderbilt.edu/api/');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_VERBOSE, 0);
+curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+curl_setopt($ch, CURLOPT_AUTOREFERER, true);
+curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data, '', '&'));
+$output = curl_exec($ch);
+echo $output."\n";
+curl_close($ch);
+
