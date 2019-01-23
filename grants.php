@@ -11,7 +11,8 @@ $awards = array(
 		"r_awards" => "R Awards",
 		"misc_awards" => "Misc. Awards",
 		"lrp_awards" => "LRP Awards",
-		"va_merit_awards" => "VA Merit Awards"
+		"va_merit_awards" => "VA Merit Awards",
+		"f_awards" => "F Awards",
 		);
 
 # get query string variables
