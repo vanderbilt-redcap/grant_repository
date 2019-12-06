@@ -73,7 +73,7 @@ $sql = "SELECT d.record, d.value as 'title', d2.value as 'pi', d3.value as 'numb
 		JOIN redcap_data d2
 		LEFT JOIN redcap_data d3 ON (d3.project_id =d.project_id AND d3.record = d.record AND d3.field_name = 'grants_number')
 		JOIN redcap_data d4
-		LEFT JOIN redcap_data d5 ON (d5.project_id =d.project_id AND d5.record = d.record AND d5.field_name = 'nih_submission_date')
+		LEFT JOIN redcap_data d5 ON (d5.project_id =d.project_id AND d5.record = d.record AND d5.field_name = 'grants_date')
 		LEFT JOIN redcap_data d6 ON (d6.project_id =d.project_id AND d6.record = d.record AND d6.field_name = 'nih_format')
 		$awardClause
 		WHERE d.project_id = $grantsProjectId
@@ -220,7 +220,7 @@ echo "</form>";
 					<th>PI</th>
 					<th>Grant Title</th>
 					<th style="width: 90px;">NIH Format</th>
-					<th style="width: 150px;">NIH Submission Date</th>
+					<th style="width: 150px;">Grant Date</th>
 					<th>Grant #</th>
 					<th></th>
 				</tr>
