@@ -57,7 +57,7 @@ if (isset($_POST['submit'])) {
                     <input type="submit" value="I agree to all terms above" name="submit">
                 </form>
 			<?php else: ?>
-				Please contact Rebecca Helton at <a href='mailto:rebecca.helton@vanderbilt.edu'>rebecca.helton@vanderbilt.edu</a> to gain access to the Edge for Scholars Funded Grant Repository.
+				Please contact Rebecca Helton at <a href='mailto:rebecca.helton@vumc.org'>rebecca.helton@vanderbilt.edu</a> to gain access to the Edge for Scholars Funded Grant Repository.
 			<?php endif ?>
         </div>
     </html>

@@ -5,7 +5,7 @@ $(document).ready(function() {
 	});
 	function showCheckboxes() {
 		var val = $('[name=grants_number]').val();
-		if (val.match(/K\d\d/)) {
+		if (val.match(/\dK\d\d/) || val.match(/^K\d\d/)) {
 			$('#k_awards-tr').show();
 			$('#r_awards-tr').hide();
 			$('#f_awards-tr').hide();
