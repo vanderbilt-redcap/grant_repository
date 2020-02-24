@@ -23,81 +23,47 @@ if (!db_num_rows($q)) {
 }
 $this_file = db_fetch_array($q);
 
-if ($edoc_storage_option == '0') {
-	// LOCAL
-	//Use custom edocs folder (set in Control Center)
-	if (!is_dir(EDOC_PATH))
-	{
-		include APP_PATH_DOCROOT . 'ProjectGeneral/header.php';
-		print  "<div class='red'>
-					<b>{$lang['global_01']}!</b><br>{$lang['file_download_04']} <b>".EDOC_PATH."</b> {$lang['file_download_05']} ";
-		if ($super_user) print "{$lang['file_download_06']} <a href='".APP_PATH_WEBROOT."ControlCenter/modules_settings.php' style='text-decoration:underline;font-family:verdana;font-weight:bold;'>{$lang['global_07']}</a>.";
-		print  "</div>";
-		include APP_PATH_DOCROOT . 'ProjectGeneral/footer.php';
-		exit;
-	}
+$basename = preg_replace("/\.[^\.]*$/", "", $this_file['stored_name']);
+if (!preg_match("/\/$/", $basename)) {
+	$basename.= "/";
+}
+$outDir = APP_PATH_TEMP.$basename;
+mkdir($outDir);
 
-	//Download from "edocs" folder (use default or custom path for storage)
-	$local_file = EDOC_PATH . $this_file['stored_name'];
-	if (file_exists($local_file) && is_file($local_file))
-	{
-		header('Pragma: anytextexeptno-cache', true);
-		header('Content-Type: '.$this_file['mime_type'].'; name="'.$this_file['doc_name'].'"');
-		header('Content-Disposition: attachment; filename="'.$this_file['doc_name'].'"');
-		ob_end_flush();
-		readfile($local_file);
-	}
-	else
-	{
-		die('<b>'.$lang['global_01'].':</b> '.$lang['file_download_08'].' <b>"'.$local_file.
-			'"</b> ("'.$this_file['doc_name'].'") '.$lang['file_download_09'].'!');
-	}
+$files = array();
+if ($this_file['mime_type'] == "application/x-zip-compressed") {
+	$zip = new ZipArchive;
+	$res = $zip->open(EDOC_PATH.$this_file['stored_name']);
+	if ($res) {
+		$zip->extractTo($outDir);
+		$zip->close();
 
-} elseif ($edoc_storage_option == '2') {
-	// S3
-	$s3 = new S3($amazon_s3_key, $amazon_s3_secret, SSL);
-	if (($object = $s3->getObject($amazon_s3_bucket, $this_file['stored_name'], APP_PATH_TEMP . $this_file['stored_name'])) !== false) {
-		header('Pragma: anytextexeptno-cache', true);
-		header('Content-Type: '.$this_file['mime_type'].'; name="'.$this_file['doc_name'].'"');
-		header('Content-Disposition: attachment; filename="'.$this_file['doc_name'].'"');
-		ob_end_flush();
-		readfile(APP_PATH_TEMP . $this_file['stored_name']);
-		// Now remove file from temp directory
-		unlink(APP_PATH_TEMP . $this_file['stored_name']);
+		$allFiles = scandir($outDir);
+		foreach ($allFiles as $filename) {
+			if (!in_array($filename, $skip)) {
+				array_push($files, $filename);
+			}
+		}
 	}
-
 } else {
-
-	//  WebDAV
-	include APP_PATH_WEBTOOLS . 'webdav/webdav_connection.php';
-	$wdc = new WebdavClient();
-	$wdc->set_server($webdav_hostname);
-	$wdc->set_port($webdav_port); $wdc->set_ssl($webdav_ssl);
-	$wdc->set_user($webdav_username);
-	$wdc->set_pass($webdav_password);
-	$wdc->set_protocol(1); //use HTTP/1.1
-	$wdc->set_debug(false);
-	if (!$wdc->open()) {
-		exit($lang['global_01'].': '.$lang['file_download_11']);
+	$fpIn = fopen(EDOC_PATH.$this_file['stored_name'], "r");
+	$fpOut = fopen($outDir.$this_file['doc_name'], "w");
+	while ($line = fgets($fpIn)) {
+		fwrite($fpOut, $line);
 	}
-	if (substr($webdav_path,-1) != '/') {
-		$webdav_path .= '/';
-	}
-	$http_status = $wdc->get($webdav_path . $this_file['stored_name'], $contents); //$contents is produced by webdav class
-	$wdc->close();
-
-	//Send file headers and contents
-	header('Pragma: anytextexeptno-cache', true);
-	header('Content-Type: '.$this_file['mime_type'].'; name="'.$this_file['doc_name'].'"');
-	//header('Content-Length: '.$this_file['doc_size']);
-	header('Content-Disposition: attachment; filename="'.$this_file['doc_name'].'"');
-	ob_clean();
-	flush();
-	print $contents;
+	fclose($fpIn);
+	fclose($fpOut);
+	$files = array($this_file['doc_name']);
 }
 
-// Do logging
-// When downloading edoc files on a data entry form/survey
-// log_event($sql,"redcap_edocs_metadata","MANAGE",$_GET['record'],$_GET['field_name'],"Download uploaded document", );
-REDCap::logEvent("Download uploaded document", "", $sql, $_GET['record'], "", $project_id);
-
+if (!empty($files)) {
+	$skip = array(".", "..");
+	echo "<h1>Files (".count($files).")</h1>\n";
+	foreach ($files as $filename) {
+			echo "<p><a href='downloadFile.php?f=".urlencode($basename.$filename)."'>$filename</a></p>\n";
+		}
+	}
+	exit();
+} else {
+	echo "<p>No files have been provided.</p>";
+}
