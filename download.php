@@ -60,8 +60,7 @@ if (!empty($files)) {
 	$skip = array(".", "..");
 	echo "<h1>Files (".count($files).")</h1>\n";
 	foreach ($files as $filename) {
-			echo "<p><a href='downloadFile.php?f=".urlencode($basename.$filename)."'>$filename</a></p>\n";
-		}
+		echo "<p><a href='downloadFile.php?f=".urlencode($basename.$filename)."'>$filename</a></p>\n";
 	}
 	exit();
 } else {
