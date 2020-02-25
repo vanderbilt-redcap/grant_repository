@@ -37,14 +37,7 @@ if ($this_file['mime_type'] == "application/x-zip-compressed") {
 	if ($res) {
 		$zip->extractTo($outDir);
 		$zip->close();
-
-		$allFiles = scandir($outDir);
-		$skip = array(".", "..");
-		foreach ($allFiles as $filename) {
-			if (!in_array($filename, $skip)) {
-				array_push($files, $filename);
-			}
-		}
+		$files = inspectDir($outDir);
 	}
 } else {
 	$fpIn = fopen(EDOC_PATH.$this_file['stored_name'], "r");
@@ -54,15 +47,36 @@ if ($this_file['mime_type'] == "application/x-zip-compressed") {
 	}
 	fclose($fpIn);
 	fclose($fpOut);
-	$files = array($this_file['doc_name']);
+	$files = array($outDir.$this_file['doc_name']);
 }
 
 if (!empty($files)) {
 	echo "<h1>All ".count($files)." Files</h1>\n";
 	foreach ($files as $filename) {
-		echo "<p><a href='downloadFile.php?f=".urlencode($basename.$filename)."'>$filename</a></p>\n";
+		echo "<p><a href='downloadFile.php?f=".encodeFile($filename)."'>$filename</a></p>\n";
 	}
 	exit();
 } else {
 	echo "<p>No files have been provided.</p>";
+}
+
+function encodeFile($filename) {
+	return urlencode(str_replace(APP_PATH_TEMP, "", $filename));
+}
+
+function inspectDir($dir) {
+	$files = array();
+
+	$allFiles = scandir($dir);
+	$skip = array(".", "..");
+	foreach ($allFiles as $filename) {
+		if (!in_array($filename, $skip)) {
+			if (is_dir($dir.$filename)) {
+				$files = array_merge($files, inspectDir($dir.$filename));
+			} else {
+				array_push($files, $dir.$filename);
+			}
+		}
+	}
+	return $files;
 }
