@@ -39,7 +39,7 @@ foreach ($redcapData as $row) {
 
 if (count($records) > 0) {
 	if (count($records) > $numRecordsInTest) {
-		$records = array_splice($records, 0, $numRecordsInTest)
+		$records = array_splice($records, 0, $numRecordsInTest);
 	}
 
 	$data = array(
