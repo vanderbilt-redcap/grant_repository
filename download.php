@@ -73,7 +73,7 @@ function inspectDir($dir) {
 	foreach ($allFiles as $filename) {
 		if (!in_array($filename, $skip)) {
 			if (is_dir($dir.$filename)) {
-				$files = array_merge($files, inspectDir($dir.$filename));
+				$files = array_merge($files, inspectDir($dir.$filename."/"));
 			} else {
 				array_push($files, $dir.$filename);
 			}
