@@ -39,6 +39,7 @@ if ($this_file['mime_type'] == "application/x-zip-compressed") {
 		$zip->close();
 
 		$allFiles = scandir($outDir);
+		$skip = array(".", "..");
 		foreach ($allFiles as $filename) {
 			if (!in_array($filename, $skip)) {
 				array_push($files, $filename);
@@ -57,7 +58,6 @@ if ($this_file['mime_type'] == "application/x-zip-compressed") {
 }
 
 if (!empty($files)) {
-	$skip = array(".", "..");
 	echo "<h1>Files (".count($files).")</h1>\n";
 	foreach ($files as $filename) {
 		echo "<p><a href='downloadFile.php?f=".urlencode($basename.$filename)."'>$filename</a></p>\n";
