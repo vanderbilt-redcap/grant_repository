@@ -53,15 +53,16 @@ if ($this_file['mime_type'] == "application/x-zip-compressed") {
 if (!empty($files)) {
 	echo "<h1>All ".count($files)." Files</h1>\n";
 	foreach ($files as $filename) {
-		echo "<p><a href='downloadFile.php?f=".encodeFile($filename)."'>$filename</a></p>\n";
+		$filename = truncateFile($filename);
+		echo "<p><a href='downloadFile.php?f=".urlencode($filename)."'>$filename</a></p>\n";
 	}
 	exit();
 } else {
 	echo "<p>No files have been provided.</p>";
 }
 
-function encodeFile($filename) {
-	return urlencode(str_replace(APP_PATH_TEMP, "", $filename));
+function truncateFile($filename) {
+	return str_replace(APP_PATH_TEMP, "", $filename);
 }
 
 function inspectDir($dir) {
