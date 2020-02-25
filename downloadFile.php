@@ -20,6 +20,8 @@ if (!file_exists($filename)) {
 	die($dieMssg);
 }
 
+displayFile($filename);
+
 $phpOfficeObj = NULL;
 $pdfOut = $filename."_pdf.pdf"; 
 if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
@@ -63,17 +65,7 @@ if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
 	$xmlWriter->save($pdfOut);  
 } else {
 	# unknown type; just download
-
-	header('Content-Description: File Transfer');
-	header('Content-Type: application/octet-stream');
-	header('Content-Disposition: attachment; filename="'.basename($filename).'"');
-	header('Expires: 0');
-	header('Cache-Control: must-revalidate');
-	header('Pragma: public');
-	header('Content-Length: ' . filesize($filename));
-
-	readfile($filename);
-	exit();
+	displayFile($filename);
 }
 
 if (file_exists($pdfOut)) {
@@ -98,4 +90,17 @@ if (file_exists($pdfOut)) {
 	readfile($jpgOut);
 } else {
 	die("Could not create intermediate file.");
+}
+
+function displayFile($filename) {
+	header('Content-Description: File Transfer');
+	header('Content-Type: application/octet-stream');
+	header('Content-Disposition: attachment; filename="'.basename($filename).'"');
+	header('Expires: 0');
+	header('Cache-Control: must-revalidate');
+	header('Pragma: public');
+	header('Content-Length: ' . filesize($filename));
+
+	readfile($filename);
+	exit();
 }

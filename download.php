@@ -51,7 +51,7 @@ if ($this_file['mime_type'] == "application/x-zip-compressed") {
 }
 
 if (!empty($files)) {
-	echo "<h1>All ".count($files)." Files</h1>\n";
+	echo "<h1>All Files (".count($files).")</h1>\n";
 	foreach ($files as $filename) {
 		$truncFilename = truncateFile($filename);
 		echo "<p><a href='downloadFile.php?f=".urlencode($truncFilename)."'>".basename($filename)."</a></p>\n";
