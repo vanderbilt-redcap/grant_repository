@@ -6,10 +6,6 @@ if (!isset($_COOKIE['grant_repo'])) {
 }
 
 require_once("base.php");
-require_once(dirname(__FILE__)."/vendor/autoload.php");
-
-use Hfig\MAPI;
-use Hfig\MAPI\OLE\Pear;
 
 $dieMssg = "Improper filename";
 if (!isset($_GET['f']) || preg_match("/\.\./", $_GET['f']) || preg_match("/^\//", $_GET['f'])) {
@@ -21,6 +17,12 @@ if (!file_exists($filename)) {
 }
 
 displayFile($filename);
+exit();
+
+require_once(dirname(__FILE__)."/vendor/autoload.php");
+
+use Hfig\MAPI;
+use Hfig\MAPI\OLE\Pear;
 
 $phpOfficeObj = NULL;
 $pdfOut = $filename."_pdf.pdf"; 
