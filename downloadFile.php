@@ -7,7 +7,7 @@ if (!isset($_COOKIE['grant_repo'])) {
 
 require_once("base.php");
 
-$dieMssg = "Improper filename";
+$dieMssg = "Improper filename ".APP_PATH_TEMP.$_GET['f'];
 if (!isset($_GET['f']) || preg_match("/\.\./", $_GET['f']) || preg_match("/^\//", $_GET['f'])) {
 	die($dieMssg);
 }
