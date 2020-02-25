@@ -31,7 +31,7 @@ $outDir = APP_PATH_TEMP.$basename;
 mkdir($outDir);
 
 $files = array();
-if ($this_file['mime_type'] == "application/x-zip-compressed") {
+if (preg_match("/\.zip$/i", $this_file['stored_name']) || ($this_file['mime_type'] == "application/x-zip-compressed")) {
 	$zip = new ZipArchive;
 	$res = $zip->open(EDOC_PATH.$this_file['stored_name']);
 	if ($res) {
