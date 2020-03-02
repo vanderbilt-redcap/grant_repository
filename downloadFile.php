@@ -87,9 +87,7 @@ if (file_exists($pdfOut)) {
 	$im->clear(); 
 	$im->destroy();
 
-        header('Content-Description: File Transfer');
         header('Content-Type: image/jpeg');
-        header('Content-Disposition: attachment; filename="'.basename($jpgOut).'"');
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
