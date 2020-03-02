@@ -68,23 +68,26 @@ if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
 }
 
 if (file_exists($pdfOut)) {
-	$jpgOut = $filename.".jpg";
+	$readonlyPdf = APP_PATH_TEMP.time()."_".rand(0, 1000000).".pdf";
 
-	$im = new Imagick();
-	$im->setResolution(300,300);
-	$im->readimage($pdfOut); 
-	$im->setImageFormat('jpeg');    
-	$im->writeImages($jpgOut, FALSE); 
-	$im->clear(); 
-	$im->destroy();
+	$readonlyPdf = $jpgOut.".pdf";
+	$imPdf = new Imagick();
+	$imPdf->setResolution(300, 300);
+	$imPdf->setCompressionQuality(80);
+	$imPdf->readimages($pdfOut);
+	$imPdf->setImageFormat("pdf");
+	$imPdf->writeImages($readonlyPdf, TRUE);
+	$imPdf->clear();
+	$imPdf->destroy();
 
-	header('Content-Type: image/jpeg');
+	header('Content-Type: application/pdf');
+	header('Content-Disposition: attachment; filename="'.basename($filename).'"');
 	header('Expires: 0');
 	header('Cache-Control: must-revalidate');
 	header('Pragma: public');
-	header('Content-Length: ' . filesize($jpgOut));
+	header('Content-Length: ' . filesize($readonlyPdf));
 
-	readfile($jpgOut);
+	readfile($readonlyPdf);
 } else {
 	die("Could not create intermediate file.");
 }
