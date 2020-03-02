@@ -84,10 +84,9 @@ if (file_exists($pdfOut)) {
 }
 
 function convertToImagePDF($fileIn, $fileOut) {
-	$imPdf = new Imagick();
+	$imPdf = new Imagick($fileIn);
 	$imPdf->setResolution(300, 300);
 	$imPdf->setCompressionQuality(80);
-	$imPdf->readimages($fileIn);
 	$imPdf->setImageFormat("pdf");
 	$imPdf->writeImages($fileOut, TRUE);
 	$imPdf->clear();
