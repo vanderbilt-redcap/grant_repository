@@ -16,9 +16,6 @@ if (!file_exists($filename)) {
 	die($dieMssg);
 }
 
-displayFile($filename);
-exit();
-
 require_once(dirname(__FILE__)."/vendor/autoload.php");
 
 use Hfig\MAPI;
