@@ -25,6 +25,10 @@ $phpOfficeObj = NULL;
 $pdfOut = $filename."_pdf.pdf"; 
 if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
 	# Word doc
+	$domPdfPath = realpath(dirname(__FILE__). '/vendor/dompdf/dompdf');
+	\PhpOffice\PhpWord\Settings::setPdfRendererPath($domPdfPath);
+	\PhpOffice\PhpWord\Settings::setPdfRendererName('DomPDF');
+
 	$phpOfficeObj = \PhpOffice\PhpWord\IOFactory::load($filename);
 	$xmlWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpOfficeObj, 'PDF');
 	$xmlWriter->save($pdfOut);  
