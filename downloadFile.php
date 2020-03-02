@@ -18,9 +18,6 @@ if (!file_exists($filename)) {
 
 require_once(dirname(__FILE__)."/vendor/autoload.php");
 
-use Hfig\MAPI;
-use Hfig\MAPI\OLE\Pear;
-
 $phpOfficeObj = NULL;
 $pdfOut = $filename."_pdf.pdf"; 
 if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
@@ -53,29 +50,6 @@ if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
 } else if (preg_match("/\.pdf$/i", $filename)) {
 	# PDF
 	$pdfOut = $filename;
-} else if (preg_match("/\.msg$/i", $filename)) {
-	# Outlook Msg
-
-	$messageFactory = new MAPI\MapiMessageFactory(new Swiftmailer\Factory());
-	$documentFactory = new Pear\DocumentFactory(); 
-
-	$ole = $documentFactory->createFromFile($filename);
-	$message = $messageFactory->parseMessage($ole);
-
-	$html = $message->getBody();
-
-	$filenameHTML = $filename.".html";
-	$fp = fopen($filenameHTML, "w");
-	fwrite($fp, $html);
-	fclose($fp);
-
-	$domPdfPath = realpath(dirname(__FILE__). '/vendor/dompdf/dompdf');
-	\PhpOffice\PhpWord\Settings::setPdfRendererPath($domPdfPath);
-	\PhpOffice\PhpWord\Settings::setPdfRendererName('DomPDF');
-
-	$phpOfficeObj = \PhpOffice\PhpWord\IOFactory::load($filenameHTML, "HTML");
-	$xmlWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpOfficeObj, 'PDF');
-	$xmlWriter->save($pdfOut);  
 } else {
 	# unknown type; just download
 	displayFile($filename);
