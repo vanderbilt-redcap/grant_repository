@@ -67,6 +67,10 @@ if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
 	fwrite($fp, $html);
 	fclose($fp);
 
+	$domPdfPath = realpath(dirname(__FILE__). '/vendor/dompdf/dompdf');
+	\PhpOffice\PhpWord\Settings::setPdfRendererPath($domPdfPath);
+	\PhpOffice\PhpWord\Settings::setPdfRendererName('DomPDF');
+
 	$phpOfficeObj = \PhpOffice\PhpWord\IOFactory::load($filenameHTML, "HTML");
 	$xmlWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpOfficeObj, 'PDF');
 	$xmlWriter->save($pdfOut);  
