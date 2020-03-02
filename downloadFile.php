@@ -72,7 +72,7 @@ if (file_exists($pdfOut)) {
 	convertToImagePdf($pdfOut, $readonlyPdf);
 
 	header('Content-Type: application/pdf');
-	header('Content-Disposition: attachment; filename="'.basename($filename).'"');
+	header('Content-Disposition: inline; filename="'.basename($filename).'"');
 	header('Expires: 0');
 	header('Cache-Control: must-revalidate');
 	header('Pragma: public');
