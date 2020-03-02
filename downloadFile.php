@@ -74,7 +74,7 @@ if (file_exists($pdfOut)) {
 	$im->setResolution(300,300);
 	$im->readimage($pdfOut); 
 	$im->setImageFormat('jpeg');    
-	$im->writeImage($jpgOut); 
+	$im->writeImages($jpgOut); 
 	$im->clear(); 
 	$im->destroy();
 
