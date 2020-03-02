@@ -36,12 +36,16 @@ if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
 	# CSV
 	$reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
 	$phpOfficeObj = $reader->load($filename);
+	$class = \PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf::class;
+	\PhpOffice\PhpSpreadsheet\IOFactory::registerWriter('PDF', $class);
 	$xmlWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($phpOfficeObj, "PDF");
 	$xmlWriter->save($pdfOut);  
 } else if (preg_match("/\.xls$/i", $filename) || preg_match("/\.xlsx$/i", $filename)) {
 	# Excel
 	$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($filename);
 	$phpOfficeObj = $reader->load($filename);
+	$class = \PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf::class;
+	\PhpOffice\PhpSpreadsheet\IOFactory::registerWriter('PDF', $class);
 	$xmlWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($phpOfficeObj, "PDF");
 	$xmlWriter->save($pdfOut);  
 } else if (preg_match("/\.pdf$/i", $filename)) {
