@@ -35,18 +35,20 @@ if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
 } else if (preg_match("/\.csv$/i", $filename)) {
 	# CSV
 	$reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
-	$phpOfficeObj = $reader->load($filename);
+	$spreadsheet = $reader->load($filename);
+	setupSpreadsheet($spreadsheet);
 	$class = \PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf::class;
 	\PhpOffice\PhpSpreadsheet\IOFactory::registerWriter('PDF', $class);
-	$xmlWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($phpOfficeObj, "PDF");
+	$xmlWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "PDF");
 	$xmlWriter->save($pdfOut);  
 } else if (preg_match("/\.xls$/i", $filename) || preg_match("/\.xlsx$/i", $filename)) {
 	# Excel
 	$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($filename);
-	$phpOfficeObj = $reader->load($filename);
+	$spreadsheet = $reader->load($filename);
+	setupSpreadsheet($spreadsheet);
 	$class = \PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf::class;
 	\PhpOffice\PhpSpreadsheet\IOFactory::registerWriter('PDF', $class);
-	$xmlWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($phpOfficeObj, "PDF");
+	$xmlWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "PDF");
 	$xmlWriter->save($pdfOut);  
 } else if (preg_match("/\.pdf$/i", $filename)) {
 	# PDF
@@ -117,4 +119,12 @@ function displayFile($filename) {
 
 	readfile($filename);
 	exit();
+}
+
+function setupSpreadsheet(&$spreadsheet) {
+	$spreadsheet->getActiveSheet()->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+	$spreadsheet->getActiveSheet()->getPageMargins()->setTop(0.5);
+	$spreadsheet->getActiveSheet()->getPageMargins()->setRight(0.5);
+	$spreadsheet->getActiveSheet()->getPageMargins()->setLeft(0.5);
+	$spreadsheet->getActiveSheet()->getPageMargins()->setBottom(0.5);
 }
