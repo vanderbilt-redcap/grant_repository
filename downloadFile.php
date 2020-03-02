@@ -74,15 +74,15 @@ if (file_exists($pdfOut)) {
 	$im->setResolution(300,300);
 	$im->readimage($pdfOut); 
 	$im->setImageFormat('jpeg');    
-	$im->writeImages($jpgOut); 
+	$im->writeImages($jpgOut, FALSE); 
 	$im->clear(); 
 	$im->destroy();
 
-        header('Content-Type: image/jpeg');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: ' . filesize($jpgOut));
+	header('Content-Type: image/jpeg');
+	header('Expires: 0');
+	header('Cache-Control: must-revalidate');
+	header('Pragma: public');
+	header('Content-Length: ' . filesize($jpgOut));
 
 	readfile($jpgOut);
 } else {
