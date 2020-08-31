@@ -165,7 +165,7 @@ else
 				</tr>
 				<tr>
 					<td style='vertical-align: middle;'>
-						Filter By: <select id='award_type' onchange='displayAwardList(); displayFilterButton();'>
+						Filter By: <select id='award_type' onchange='displayAwardList();'>
 							<option value=''>---SELECT---</option>
 							<?php
 							foreach ($awards as $award => $awardTitle) {
@@ -196,7 +196,9 @@ echo "</form>";
 	function displayFilterButton() {
 		var item = $('#award_type').val();
 		var sel = $('#'+item).val();
-		$('#filterButton').show();
+		if (sel != "") {
+			$('#filterButton').show();
+		}
 	}
 
 	function displayAwardList() {
