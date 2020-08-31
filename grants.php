@@ -1,4 +1,4 @@
-<?php
+
 # verify user access
 if (!isset($_COOKIE['grant_repo'])) {
 	header("Location: index.php");
@@ -158,7 +158,7 @@ else
 				</tr>
 				<tr>
 					<td style='vertical-align: middle;'>
-						Filter By: <select id='award_type' onchange='displayAwardList();'>
+						Filter By: <select id='award_type' onchange='displayAwardList(); displayFilterButton();'>
 							<option value=''>---SELECT---</option>
 							<?php
 							foreach ($awards as $award => $awardTitle) {
@@ -172,7 +172,7 @@ else
 echo "<form style='margin-bottom: 0px;' method='get'>";
 foreach($awards as $award => $awardTitle) {
 	echo "<select name='$award' id='$award' onchange='displayFilterButton();' style='display: none;'>";
-	echo "<option value=''>---SELECT---</option>";
+	echo "<option value=''>---ALL---</option>";
 	foreach ($choices[$award] as $value => $label) {
 		echo "<option value='$value'>$label</option>";
 	}
@@ -188,11 +188,7 @@ echo "</form>";
 	function displayFilterButton() {
 		var item = $('#award_type').val();
 		var sel = $('#'+item).val();
-		if (sel !== "") {
-			$('#filterButton').show();
-		} else {
-			$('#filterButton').hide();
-		}
+		$('#filterButton').show();
 	}
 
 	function displayAwardList() {
