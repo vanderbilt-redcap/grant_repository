@@ -1,3 +1,4 @@
+<?php
 
 # verify user access
 if (!isset($_COOKIE['grant_repo'])) {
