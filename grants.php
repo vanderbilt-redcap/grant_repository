@@ -62,9 +62,15 @@ $awardClause = "";
 foreach ($awards as $award => $awardTitle) {
 	if (isset($_GET[$award]) && $_GET[$award]) {
 		$awardValue = $_GET[$award];
-		$awardField = $award;
-		$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value='$awardValue')";
-		$search = $awardTitle." as ".$choices[$award][$awardValue];
+		if ($awardValue == "ALL") {
+			$awardField = $award;
+			$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value!='')";
+			$search = "All ".$awardTitle;
+		} else {
+			$awardField = $award;
+			$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value='$awardValue')";
+			$search = $awardTitle." as ".$choices[$award][$awardValue];
+		}
 	}
 }
 
@@ -173,7 +179,8 @@ else
 echo "<form style='margin-bottom: 0px;' method='get'>";
 foreach($awards as $award => $awardTitle) {
 	echo "<select name='$award' id='$award' onchange='displayFilterButton();' style='display: none;'>";
-	echo "<option value=''>---ALL---</option>";
+	echo "<option value=''>---SELECT---</option>";
+	echo "<option value='ALL'>---ALL---</option>";
 	foreach ($choices[$award] as $value => $label) {
 		echo "<option value='$value'>$label</option>";
 	}
