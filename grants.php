@@ -67,7 +67,7 @@ foreach ($awards as $award => $awardTitle) {
 			$awardField = $award;
 			$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value IN ('".implode("','", array_keys($choices[$award]))."'))";
 			$search = "all ".$awardTitle;
-			$extra = ", d7.value as 'award'";
+			$extra = ", DISTINCT d7.field_name as 'award_field'";
 		} else {
 			$awardField = $award;
 			$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value='$awardValue')";
@@ -244,8 +244,8 @@ echo "</form>";
 						echo "<td style='text-align: center;'>" . (($row['format'] == "1") ? "NEW" : "OLD") . "</td>";
 						echo "<td style='text-align: center;'>" . $row['date']."</td>";
 						echo "<td style='white-space:nowrap;'>" . $row['number'] . "</td>";
-						if ($row['award']) {
-							echo "<td style='white-space:nowrap;'>" . $row['award'] . "</td>";
+						if ($row['award_field']) {
+							echo "<td style='white-space:nowrap;'>" . $row['award_field'] . "</td>";
 						}
 						if ($row['record']) {
 							echo "<td style='white-space:nowrap;'>" . $row['record'] . "</td>";
