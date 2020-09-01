@@ -67,7 +67,7 @@ foreach ($awards as $award => $awardTitle) {
 			$awardField = $award;
 			$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value IN ('".implode("','", array_keys($choices[$award]))."'))";
 			$search = "all ".$awardTitle;
-			$extra = ", d7.value AS award";
+			$extra = ", d7.value as 'award'";
 		} else {
 			$awardField = $award;
 			$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value='$awardValue')";
@@ -77,7 +77,7 @@ foreach ($awards as $award => $awardTitle) {
 }
 
 # Get the list of grants
-$sql = "SELECT d.record, d.value as 'title', d2.value as 'pi', d3.value as 'number', d4.value as 'file', d5.value as 'date', d6.value as 'format' $extra
+$sql = "SELECT d.record as 'record', d.value as 'title', d2.value as 'pi', d3.value as 'number', d4.value as 'file', d5.value as 'date', d6.value as 'format' $extra
 		FROM redcap_data d
 		JOIN redcap_data d2
 		LEFT JOIN redcap_data d3 ON (d3.project_id =d.project_id AND d3.record = d.record AND d3.field_name = 'grants_number')
@@ -246,6 +246,9 @@ echo "</form>";
 						echo "<td style='white-space:nowrap;'>" . $row['number'] . "</td>";
 						if ($row['award']) {
 							echo "<td style='white-space:nowrap;'>" . $row['award'] . "</td>";
+						}
+						if ($row['record']) {
+							echo "<td style='white-space:nowrap;'>" . $row['record'] . "</td>";
 						}
 						echo "<td style='text-align: center;'><a href='$url'>Download</a></td></tr>";
 					}
