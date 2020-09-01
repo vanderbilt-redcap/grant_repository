@@ -242,12 +242,6 @@ echo "</form>";
 						echo "<td style='text-align: center;'>" . (($row['format'] == "1") ? "NEW" : "OLD") . "</td>";
 						echo "<td style='text-align: center;'>" . $row['date']."</td>";
 						echo "<td style='white-space:nowrap;'>" . $row['number'] . "</td>";
-						if ($row['award_field']) {
-							echo "<td style='white-space:nowrap;'>" . $row['award_field'] . "</td>";
-						}
-						if ($row['record']) {
-							echo "<td style='white-space:nowrap;'>" . $row['record'] . "</td>";
-						}
 						echo "<td style='text-align: center;'><a href='$url'>Download</a></td></tr>";
 					}
 					?>
