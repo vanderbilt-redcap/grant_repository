@@ -75,7 +75,7 @@ foreach ($awards as $award => $awardTitle) {
 }
 
 # Get the list of grants
-$sql = "SELECT d.record as 'record', d.value as 'title', d2.value as 'pi', d3.value as 'number', d4.value as 'file', d5.value as 'date', d6.value as 'format'
+$sql = "SELECT DISTINCT d.record as 'record', d.value as 'title', d2.value as 'pi', d3.value as 'number', d4.value as 'file', d5.value as 'date', d6.value as 'format'
 		FROM redcap_data d
 		JOIN redcap_data d2
 		LEFT JOIN redcap_data d3 ON (d3.project_id =d.project_id AND d3.record = d.record AND d3.field_name = 'grants_number')
