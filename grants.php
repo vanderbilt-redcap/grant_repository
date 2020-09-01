@@ -234,20 +234,16 @@ echo "</form>";
 					<?php
 					$recordsWithAwards = [];
 					while ($row = db_fetch_assoc($grants)) {
-						// turn off multiples with multiple checkboxes for d7
-						if (!in_array($row['record'], $recordsWithAwards)) {
-							$url = "download.php?p=$grantsProjectId&id=" .
-								$row['file'] . "&s=&page=register_grants&record=" . $row['record'] . "&event_id=" .
-								$eventId . "&field_name=grants_file";
+						$url = "download.php?p=$grantsProjectId&id=" .
+							$row['file'] . "&s=&page=register_grants&record=" . $row['record'] . "&event_id=" .
+							$eventId . "&field_name=grants_file";
 
-							echo "<td style='white-space:nowrap;'>" . $row['pi'] . "</td>";
-							echo "<td>" . $row['title'] . "</td>";
-							echo "<td style='text-align: center;'>" . (($row['format'] == "1") ? "NEW" : "OLD") . "</td>";
-							echo "<td style='text-align: center;'>" . $row['date']."</td>";
-							echo "<td style='white-space:nowrap;'>" . $row['number'] . "</td>";
-							echo "<td style='text-align: center;'><a href='$url'>Download</a></td></tr>";
-							$recordsWithAwards[] = $row['record'];
-						}
+						echo "<td style='white-space:nowrap;'>" . $row['pi'] . "</td>";
+						echo "<td>" . $row['title'] . "</td>";
+						echo "<td style='text-align: center;'>" . (($row['format'] == "1") ? "NEW" : "OLD") . "</td>";
+						echo "<td style='text-align: center;'>" . $row['date']."</td>";
+						echo "<td style='white-space:nowrap;'>" . $row['number'] . "</td>";
+						echo "<td style='text-align: center;'><a href='$url'>Download</a></td></tr>";
 					}
 					?>
 				</table>
