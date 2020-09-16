@@ -49,7 +49,6 @@ if (isset($_POST['submit'])) {
             <hr>
             <h3>Edge for Scholars Funded Grant Repository</h3>
             <br/>
-	    <p style='font-size: 11px;'><?= $userid."(".$vunet.")" ?></p>
             <?php if ($vunet != ""): ?>
                 <p><strong>NOTICE: You must agree to the following terms before using the Edge for Scholars Grant Repository</strong></p>
                 <ul> 
