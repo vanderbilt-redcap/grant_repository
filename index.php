@@ -5,9 +5,10 @@ $timestamp = date('Y-m-d');
 $role = "";
 $vunet = "";
 
-if ($_GET['uid']) {
-	$userid = $_GET['uid'];
-}
+# spoofing tool - provide uid in the GET params in the URL
+// if ($_GET['uid']) {
+	// $userid = $_GET['uid'];
+// }
 
 # query table to authenticate user
 $sql = "SELECT a.value as 'userid', a2.value as 'role'
