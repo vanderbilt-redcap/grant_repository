@@ -115,7 +115,7 @@ else
 		<br/>
 		<script>
 		$(document).ready( function () {
-			$('#filterTable').DataTable();
+			// $('#filterTable').DataTable();
 			$('#grantsTable').DataTable();
 		});
 		</script>
