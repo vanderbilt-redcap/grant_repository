@@ -116,6 +116,7 @@ else
 		<script>
 		$(document).ready( function () {
 			$('#filterTable').DataTable();
+			$('#grantsTable').DataTable();
 		});
 		</script>
 		<div id="container">
