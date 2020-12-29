@@ -240,7 +240,7 @@ echo "</form>";
 						<th style="width: 90px;">NIH Format</th>
 						<th style="width: 150px;">Grant Date</th>
 						<th>Grant #</th>
-						<th></th>
+						<th>Acquire</th>
 					</tr>
 				</thead>
 				<tbody>
