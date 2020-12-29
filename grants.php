@@ -116,7 +116,7 @@ else
 		<script>
 		$(document).ready( function () {
 			// $('#filterTable').DataTable();
-			$('#grantsTable').DataTable();
+			$('#grantsTable').DataTable({ "pageLength": 1000 });
 		});
 		</script>
 		<div id="container">
