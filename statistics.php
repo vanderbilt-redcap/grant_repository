@@ -88,7 +88,7 @@ while ($row = db_fetch_array($result)) {
 	<body>
 		<br/>
 		<div style="padding-left:8%;  padding-right:10%; margin-left:auto; margin-right:auto;   ">
-			<img src="img/EdgeLogoSmall.png" style="vertical-align:middle"/>
+			<img src="img/efs_small.png" style="vertical-align:middle"/>
 			<hr>
 			<a href="grants.php">Grants</a> |
 			<?php

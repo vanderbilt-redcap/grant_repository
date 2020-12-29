@@ -113,7 +113,7 @@ else
 		<br/>
 		<div id="container">
 			<div id="header">
-				<img src="img/EdgeLogoSmall.png" style="vertical-align:middle"/>
+				<img src="img/efs_small.png" style="vertical-align:middle"/>
 				<hr>
 				<a href="grants.php">Grants</a> |
 				<?php

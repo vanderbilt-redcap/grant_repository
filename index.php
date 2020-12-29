@@ -45,7 +45,7 @@ if (isset($_POST['submit'])) {
     <body style="background-color:#f8f8f8">
         <br/>
         <div style="padding-left:8%;  padding-right:10%; margin-left:auto; margin-right:auto; ">  
-            <img src="img/EdgeLogoSmall.png" style="vertical-align:middle"/>
+            <img src="img/efs_small.png" style="vertical-align:middle"/>
             <hr>
             <h3>Edge for Scholars Funded Grant Repository</h3>
             <br/>
