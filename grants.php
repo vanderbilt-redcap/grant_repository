@@ -108,9 +108,16 @@ else
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="css/basic.css">
+		<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
+		<script src="//cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
 	</head>
 	<body>
 		<br/>
+		<script>
+		$(document).ready( function () {
+			$('#filterTable').DataTable();
+		});
+		</script>
 		<div id="container">
 			<div id="header">
 				<img src="img/efs_small.png" style="vertical-align:middle"/>
