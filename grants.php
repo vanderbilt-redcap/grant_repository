@@ -140,6 +140,7 @@ else
 
 			<div id="filter">
 				<table id="filterTable">
+				<thead>
 				<tr>
 					<td>
 						<form method="get">
@@ -170,6 +171,8 @@ else
 						</form>
 					</td>
 				</tr>
+				</thead>
+				<tbody>
 				<tr>
 					<td style='vertical-align: middle;'>
 						Filter By: <select id='award_type' onchange='displayAwardList();'>
@@ -221,6 +224,7 @@ echo "</form>";
 </script>
 					</td>
 				</tr>
+				</tbody>
 				</table>
 			</div>
 
@@ -228,15 +232,17 @@ echo "</form>";
 				<div><strong><?= $message ?></strong></div>
 				<br/>
 				<table id="grantsTable">
-				<tr>
-					<th>PI</th>
-					<th>Grant Title</th>
-					<th style="width: 90px;">NIH Format</th>
-					<th style="width: 150px;">Grant Date</th>
-					<th>Grant #</th>
-					<th></th>
-				</tr>
-				<tr>
+				<thead>
+					<tr>
+						<th>PI</th>
+						<th>Grant Title</th>
+						<th style="width: 90px;">NIH Format</th>
+						<th style="width: 150px;">Grant Date</th>
+						<th>Grant #</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
 					<?php
 					$recordsWithAwards = [];
 					while ($row = db_fetch_assoc($grants)) {
@@ -244,14 +250,17 @@ echo "</form>";
 							$row['file'] . "&s=&page=register_grants&record=" . $row['record'] . "&event_id=" .
 							$eventId . "&field_name=grants_file";
 
+						echo "<tr>";
 						echo "<td style='white-space:nowrap;'>" . $row['pi'] . "</td>";
 						echo "<td>" . $row['title'] . "</td>";
 						echo "<td style='text-align: center;'>" . (($row['format'] == "1") ? "NEW" : "OLD") . "</td>";
 						echo "<td style='text-align: center;'>" . $row['date']."</td>";
 						echo "<td style='white-space:nowrap;'>" . $row['number'] . "</td>";
-						echo "<td style='text-align: center;'><a href='$url'>Download</a></td></tr>";
+						echo "<td style='text-align: center;'><a href='$url'>Download</a></td>";
+						echo "</tr>";
 					}
 					?>
+				</tbody>
 				</table>
 			</div>
 		</div>
