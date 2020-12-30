@@ -112,7 +112,7 @@ else
         	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="//cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
 		<style>
-			body { font-family: 'Arial, Helvetica, sans-serif'; }
+			body { font-family: Arial, Helvetica, sans-serif; }
 		</style>
 	</head>
 	<body>
