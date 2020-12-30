@@ -36,6 +36,17 @@ if (isset($_POST['submit'])) {
 	setcookie('grant_repo', $role);
 	header("Location: grants.php");
 }
+ 
+$startTs = strtotime("2021-01-01");
+if (($vunet != "") && ($startTs <= time())) {
+	$saveData = [
+			"vunet_id" => $vunet,
+			"accessed" => '1',
+			];
+	$json = json_encode([$saveData]);
+	\REDCap::saveData($userProjectId, "json", $json, "overwrite");
+}
+
 ?>
 
 <html>
