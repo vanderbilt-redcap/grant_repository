@@ -112,8 +112,8 @@ else
         	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="//cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
 		<style>
-			body { font-family: Arial, Helvetica, sans-serif; }
-			td { font-family: 'Times New Roman', Times, serif; }
+			body { font-family: 'Avenir Next Regular', Arial, Helvetica, sans-serif; }
+			td { font-family: 'Adobe Caslon Pro', 'Avenir Next LT Pro', 'Times New Roman', Times, serif; }
 			table { border-collapse: collapse; }
 			table.dataTable tbody tr.even { background-color: #f2f2f2; } 
 		</style>
