@@ -123,16 +123,16 @@ else
 			<div id="header">
 				<img src="img/efs_small.png" style="vertical-align:middle"/>
 				<hr>
-				<a href="grants.php">Grants</a> |
+				<a href="grants.php">Grants</a> | 
 				<?php
 				if ($_COOKIE['grant_repo'] != 1) {
-					echo '<a href="statistics.php">Use Statistics</a> |';
+					echo '<a href="statistics.php">Use Statistics</a> | ';
 				}
 				if ($_COOKIE['grant_repo'] == 3) {
-					echo "<a href='".APP_PATH_WEBROOT."index.php?pid=$grantsProjectId' target='_blank'>Register Grants</a> |";
-					echo "<a href='".APP_PATH_WEBROOT."index.php?pid=$userProjectId' target='_blank'>Administer Users</a> |";
+					echo "<a href='".APP_PATH_WEBROOT."index.php?pid=$grantsProjectId' target='_blank'>Register Grants</a> | ";
+					echo "<a href='".APP_PATH_WEBROOT."index.php?pid=$userProjectId' target='_blank'>Administer Users</a> | ";
 				} ?>
-				<a href ="http://projectreporter.nih.gov/reporter.cfm">NIH RePORTER</a> |
+				<a href ="http://projectreporter.nih.gov/reporter.cfm">NIH RePORTER</a> | 
 				<a href ="http://grants.nih.gov/grants/oer.htm">NIH-OER</a>
 				<h3>Edge for Scholars Funded Grant Repository</h3>
 				<i>You may download grant documents by clicking "download" links below. The use of the grants document repository is strictly limited to authorized individuals and you are not permitted to share files or any embedded content with other individuals. All file downloads are logged.</i><br><br><span style="color:#fe0000;">NEW: We have replaced the spreadsheet of grant components with dropdown menus you can use to filter to grants containing only your component (budget, letters, etc.) of interest.</span> <a href="https://redcap.vanderbilt.edu/plugins/grant_repository/download.php?p=27635&id=3067400&s=&page=register_grants&record=1%20READ%20ME%20FIRST&event_id=52818&field_name=grants_file">Instructions for filtering.</a>
