@@ -153,6 +153,7 @@ else
 				<tr>
 					<td>
 						<form method="get">
+							<!-- 
 							<select name="o">
 								<option value="pi" <?php echo ($sort == "pi") ? "selected" : "" ?>>PI</option>
 								<option value="title" <?php echo ($sort == "title") ? "selected" : "" ?>>Grant Title</option>
@@ -161,6 +162,7 @@ else
 								<option value ="date" <?php echo ($sort == "date") ? "selected" : "" ?>>NIH Submission Date</option>
 							</select>
 							<input type="submit" value="Sort"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							-->
 							<input type="hidden" name="s" value="<?= $search ?>" />
 						</form>
 					</td>
