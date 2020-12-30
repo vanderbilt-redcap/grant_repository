@@ -116,7 +116,7 @@ else
 			td { font-family: 'Times New Roman', Times, serif; }
 			#grantsTable_filter { display: none; }
 			table { border-collapse: collapse; }
-			tr:nth-child(even) { background-color: #f2f2f2; }
+			table.dataTable tbody tr.even { background-color: #f2f2f2; } 
 		</style>
 	</head>
 	<body>
