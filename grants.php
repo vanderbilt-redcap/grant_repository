@@ -107,7 +107,7 @@ else
 
 <html>
 	<head>
-		<title>The Grants Repository from Edge for Scholars</title> 
+		<title>The Grant Repository from Edge for Scholars</title> 
 		<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
         	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="//cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
