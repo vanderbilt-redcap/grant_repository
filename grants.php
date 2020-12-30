@@ -113,6 +113,7 @@ else
 		<script src="//cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
 		<style>
 			body { font-family: Arial, Helvetica, sans-serif; }
+			td { font-family: 'Times New Roman', Times, serif; }
 		</style>
 	</head>
 	<body>
