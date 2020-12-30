@@ -114,6 +114,7 @@ else
 		<style>
 			body { font-family: Arial, Helvetica, sans-serif; }
 			td { font-family: 'Times New Roman', Times, serif; }
+			#grantsTable_filter { display: none; }
 		</style>
 	</head>
 	<body>
