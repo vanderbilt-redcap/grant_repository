@@ -114,7 +114,6 @@ else
 		<style>
 			body { font-family: Arial, Helvetica, sans-serif; }
 			td { font-family: 'Times New Roman', Times, serif; }
-			#grantsTable_filter { display: none; }
 			table { border-collapse: collapse; }
 			table.dataTable tbody tr.even { background-color: #f2f2f2; } 
 		</style>
@@ -148,28 +147,6 @@ else
 			</div>
 
 			<div id="filter">
-				<table id="searchTable">
-				<tbody>
-				<tr>
-					<td>
-						<form method ="get" action ="grants.php" >
-							<input type="text" name="s" style="width: 250px;" value="<?= $search ?>" />
-							<input type="submit" value="Search Term or Phrase" />
-							<input type="hidden" name="o" value="<?= $sort ?>" />
-						</form>
-					</td>
-					<td>
-						<form method ="get" action ="grants.php" >
-							<strong>OR</strong>&nbsp;
-							<input type="submit" value="Show All Grants" />
-							<input type="hidden" name="s" value="" />
-							<input type="hidden" name="o" value="<?= $sort ?>" />
-						</form>
-					</td>
-				</tr>
-				</tbody>
-				</table>
-
 				<table id='filterTable'>
 				<tbody>
 				<tr>
