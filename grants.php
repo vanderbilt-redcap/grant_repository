@@ -115,6 +115,8 @@ else
 			body { font-family: Arial, Helvetica, sans-serif; }
 			td { font-family: 'Times New Roman', Times, serif; }
 			#grantsTable_filter { display: none; }
+			table { border-collapse: collapse; }
+			tr:nth-child(even) { background-color: #f2f2f2; }
 		</style>
 	</head>
 	<body>
