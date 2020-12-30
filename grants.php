@@ -148,24 +148,9 @@ else
 			</div>
 
 			<div id="filter">
-				<table id="filterTable">
-				<thead>
+				<table id="searchTable">
+				<tbody>
 				<tr>
-					<td>
-						<form method="get">
-							<!-- 
-							<select name="o">
-								<option value="pi" <?php echo ($sort == "pi") ? "selected" : "" ?>>PI</option>
-								<option value="title" <?php echo ($sort == "title") ? "selected" : "" ?>>Grant Title</option>
-								<option value="number" <?php echo ($sort == "number") ? "selected" : "" ?>>Grant #</option>
-								<option value ="format" <?php echo ($sort == "format") ? "selected" : "" ?>>NIH Format</option>
-								<option value ="date" <?php echo ($sort == "date") ? "selected" : "" ?>>NIH Submission Date</option>
-							</select>
-							<input type="submit" value="Sort"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-							-->
-							<input type="hidden" name="s" value="<?= $search ?>" />
-						</form>
-					</td>
 					<td>
 						<form method ="get" action ="grants.php" >
 							<input type="text" name="s" style="width: 250px;" value="<?= $search ?>" />
@@ -182,7 +167,10 @@ else
 						</form>
 					</td>
 				</tr>
-				</thead>
+				</tbody>
+				</table>
+
+				<table id='filterTable'>
 				<tbody>
 				<tr>
 					<td style='vertical-align: middle;'>
