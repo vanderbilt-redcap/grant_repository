@@ -61,15 +61,20 @@ elseif ($sort == 'format') {
 $awardClause = "";
 foreach ($awards as $award => $awardTitle) {
 	if (isset($_GET[$award]) && $_GET[$award]) {
-		$awardValue = $_GET[$award];
-		if ($awardValue == "ALL") {
+		$awardValues = explode(",", $_GET[$award]);
+		if (in_array("ALL", $awardValues)) {
 			$awardField = $award;
 			$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value IN ('".implode("','", array_keys($choices[$award]))."'))";
 			$search = "all ".$awardTitle;
 		} else {
 			$awardField = $award;
-			$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value='$awardValue')";
-			$search = $awardTitle." as ".$choices[$award][$awardValue];
+            $awardValueStr = "('".implode("','", $awardValues)."')";
+			$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value IN $awardValueStr)";
+            $awardStrs = [];
+            foreach ($awardValues as $awardValue) {
+                $awardStrs[] = $choices[$award][$awardValue];
+            }
+			$search = $awardTitle." as ".implode(" OR ", $awardStrs);
 		}
 	}
 }
@@ -167,8 +172,17 @@ foreach($awards as $award => $awardTitle) {
 	echo "<select name='$award' id='$award' onchange='displayFilterButton();' style='display: none;'>";
 	echo "<option value=''>---SELECT---</option>";
 	echo "<option value='ALL'>---ALL---</option>";
+    $items = [];
 	foreach ($choices[$award] as $value => $label) {
-		echo "<option value='$value'>$label</option>";
+        $shortenedLabel = preg_replace("/^Original /", "", $label);
+        $shortenedLabel = preg_replace("/^Resub /", "", $label);
+        if (!isset($items[$shortenedLabel])) {
+            $items[$shortenedLabel] = [];
+        }
+        $items[$shortenedLabel][] = $value;
+    }
+	foreach ($items as $label => $values) {
+		echo "<option value='".implode(",", $values)."'>$label</option>";
 	}
 	echo "</select>";
 }
