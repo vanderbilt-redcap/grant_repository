@@ -175,7 +175,7 @@ foreach($awards as $award => $awardTitle) {
     $items = [];
 	foreach ($choices[$award] as $value => $label) {
         $shortenedLabel = preg_replace("/^Original /", "", $label);
-        $shortenedLabel = preg_replace("/^Resub /", "", $shortenedlabel);
+        $shortenedLabel = preg_replace("/^Resub /", "", $shortenedLabel);
         if (!isset($items[$shortenedLabel])) {
             $items[$shortenedLabel] = [];
         }
