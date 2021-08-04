@@ -226,7 +226,6 @@ echo "</form>";
 					<tr>
 						<th>PI</th>
 						<th>Grant Title</th>
-						<th style="width: 90px;">NIH Format</th>
 						<th style="width: 150px;">Grant Date</th>
 						<th>Grant #</th>
 						<th>Acquire</th>
@@ -243,7 +242,6 @@ echo "</form>";
 						echo "<tr>";
 						echo "<td style='white-space:nowrap;'>" . $row['pi'] . "</td>";
 						echo "<td>" . $row['title'] . "</td>";
-						echo "<td style='text-align: center;'>" . (($row['format'] == "1") ? "NEW" : "OLD") . "</td>";
 						echo "<td style='text-align: center;'>" . $row['date'] ."</td>";
 						echo "<td style='white-space:nowrap;'>" . $row['number'] . "</td>";
 						echo "<td style='text-align: center;'><a href='$url'>Download</a></td>";
