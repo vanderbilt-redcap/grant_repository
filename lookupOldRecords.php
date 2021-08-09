@@ -1,6 +1,6 @@
 <?php
 
-use \Vanderbilt\GrantRepostoryLibrary\LDAP;
+use \Vanderbilt\GrantRepositoryLibrary\LDAP;
 
 require_once(dirname(__FILE__)."/base.php");
 require_once(dirname(__FILE__)."/classes/Autoload.php");
