@@ -2,6 +2,8 @@
 
 use \Vanderbilt\GrantRepostoryLibrary\LDAP;
 
+require_once(dirname(__FILE__)."/classes/Autoload.php");
+
 $json = \REDCap::getData($project_id, "json", [$record]);
 $data = json_decode($json, TRUE);
 
