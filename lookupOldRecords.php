@@ -12,7 +12,7 @@ $upload = [];
 foreach ($data as $row) {
 	if (!$row['first_name'] || !$row['last_name']) {
 		$userid = $row['vunet_id'];
-		list($first, $last) = LDAP::getName($userid);
+		list($first, $last) = preg_split("/\s+/", LDAP::getName($userid));
 		if ($first && $last) {
 			$upload[] = [
 				"vunet_id" => $userid,
@@ -20,6 +20,8 @@ foreach ($data as $row) {
 				"last_name" => $last,
 			];
 			echo "Adding $first $last for $userid<br>";
+		} else {
+			echo "Could not find name for $userid<br>";
 		}
 	}
 }

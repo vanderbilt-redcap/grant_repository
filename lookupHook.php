@@ -11,7 +11,7 @@ $upload = [];
 foreach ($data as $row) {
 	if (!$row['first_name'] || !$row['last_name']) {
 		$userid = $row['vunet_id'];
-		list($first, $last) = LDAP::getName($userid);
+		list($first, $last) = preg_split("/\s+/", LDAP::getName($userid));
 		if ($first && $last) {
 			$upload[] = [
 				"vunet_id" => $userid,
