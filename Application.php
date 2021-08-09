@@ -1,6 +1,6 @@
 <?php
 
-namespace \Vanderbilt\GrantRepositoryLibrary\Application;
+namespace Vanderbilt\GrantRepositoryLibrary;
 
 class Application {
 	public static function log($mssg, $pid = "") {
