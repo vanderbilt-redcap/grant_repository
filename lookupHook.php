@@ -9,12 +9,14 @@ $upload = [];
 foreach ($data as $row) {
 	if (!$row['first_name'] || !$row['last_name']) {
 		$userid = $row['vunet_id'];
-		list($last, $first) = LDAP::getName($userid);
-		$upload[] = [
-			"vunet_id" => $userid,
-			"first_name" => $first,
-			"last_name" => $last,
-		];
+		list($first, $last) = LDAP::getName($userid);
+		if ($first && $last) {
+			$upload[] = [
+				"vunet_id" => $userid,
+				"first_name" => $first,
+				"last_name" => $last,
+			];
+		}
 	}
 }
 if (!empty($upload)) {
