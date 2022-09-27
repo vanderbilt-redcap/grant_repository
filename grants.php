@@ -147,7 +147,7 @@ else
 				<a href ="http://projectreporter.nih.gov/reporter.cfm">NIH RePORTER</a> | 
 				<a href ="http://grants.nih.gov/grants/oer.htm">NIH-OER</a>
 				<h3>Edge for Scholars Funded Grant Repository</h3>
-				<i>You may download grant documents by clicking "download" links below. The use of the grants document repository is strictly limited to authorized individuals and you are not permitted to share files or any embedded content with other individuals. All file downloads are logged.</i>
+				<i>You may vew grant documents by clicking "View" links below. The use of the grants document repository is strictly limited to authorized individuals and you are not permitted to share files or any embedded content with other individuals. All file downloads are logged.</i>
 				<hr/>
 			</div>
 
@@ -228,7 +228,7 @@ echo "</form>";
 						<th>Grant Title</th>
 						<th style="width: 150px;">Grant Date</th>
 						<th>Grant #</th>
-						<th>Acquire</th>
+						<th>View</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -244,7 +244,7 @@ echo "</form>";
 						echo "<td>" . $row['title'] . "</td>";
 						echo "<td style='text-align: center;'>" . $row['date'] ."</td>";
 						echo "<td style='white-space:nowrap;'>" . $row['number'] . "</td>";
-						echo "<td style='text-align: center;'><a href='$url'>Download</a></td>";
+						echo "<td style='text-align: center;'><a href='$url'>View</a></td>";
 						echo "</tr>";
 					}
 					?>

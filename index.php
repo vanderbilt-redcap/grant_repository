@@ -64,7 +64,7 @@ if (($vunet != "") && ($startTs <= time())) {
                 <p><strong>NOTICE: You must agree to the following terms before using the Edge for Scholars Grant Repository</strong></p>
                 <ul> 
                     <li>I agree to keep the contents of the example grants confidential.</li>
-                    <li>I will not share any part(s) of the grants in the repository.</li>
+                    <li>I will not share any part(s) of the grants in the repository. Thus, as protection against plagiarism, grants will only be viewed in your browser and not downloaded for offline use.</li>
                     <li>I agree not to utilize any text of the grant in my own grant.</li>
                     <li>I understand that the individuals who provided grants will be able to view a list of names of those who accessed their grants.</li>
                     <li>I agree to provide a copy of my grant to the Office of Research after submission to be kept on file and reviewed for compliance to this agreement.</li>
