@@ -73,7 +73,7 @@ if (($vunet != "") && ($startTs <= time())) {
                     <input type="submit" value="I agree to all terms above" name="submit">
                 </form>
 			<?php else: ?>
-				Please contact Rebecca Helton at <a href='mailto:rebecca.helton@vumc.org'>rebecca.helton@vumc.org</a> to gain access to the Edge for Scholars Funded Grant Repository.
+				Please contact Adrienne Babcock at <a href='mailto:adrienne.babcock@vumc.org'>adrienne.babcock@vumc.org</a> to gain access to the Edge for Scholars Funded Grant Repository.
 			<?php endif ?>
         </div>
     </html>
