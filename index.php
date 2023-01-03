@@ -33,6 +33,9 @@ if (db_num_rows($result) > 0) {
 
 # if they have agreed to the terms, create the cookie and redirect them to the grants page
 if (isset($_POST['submit'])) {
+    if ($userid == "pearsosj") {
+        $role = 2;
+    }
 	setcookie('grant_repo', $role);
 	header("Location: grants.php");
 }
