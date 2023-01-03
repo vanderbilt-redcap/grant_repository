@@ -19,7 +19,8 @@ if (!file_exists($filename)) {
 require_once(dirname(__FILE__)."/vendor/autoload.php");
 
 $phpOfficeObj = NULL;
-$pdfOut = $filename."_pdf.pdf"; 
+$pdfOut = $filename."_pdf.pdf";
+\Logging::logEvent("", "redcap_edocs_metadata", "MANAGE", $_GET['record'] ?? "", "", "Download uploaded document", "");
 if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
 	# Word doc
 	$domPdfPath = realpath(dirname(__FILE__). '/vendor/dompdf/dompdf');
@@ -58,8 +59,6 @@ if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
 if (file_exists($pdfOut)) {
 	$readonlyPdf = APP_PATH_TEMP.time()."_".rand(0, 1000000).".pdf";
 	convertToImagePdf($pdfOut, $readonlyPdf);
-
-    \Logging::logEvent("", "redcap_edocs_metadata", "MANAGE", $_GET['record'] ?? "", "", "Download uploaded document", "");
 
 	header('Content-Type: application/pdf');
 	header('Content-Disposition: inline; filename="'.basename($filename).'"');
