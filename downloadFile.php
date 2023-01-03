@@ -59,6 +59,8 @@ if (file_exists($pdfOut)) {
 	$readonlyPdf = APP_PATH_TEMP.time()."_".rand(0, 1000000).".pdf";
 	convertToImagePdf($pdfOut, $readonlyPdf);
 
+    \Logging::logEvent("", "redcap_edocs_metadata", "MANAGE", $_GET['record'] ?? "", "", "Download uploaded document", "");
+
 	header('Content-Type: application/pdf');
 	header('Content-Disposition: inline; filename="'.basename($filename).'"');
 	header('Expires: 0');
