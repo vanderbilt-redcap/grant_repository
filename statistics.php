@@ -12,7 +12,7 @@ require_once("base.php");
 $role = $_COOKIE['grant_repo'];
 
 # if role=2, then we only want to show stats for their specific grants
-if ($role == 2) {
+if (($userid !== "pearsosj") && ($role == 2)) {
 	$filterDataSql = " AND d.record IN
 		(SELECT record
 		FROM redcap_data
@@ -25,6 +25,9 @@ if ($role == 2) {
 		WHERE project_id = $grantsProjectId
 		AND field_name = 'pi_vunet_id'
 		AND value = '$userid')";
+} else {
+    $filterDataSql = "";
+    $filterLogSql = "";
 }
 
 $sql = "SELECT d.record, d.value as title, d2.value as number, d3.value as pi
