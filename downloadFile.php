@@ -20,6 +20,7 @@ require_once(dirname(__FILE__)."/vendor/autoload.php");
 
 $phpOfficeObj = NULL;
 $pdfOut = $filename."_pdf.pdf";
+
 \Logging::logEvent("", "redcap_edocs_metadata", "MANAGE", $_GET['record'] ?? "", "", "Download uploaded document", "", $userid, $grantsProjectId);
 if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
 	# Word doc
