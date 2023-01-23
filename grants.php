@@ -224,6 +224,7 @@ echo "</form>";
 				<table id="grantsTable">
 				<thead>
 					<tr>
+                        <?= isset($_GET['test']) ? "<th>Record</th>" : "" ?>
 						<th>PI</th>
 						<th>Grant Title</th>
 						<th style="width: 150px;">Grant Date</th>
@@ -240,6 +241,9 @@ echo "</form>";
 							$eventId . "&field_name=grants_file";
 
 						echo "<tr>";
+                        if (isset($_GET['test'])) {
+                            echo "<td>".$row['record']."</td>";
+                        }
 						echo "<td style='white-space:nowrap;'>" . $row['pi'] . "</td>";
 						echo "<td>" . $row['title'] . "</td>";
 						echo "<td style='text-align: center;'>" . $row['date'] ."</td>";
