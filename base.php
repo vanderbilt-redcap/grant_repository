@@ -2,7 +2,8 @@
 /** Author: Jon Scherdin */
 
 if (strpos($_SERVER['HTTP_HOST'], 'redcap.vanderbilt.edu') !== false) {
-	$grantsProjectId = 27635;
+    // $grantsProjectId = 27635;
+    $grantsProjectId = 165634;
 	$userProjectId = 27636;
 }
 else if (strpos($_SERVER['HTTP_HOST'], 'redcaptest.vanderbilt.edu') !== false) {
