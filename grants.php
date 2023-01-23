@@ -108,6 +108,15 @@ if ($search == "")
 else
 	$message = "Displaying $grantCount grants for: $search";
 
+if (isset($_GET['test'])) {
+    $redcapData = \REDCap::getData($grantsProjectId, "json-array", NULL, ["record_id"]);
+    $message .= " ".count($redcapData)." rows of REDCap records";
+    $records = [];
+    foreach ($redcapData as $row) {
+        $records[] = $row['record_id'];
+    }
+}
+
 ?>
 
 <html>
@@ -235,7 +244,9 @@ echo "</form>";
 				<tbody>
 					<?php
 					$recordsWithAwards = [];
+                    $recordsSeen = [];
 					while ($row = db_fetch_assoc($grants)) {
+                        $recordsSeen[] = $row['record_id'];
 						$url = "download.php?p=$grantsProjectId&id=" .
 							$row['file'] . "&s=&page=register_grants&record=" . $row['record'] . "&event_id=" .
 							$eventId . "&field_name=grants_file";
@@ -256,6 +267,17 @@ echo "</form>";
 				</table>
 			</div>
 		</div>
+        <?php
+        if (isset($_GET['test'])) {
+            $recordsMissing = [];
+            foreach ($records as $recordId) {
+                if (!in_array($recordId, $recordsSeen)) {
+                    $recordsMissing[] = $recordId;
+                }
+            }
+            echo "<p>Records Missing: ".implode(", ", $recordsMissing)."</p>";
+        }
+        ?>
     </body>
 </html>
 
