@@ -246,7 +246,7 @@ echo "</form>";
 					$recordsWithAwards = [];
                     $recordsSeen = [];
 					while ($row = db_fetch_assoc($grants)) {
-                        $recordsSeen[] = $row['record_id'];
+                        $recordsSeen[] = $row['record'];
 						$url = "download.php?p=$grantsProjectId&id=" .
 							$row['file'] . "&s=&page=register_grants&record=" . $row['record'] . "&event_id=" .
 							$eventId . "&field_name=grants_file";
