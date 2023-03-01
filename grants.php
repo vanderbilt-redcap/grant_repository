@@ -7,6 +7,41 @@ if (!isset($_COOKIE['grant_repo'])) {
 
 require_once("base.php");
 
+if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
+    $terms = preg_split("/\s+/", $_GET['searchTerms']);
+    $fields = ["record_id", "grants_number", "grants_abstract", "grants_thesaurus"];
+    $fieldsToInspect = ["grants_abstract", "grants_thesaurus"];
+    $redcapData = \REDCap::getData($grantsProjectId, "json-array", NULL, $fields);
+
+    $foundItems = [];
+    foreach ($terms as $term) {
+        if ($term) {
+            $term = strtolower($term);
+            $len = strlen($term);
+            foreach ($redcapData as $row) {
+                foreach ($fieldsToInspect as $field) {
+                    $pos = strpos(strtolower($row[$field]), $term);
+                    if ($pos !== FALSE) {
+                        $displayField = ucfirst(str_replace("grants_", "", $field));
+                        $textWithSpan = "<span style='background-color: #f4ff00;'>".substr($row[$field], $pos, $len)."</span>";
+                        $foundItems[$row['grants_number']." - ".$displayField] = substr_replace($row[$field], $textWithSpan, $pos, $len);
+                    }
+                }
+            }
+        }
+    }
+    if (!empty($foundItems)) {
+        echo "<h2>".count($foundItems)." Found Items</h2>";
+        foreach ($foundItems as $awardNo => $text) {
+            echo "<h4>$awardNo</h4>";
+            echo "<p>$text</p>";
+        }
+        exit;
+    } else {
+        echo "<h4>No items found</h4>";
+    }
+}
+
 $awards = array(
 		"k_awards" => "K Awards",
 		"r_awards" => "R Awards",
@@ -176,6 +211,8 @@ if (isset($_GET['test'])) {
 					</td>
 					<td colspan='2' style='vertical-align: middle;'>
 <?php
+echo "<table><tbody><tr>";
+echo "<td>";
 echo "<form style='margin-bottom: 0px;' method='get'>";
 foreach($awards as $award => $awardTitle) {
 	echo "<select name='$award' id='$award' onchange='displayFilterButton();' style='display: none;'>";
@@ -199,6 +236,15 @@ echo "<input type='submit' style='display: none;' id='filterButton' value='Filte
 echo "<input type='hidden' name='s' value='' />";
 echo "<input type='hidden' name='o' value='<?= $sort ?>' />";
 echo "</form>";
+echo "</td>";
+
+echo "<td>";
+echo "<form style='margin-bottom: 0px;' method='get'>";
+echo "<label for='searchTerms'>Search Abstracts/Thesaurus</label> <input type='text' id='searchTerms' name='searchTerms' value='' /> <button>Go!</button>";
+echo "</form>";
+echo "</td>";
+echo "</tr></tbody></table>";
+
 ?>
 <script>
 	function displayFilterButton() {
