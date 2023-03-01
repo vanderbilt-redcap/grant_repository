@@ -20,13 +20,13 @@ if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
             $len = strlen($term);
             foreach ($redcapData as $row) {
                 foreach ($fieldsToInspect as $field) {
-                    $row[$field] = sanitize($row[$field]);
-                    $pos = strpos(strtolower($row[$field]), $term);
+                    $words = sanitize($row[$field]);
+                    $pos = strpos(strtolower($words), $term);
                     if ($pos !== FALSE) {
                         $displayField = ucfirst(str_replace("grants_", "", $field));
                         $pi = sanitize($row["grants_pi"]);
-                        $textWithSpan = "<span style='background-color: #f4ff00;'>".substr($row[$field], $pos, $len)."</span>";
-                        $foundItems[sanitize($row['grants_number'])." ($pi) - ".$displayField] = substr_replace($row[$field], $textWithSpan, $pos, $len);
+                        $textWithSpan = "<span style='background-color: #f4ff00;'>".substr($words, $pos, $len)."</span>";
+                        $foundItems[sanitize($row['grants_number'])." ($pi) - ".$displayField] = substr_replace($words, $textWithSpan, $pos, $len);
                     }
                 }
             }
@@ -54,8 +54,8 @@ $awards = array(
 		);
 
 # get query string variables
-$search = (isset($_GET['s'])) ? preg_replace('#[^a-z 0-9?!]#i', '', $_GET['s']) : "";
-$sort = (isset($_GET['o'])) ? $_GET['o'] : "pi";
+$search = (isset($_GET['s'])) ? preg_replace('#[^a-z 0-9?!]#i', '', sanitize($_GET['s'])) : "";
+$sort = (isset($_GET['o'])) ? sanitize($_GET['o']) : "pi";
 
 $sortSql = "";
 $searchSql = "";
@@ -71,7 +71,7 @@ $sql = "SELECT event_id
 			(SELECT arm_id
 			FROM redcap_events_arms
 			WHERE project_id = $grantsProjectId)";
-$eventId = db_result(db_query($sql), 0);
+$eventId = sanitize(db_result(db_query($sql), 0));
 
 # if search term has been submitted then search for term else show all grants
 if ($search != "") {

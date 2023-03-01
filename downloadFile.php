@@ -7,11 +7,11 @@ if (!isset($_COOKIE['grant_repo'])) {
 
 require_once("base.php");
 
-$dieMssg = "Improper filename ".APP_PATH_TEMP.$_GET['f'];
+$dieMssg = "Improper filename ".APP_PATH_TEMP.sanitize($_GET['f']);
 if (!isset($_GET['f']) || preg_match("/\.\./", $_GET['f']) || preg_match("/^\//", $_GET['f'])) {
 	die($dieMssg);
 }
-$filename = APP_PATH_TEMP.$_GET['f'];
+$filename = \ExternalModules\ExternalModules::getSafePath(APP_PATH_TEMP.$_GET['f']);
 if (!file_exists($filename)) {
 	die($dieMssg);
 }
