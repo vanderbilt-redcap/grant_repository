@@ -78,15 +78,15 @@ foreach ($records3 as $record) {
 
 	$sqls = array();
 	while ($row = db_fetch_assoc($q)) {
-		if (preg_match("/INSERT/", $row['sql_log'])) {
-			$sqls2 = preg_split("/INSERT/", $row['sql_log']);
+		if (preg_match("/INSERT/", sanitize($row['sql_log']))) {
+			$sqls2 = preg_split("/INSERT/", sanitize($row['sql_log']));
 			foreach ($sqls2 as $sql) {
 				if ($sql) {
 					$sqls[] = "INSERT".$sql;
 				}
 			}
-		} else if (preg_match("/UPDATE/", $row['sql_log'])) {
-			$sqls2 = preg_split("/UPDATE/", $row['sql_log']);
+		} else if (preg_match("/UPDATE/", sanitize($row['sql_log']))) {
+			$sqls2 = preg_split("/UPDATE/", sanitize($row['sql_log']));
 			foreach ($sqls2 as $sql) {
 				if ($sql) {
 					$sqls[] = "UPDATE".$sql;

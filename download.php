@@ -23,7 +23,7 @@ if (!db_num_rows($q)) {
 }
 $this_file = db_fetch_array($q);
 
-$basename = preg_replace("/\.[^\.]*$/", "", $this_file['stored_name']);
+$basename = preg_replace("/\.[^\.]*$/", "", sanitize($this_file['stored_name']));
 if (!preg_match("/\/$/", $basename)) {
 	$basename.= "/";
 }
@@ -31,23 +31,23 @@ $outDir = APP_PATH_TEMP.$basename;
 mkdir($outDir);
 
 $files = array();
-if (preg_match("/\.zip$/i", $this_file['stored_name']) || ($this_file['mime_type'] == "application/x-zip-compressed")) {
+if (preg_match("/\.zip$/i", sanitize($this_file['stored_name'])) || (sanitize($this_file['mime_type']) == "application/x-zip-compressed")) {
 	$zip = new ZipArchive;
-	$res = $zip->open(EDOC_PATH.$this_file['stored_name']);
+	$res = $zip->open(EDOC_PATH.sanitize($this_file['stored_name']));
 	if ($res) {
 		$zip->extractTo($outDir);
 		$zip->close();
 		$files = inspectDir($outDir);
 	}
 } else {
-	$fpIn = fopen(EDOC_PATH.$this_file['stored_name'], "r");
-	$fpOut = fopen($outDir.$this_file['doc_name'], "w");
+	$fpIn = fopen(EDOC_PATH.sanitize($this_file['stored_name']), "r");
+	$fpOut = fopen($outDir.sanitize($this_file['doc_name']), "w");
 	while ($line = fgets($fpIn)) {
 		fwrite($fpOut, $line);
 	}
 	fclose($fpIn);
 	fclose($fpOut);
-	$files = array($outDir.$this_file['doc_name']);
+	$files = array($outDir.sanitize($this_file['doc_name']));
 }
 
 if (!empty($files)) {

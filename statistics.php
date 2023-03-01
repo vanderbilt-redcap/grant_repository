@@ -47,9 +47,9 @@ $result = db_query($sql);
 # create array to hold log events
 $downloads = array();
 while ($row = db_fetch_array($result)) {
-	$downloads[$row['record']]['title'] = $row['title'];
-	$downloads[$row['record']]['number'] = $row['number'];
-	$downloads[$row['record']]['pi'] = $row['pi'];
+	$downloads[$row['record']]['title'] = sanitize($row['title']);
+	$downloads[$row['record']]['number'] = sanitize($row['number']);
+	$downloads[$row['record']]['pi'] = sanitize($row['pi']);
 }
 
 # get all log events for file downloads
@@ -62,7 +62,7 @@ $sql = "SELECT u.value as vunet, u2.value as firstName, u3.value as lastName
 $result = db_query($sql);
 $vuNets = array();
 while ($row = db_fetch_assoc($result)) {
-	$vuNets[$row['vunet']] = array($row['firstName'], $row['lastName']);
+	$vuNets[sanitize($row['vunet'])] = array(sanitize($row['firstName']), sanitize($row['lastName']));
 }
 
 $sql = "SELECT e.ts, e.user, e.pk
@@ -75,12 +75,12 @@ $result = db_query($sql);
 //echo "$sql<br/>";
 
 while ($row = db_fetch_array($result)) {
-	if ($vuNets[$row['user']] && $vuNets[$row['user']][0])
-		$name = $vuNets[$row['user']][0] . " " . $vuNets[$row['user']][1] . " (" . $row['user'] . ")";
-	else if ($vuNets[$row['user']])
-		$name = $row['user'];
+	if ($vuNets[sanitize($row['user'])] && $vuNets[sanitize($row['user'])][0])
+		$name = $vuNets[sanitize($row['user'])][0] . " " . $vuNets[sanitize($row['user'])][1] . " (" . sanitize($row['user']) . ")";
+	else if ($vuNets[sanitize($row['user'])])
+		$name = sanitize($row['user']);
 
-	$downloads[$row['pk']]['hits'][] = array('ts' => $row['ts'], 'user' => $name);
+	$downloads[sanitize($row['pk'])]['hits'][] = array('ts' => sanitize($row['ts']), 'user' => $name);
 }
 ?>
 

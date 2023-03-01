@@ -20,12 +20,13 @@ if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
             $len = strlen($term);
             foreach ($redcapData as $row) {
                 foreach ($fieldsToInspect as $field) {
+                    $row[$field] = sanitize($row[$field]);
                     $pos = strpos(strtolower($row[$field]), $term);
                     if ($pos !== FALSE) {
                         $displayField = ucfirst(str_replace("grants_", "", $field));
-                        $pi = $row["grants_pi"];
+                        $pi = sanitize($row["grants_pi"]);
                         $textWithSpan = "<span style='background-color: #f4ff00;'>".substr($row[$field], $pos, $len)."</span>";
-                        $foundItems[$row['grants_number']." ($pi) - ".$displayField] = substr_replace($row[$field], $textWithSpan, $pos, $len);
+                        $foundItems[sanitize($row['grants_number'])." ($pi) - ".$displayField] = substr_replace($row[$field], $textWithSpan, $pos, $len);
                     }
                 }
             }
@@ -239,9 +240,9 @@ echo "<input type='hidden' name='o' value='<?= $sort ?>' />";
 echo "</form>";
 echo "</td>";
 
-echo "<td>";
+echo "<td style='padding-left: 10px;'>";
 echo "<form style='margin-bottom: 0px;' method='get'>";
-echo "<label for='searchTerms'>Search Abstracts/Thesaurus</label> <input type='text' id='searchTerms' name='searchTerms' value='' /> <button>Go!</button>";
+echo "<label for='searchTerms'>Search Abstracts/Thesauri:</label> <input type='text' id='searchTerms' name='searchTerms' value='' /> <button>Go!</button>";
 echo "</form>";
 echo "</td>";
 echo "</tr></tbody></table>";
@@ -293,19 +294,19 @@ echo "</tr></tbody></table>";
 					$recordsWithAwards = [];
                     $recordsSeen = [];
 					while ($row = db_fetch_assoc($grants)) {
-                        $recordsSeen[] = $row['record'];
+                        $recordsSeen[] = sanitize($row['record']);
 						$url = "download.php?p=$grantsProjectId&id=" .
-							$row['file'] . "&s=&page=register_grants&record=" . $row['record'] . "&event_id=" .
+							sanitize($row['file']) . "&s=&page=register_grants&record=" . sanitize($row['record']) . "&event_id=" .
 							$eventId . "&field_name=grants_file";
 
 						echo "<tr>";
                         if (isset($_GET['test'])) {
-                            echo "<td>".$row['record']."</td>";
+                            echo "<td>".sanitize($row['record'])."</td>";
                         }
-						echo "<td style='white-space:nowrap;'>" . $row['pi'] . "</td>";
-						echo "<td>" . $row['title'] . "</td>";
-						echo "<td style='text-align: center;'>" . $row['date'] ."</td>";
-						echo "<td style='white-space:nowrap;'>" . $row['number'] . "</td>";
+						echo "<td style='white-space:nowrap;'>" . sanitize($row['pi']) . "</td>";
+						echo "<td>" . sanitize($row['title']) . "</td>";
+						echo "<td style='text-align: center;'>" . sanitize($row['date']) ."</td>";
+						echo "<td style='white-space:nowrap;'>" . sanitize($row['number']) . "</td>";
 						echo "<td style='text-align: center;'><a href='$url'>View</a></td>";
 						echo "</tr>";
 					}

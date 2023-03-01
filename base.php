@@ -17,6 +17,10 @@ else {
 
 require_once("../../redcap_connect.php");
 
+function sanitize($str) {
+    return htmlspecialchars($str, ENT_QUOTES);
+}
+
 function getChoices($metadata) {
 	$choicesStrs = array();
 	$multis = array("checkbox", "dropdown", "radio");

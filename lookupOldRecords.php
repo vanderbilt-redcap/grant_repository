@@ -5,15 +5,16 @@ use \Vanderbilt\GrantRepositoryLibrary\LDAP;
 require_once(dirname(__FILE__)."/base.php");
 require_once(dirname(__FILE__)."/classes/Autoload.php");
 
-$json = \REDCap::getData($userProjectId, "json");
-$data = json_decode($json, TRUE);
+$data = \REDCap::getData($userProjectId, "json-array");
 
 $upload = [];
 foreach ($data as $row) {
 	if (!$row['first_name'] || !$row['last_name']) {
-		$userid = $row['vunet_id'];
+		$userid = sanitize($row['vunet_id']);
 		list($first, $last) = preg_split("/\s+/", LDAP::getName($userid));
 		if ($first && $last) {
+            $first = sanitize($first);
+            $last = sanitize($last);
 			$upload[] = [
 				"vunet_id" => $userid,
 				"first_name" => $first,
