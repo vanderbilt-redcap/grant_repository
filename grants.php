@@ -9,7 +9,7 @@ require_once("base.php");
 
 if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
     $terms = preg_split("/\s+/", $_GET['searchTerms']);
-    $fields = ["record_id", "grants_number", "grants_abstract", "grants_thesaurus"];
+    $fields = ["record_id", "grants_number", "grants_pi", "grants_abstract", "grants_thesaurus"];
     $fieldsToInspect = ["grants_abstract", "grants_thesaurus"];
     $redcapData = \REDCap::getData($grantsProjectId, "json-array", NULL, $fields);
 
@@ -23,8 +23,9 @@ if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
                     $pos = strpos(strtolower($row[$field]), $term);
                     if ($pos !== FALSE) {
                         $displayField = ucfirst(str_replace("grants_", "", $field));
+                        $pi = $row["grants_pi"];
                         $textWithSpan = "<span style='background-color: #f4ff00;'>".substr($row[$field], $pos, $len)."</span>";
-                        $foundItems[$row['grants_number']." - ".$displayField] = substr_replace($row[$field], $textWithSpan, $pos, $len);
+                        $foundItems[$row['grants_number']." ($pi) - ".$displayField] = substr_replace($row[$field], $textWithSpan, $pos, $len);
                     }
                 }
             }
