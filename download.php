@@ -33,7 +33,7 @@ mkdir($outDir);
 $files = array();
 if (preg_match("/\.zip$/i", sanitize($this_file['stored_name'])) || (sanitize($this_file['mime_type']) == "application/x-zip-compressed")) {
 	$zip = new ZipArchive;
-    $zipFile = \ExternalModules\ExternalModules::getSafePath(EDOC_PATH.sanitize($this_file['stored_name']) EDOC_PATH);
+    $zipFile = \ExternalModules\ExternalModules::getSafePath(EDOC_PATH.sanitize($this_file['stored_name']), EDOC_PATH);
 	$res = $zip->open($zipFile);
 	if ($res) {
 		$zip->extractTo($outDir);
