@@ -16,7 +16,7 @@ $project_id = $_GET['p'];
 define("PROJECT_ID", $project_id);
 
 //Download file from the "edocs" web server directory
-$sql = "select * from redcap_edocs_metadata where project_id = $project_id and doc_id = ".$_GET['id'];
+$sql = "select * from redcap_edocs_metadata where project_id = $project_id and doc_id = ".sanitize($_GET['id']);
 $q = db_query($sql);
 if (!db_num_rows($q)) {
 	die("<b>{$lang['global_01']}:</b> {$lang['file_download_03']}");

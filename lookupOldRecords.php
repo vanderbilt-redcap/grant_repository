@@ -11,6 +11,7 @@ $upload = [];
 foreach ($data as $row) {
 	if (!$row['first_name'] || !$row['last_name']) {
 		$userid = sanitize($row['vunet_id']);
+        $userid = ldap_escape($userid);
 		list($first, $last) = preg_split("/\s+/", LDAP::getName($userid));
 		if ($first && $last) {
             $first = sanitize($first);

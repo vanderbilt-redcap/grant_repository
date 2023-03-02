@@ -27,8 +27,8 @@ $result = db_query($sql);
 
 # get vunet and role
 if (db_num_rows($result) > 0) {
-	$vunet = db_result($result, 0, 0);
-	$role = db_result($result, 0, 1);
+	$vunet = sanitize(db_result($result, 0, 0));
+	$role = sanitize(db_result($result, 0, 1));
 }
 
 # if they have agreed to the terms, create the cookie and redirect them to the grants page
