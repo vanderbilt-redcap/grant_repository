@@ -27,13 +27,13 @@ $basename = preg_replace("/\.[^\.]*$/", "", sanitize($this_file['stored_name']))
 if (!preg_match("/\/$/", $basename)) {
 	$basename.= "/";
 }
-$outDir = \ExternalModules\ExternalModules::getSafePath(APP_PATH_TEMP.$basename);
+$outDir = \ExternalModules\ExternalModules::getSafePath(APP_PATH_TEMP.$basename, APP_PATH_TEMP);
 mkdir($outDir);
 
 $files = array();
 if (preg_match("/\.zip$/i", sanitize($this_file['stored_name'])) || (sanitize($this_file['mime_type']) == "application/x-zip-compressed")) {
 	$zip = new ZipArchive;
-    $zipFile = \ExternalModules\ExternalModules::getSafePath(EDOC_PATH.sanitize($this_file['stored_name']));
+    $zipFile = \ExternalModules\ExternalModules::getSafePath(EDOC_PATH.sanitize($this_file['stored_name'], EDOC_PATH));
 	$res = $zip->open($zipFile);
 	if ($res) {
 		$zip->extractTo($outDir);
@@ -41,8 +41,8 @@ if (preg_match("/\.zip$/i", sanitize($this_file['stored_name'])) || (sanitize($t
 		$files = inspectDir($outDir);
 	}
 } else {
-    $inFile = \ExternalModules\ExternalModules::getSafePath(EDOC_PATH.sanitize($this_file['stored_name']));
-    $outFile = \ExternalModules\ExternalModules::getSafePath($outDir.sanitize($this_file['doc_name']));
+    $inFile = \ExternalModules\ExternalModules::getSafePath(EDOC_PATH.sanitize($this_file['stored_name']), EDOC_PATH);
+    $outFile = \ExternalModules\ExternalModules::getSafePath($outDir.sanitize($this_file['doc_name']), $outDir);
 	$fpIn = fopen($inFile, "r");
 	$fpOut = fopen($outFile, "w");
 	while ($line = fgets($fpIn)) {

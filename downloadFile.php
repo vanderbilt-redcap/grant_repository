@@ -11,7 +11,7 @@ $dieMssg = "Improper filename ".APP_PATH_TEMP.sanitize($_GET['f']);
 if (!isset($_GET['f']) || preg_match("/\.\./", $_GET['f']) || preg_match("/^\//", $_GET['f'])) {
 	die($dieMssg);
 }
-$filename = \ExternalModules\ExternalModules::getSafePath(APP_PATH_TEMP.$_GET['f']);
+$filename = \ExternalModules\ExternalModules::getSafePath(APP_PATH_TEMP.$_GET['f'], APP_PATH_TEMP);
 if (!file_exists($filename)) {
 	die($dieMssg);
 }

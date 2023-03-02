@@ -179,7 +179,7 @@ if (isset($_GET['test'])) {
 			$('#grantsTable').DataTable({
                 "pageLength": 1000,
                 "language": {
-                    "search": "Search Grants Titles &amp; Authors"
+                    "search": "Search Grants Titles &amp; Authors:"
                 }
             });
 		});
@@ -205,7 +205,7 @@ if (isset($_GET['test'])) {
 			</div>
 
 			<div id="filter">
-				<table id='filterTable'>
+				<table id='filterTable' style="width: 100%">
 				<tbody>
 				<tr>
 					<td style='vertical-align: middle;'>
