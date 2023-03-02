@@ -7,10 +7,19 @@ if (!isset($_COOKIE['grant_repo'])) {
 
 require_once("base.php");
 
+# get event_id
+$sql = "SELECT event_id
+		FROM redcap_events_metadata           
+		WHERE arm_id =
+			(SELECT arm_id
+			FROM redcap_events_arms
+			WHERE project_id = $grantsProjectId)";
+$eventId = sanitize(db_result(db_query($sql), 0));
+
 if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
     $terms = preg_split("/\s+/", $_GET['searchTerms']);
-    $fields = ["record_id", "grants_number", "grants_pi", "grants_abstract", "grants_thesaurus"];
-    $fieldsToInspect = ["grants_abstract", "grants_thesaurus"];
+    $fields = ["record_id", "grants_number", "grants_pi", "grants_abstract", "grants_thesaurus", "grants_file"];
+    $fieldsToInspect = ["grants_abstract" => "Abstract", "grants_thesaurus" => "Terms or Public Health Relevance"];
     $redcapData = \REDCap::getData($grantsProjectId, "json-array", NULL, $fields);
 
     $foundItems = [];
@@ -19,14 +28,16 @@ if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
             $term = strtolower($term);
             $len = strlen($term);
             foreach ($redcapData as $row) {
-                foreach ($fieldsToInspect as $field) {
+                foreach ($fieldsToInspect as $field => $displayField) {
                     $words = sanitize($row[$field]);
                     $pos = strpos(strtolower($words), $term);
                     if ($pos !== FALSE) {
-                        $displayField = ucfirst(str_replace("grants_", "", $field));
                         $pi = sanitize($row["grants_pi"]);
                         $textWithSpan = "<span style='background-color: #f4ff00;'>".substr($words, $pos, $len)."</span>";
-                        $foundItems[sanitize($row['grants_number'])." ($pi) - ".$displayField] = substr_replace($words, $textWithSpan, $pos, $len);
+                        $url = "download.php?p=$grantsProjectId&id=" .
+                            sanitize($row['grants_file']) . "&s=&page=register_grants&record=" . sanitize($row['record_id']) . "&event_id=" .
+                            $eventId . "&field_name=grants_file";
+                        $foundItems["<a href='$url'>".sanitize($row['grants_number'])." ($pi) - ".$displayField."</a>"] = substr_replace($words, $textWithSpan, $pos, $len);
                     }
                 }
             }
@@ -63,15 +74,6 @@ $searchSql = "";
 # get metadata
 $metadataJSON = \REDCap::getDataDictionary($grantsProjectId, "json");
 $choices = getChoices(json_decode($metadataJSON, true));
-
-# get event_id
-$sql = "SELECT event_id
-		FROM redcap_events_metadata           
-		WHERE arm_id =
-			(SELECT arm_id
-			FROM redcap_events_arms
-			WHERE project_id = $grantsProjectId)";
-$eventId = sanitize(db_result(db_query($sql), 0));
 
 # if search term has been submitted then search for term else show all grants
 if ($search != "") {
@@ -174,7 +176,12 @@ if (isset($_GET['test'])) {
 		<script>
 		$(document).ready( function () {
 			// $('#filterTable').DataTable();
-			$('#grantsTable').DataTable({ "pageLength": 1000 });
+			$('#grantsTable').DataTable({
+                "pageLength": 1000,
+                "language": {
+                    "search": "Search Grants Titles &amp; Authors"
+                }
+            });
 		});
 		</script>
 		<div id="container">
@@ -213,8 +220,7 @@ if (isset($_GET['test'])) {
 					</td>
 					<td colspan='2' style='vertical-align: middle;'>
 <?php
-echo "<table><tbody><tr>";
-echo "<td>";
+echo "<div style='float: left; max-width: 600px;'>";
 echo "<form style='margin-bottom: 0px;' method='get'>";
 foreach($awards as $award => $awardTitle) {
 	echo "<select name='$award' id='$award' onchange='displayFilterButton();' style='display: none;'>";
@@ -238,14 +244,12 @@ echo "<input type='submit' style='display: none;' id='filterButton' value='Filte
 echo "<input type='hidden' name='s' value='' />";
 echo "<input type='hidden' name='o' value='<?= $sort ?>' />";
 echo "</form>";
-echo "</td>";
-
-echo "<td style='padding-left: 10px;'>";
+echo "</div>";
+echo "<div style='max-width: 300px; float: right;'>";
 echo "<form style='margin-bottom: 0px;' method='get'>";
-echo "<label for='searchTerms'>Search Abstracts/Thesauri:</label> <input type='text' id='searchTerms' name='searchTerms' value='' /> <button>Go!</button>";
+echo "<label for='searchTerms'>Search Abstracts:</label> <input type='text' id='searchTerms' name='searchTerms' value='' /> <button>Go!</button>";
 echo "</form>";
-echo "</td>";
-echo "</tr></tbody></table>";
+echo "</div>";
 
 ?>
 <script>
