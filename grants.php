@@ -245,7 +245,7 @@ echo "<input type='hidden' name='s' value='' />";
 echo "<input type='hidden' name='o' value='<?= $sort ?>' />";
 echo "</form>";
 echo "</div>";
-echo "<div style='max-width: 300px; float: right;'>";
+echo "<div style='max-width: 400px; float: right;'>";
 echo "<form style='margin-bottom: 0px;' method='get'>";
 echo "<label for='searchTerms'>Search Abstracts:</label> <input type='text' id='searchTerms' name='searchTerms' value='' /> <button>Go!</button>";
 echo "</form>";
