@@ -4,6 +4,7 @@
 if (!isset($_COOKIE['grant_repo'])) {
 	header("Location: index.php");
 }
+$suffix = isset($_GET['plain']) ? "&plain" : "";
 
 require_once("base.php");
 
@@ -57,7 +58,7 @@ if (!empty($files)) {
 	echo "<h1>All Files (".count($files).")</h1>\n";
 	foreach ($files as $filename) {
 		$truncFilename = truncateFile($filename);
-		echo "<p><a href='downloadFile.php?f=".urlencode($truncFilename)."&record=".urlencode($_GET['record'])."'>".basename($filename)."</a></p>\n";
+		echo "<p><a href='downloadFile.php?f=".urlencode($truncFilename)."&record=".urlencode($_GET['record']).$suffix."'>".basename($filename)."</a></p>\n";
 	}
 	exit();
 } else {
