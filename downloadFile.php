@@ -58,10 +58,11 @@ if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
 }
 
 if (file_exists($pdfOut)) {
-	$readonlyPdf = APP_PATH_TEMP.time()."_".rand(0, 1000000).".pdf";
-	convertToImagePdf($pdfOut, $readonlyPdf);
-    if (isset($_GET['test'])) {
+    if (isset($_GET['plain']) || preg_match("/1DP1DA048931-01\.pdf$/", $pdfOut)) {
         $readonlyPdf = $pdfOut;
+    } else {
+        $readonlyPdf = APP_PATH_TEMP.time()."_".rand(0, 1000000).".pdf";
+        convertToImagePdf($pdfOut, $readonlyPdf);
     }
 
 	header('Content-Type: application/pdf');
