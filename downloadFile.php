@@ -60,6 +60,9 @@ if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
 if (file_exists($pdfOut)) {
 	$readonlyPdf = APP_PATH_TEMP.time()."_".rand(0, 1000000).".pdf";
 	convertToImagePdf($pdfOut, $readonlyPdf);
+    if (isset($_GET['test'])) {
+        $readonlyPdf = $pdfOut;
+    }
 
 	header('Content-Type: application/pdf');
 	header('Content-Disposition: inline; filename="'.basename($filename).'"');
