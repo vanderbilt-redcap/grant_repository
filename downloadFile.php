@@ -58,7 +58,10 @@ if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
 }
 
 if (file_exists($pdfOut)) {
-    if (isset($_GET['plain']) || preg_match("/1DP1DA048931-01\.pdf$/", $pdfOut)) {
+    $fp = fopen($pdfOut, "r");
+    $firstLine = fgets($fp);
+    fclose($fp);
+    if (isset($_GET['plain']) || preg_match("/PDF-1\.[56789]/", $firstLine)) {
         $readonlyPdf = $pdfOut;
     } else {
         $readonlyPdf = APP_PATH_TEMP.time()."_".rand(0, 1000000).".pdf";
