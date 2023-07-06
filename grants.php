@@ -255,7 +255,7 @@ echo "</form>";
 echo "</div>";
 echo "<div style='max-width: 400px; float: right;'>";
 echo "<form style='margin-bottom: 0px;' method='get'>";
-echo "<label for='searchTerms'>Search Abstracts:</label> <input type='text' id='searchTerms' name='searchTerms' value='' /> <button>Go!</button>";
+echo "<label for='searchTerms'>Search Abstracts:</label> <input type='text' id='searchTerms' name='searchTerms' value='' /> <button>Go!</button><br/>(Double quotes are permitted to search for multiple words.)";
 echo "</form>";
 echo "</div>";
 
