@@ -19,7 +19,7 @@ $eventId = sanitize(db_result(db_query($sql), 0));
 if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
     $searchTerms = $_GET['searchTerms'];
     $terms = [];
-    if (preg_match("/\"(.+)\"/", $searchTerms, $matches)) {
+    while (preg_match("/\"(.+)\"/", $searchTerms, $matches)) {
         $quotedTerm = $matches[1];
         $terms[] = $quotedTerm;
         $searchTerms = str_replace("\"$quotedTerm\"", "", $searchTerms);
