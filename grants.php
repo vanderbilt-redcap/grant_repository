@@ -17,7 +17,15 @@ $sql = "SELECT event_id
 $eventId = sanitize(db_result(db_query($sql), 0));
 
 if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
-    $terms = preg_split("/\s+/", $_GET['searchTerms']);
+    $searchTerms = $_GET['searchTerms'];
+    $terms = [];
+    if (preg_match("/\"(.+)\"/", $searchTerms, $matches)) {
+        $quotedTerm = $matches[1];
+        $terms[] = $quotedTerm;
+        $searchTerms = str_replace("\"$quotedTerm\"", "", $searchTerms);
+    }
+    $normalTerms = preg_split("/\s+/", $searchTerms);
+    $terms = array_merge($terms, $normalTerms);
     $fields = ["record_id", "grants_number", "grants_pi", "grants_abstract", "grants_thesaurus", "grants_file"];
     $fieldsToInspect = ["grants_abstract" => "Abstract", "grants_thesaurus" => "Terms or Public Health Relevance"];
     $redcapData = \REDCap::getData($grantsProjectId, "json-array", NULL, $fields);
