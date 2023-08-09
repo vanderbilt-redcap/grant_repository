@@ -49,7 +49,7 @@ if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
                         $url = "download.php?p=$grantsProjectId&id=" .
                             sanitize($row['grants_file']) . "&s=&page=register_grants&record=" . sanitize($row['record_id']) . "&event_id=" .
                             $eventId . "&field_name=grants_file";
-                        $foundItems["<a href='$url'>".sanitize($row['grants_number'])." ($pi) - ".$displayField." ($percentAsInt% overlap)</a>"] = substr_replace($words, $textWithSpan, $pos, $len);
+                        $foundItems["<a href='$url'>".sanitize($row['grants_number'])." ($pi) - ".$displayField." ($percent% overlap)</a>"] = substr_replace($words, $textWithSpan, $pos, $len);
                     }
                 }
             }
