@@ -31,7 +31,7 @@ if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
     $fieldsToInspect = ["grants_abstract" => "Abstract", "grants_thesaurus" => "Terms or Public Health Relevance"];
     $redcapData = \REDCap::getData($grantsProjectId, "json-array", NULL, $fields);
 
-    $foundItems = [];
+    $foundItemsByPercent = [];
     foreach ($terms as $term) {
         if ($term) {
             $term = strtolower($term);
@@ -67,13 +67,23 @@ if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
                         $url = "download.php?p=$grantsProjectId&id=" .
                             sanitize($row['grants_file']) . "&s=&page=register_grants&record=" . sanitize($row['record_id']) . "&event_id=" .
                             $eventId . "&field_name=grants_file";
-                        $foundItems["<a href='$url'>".sanitize($row['grants_number'])." ($pi) - ".$displayField." ($percentAsInt% overlap)</a>"] = $text;
+                        if (!isset($foundItemsByPercent[$percentAsInt])) {
+                            $foundItemsByPercent[$percentAsInt] = [];
+                        }
+                        $foundItemsByPercent[$percentAsInt]["<a href='$url'>".sanitize($row['grants_number'])." ($pi) - ".$displayField." ($percentAsInt% overlap)</a>"] = $text;
                     }
                 }
             }
         }
     }
-    if (!empty($foundItems)) {
+    if (!empty($foundItemsByPercent)) {
+        krsort($foundItemsByPercent, SORT_NUMERIC);
+        $foundItems = [];
+        foreach ($foundItemsByPercent as $percent => $items) {
+            foreach ($items as $header => $words) {
+                $foundItems[$header] = $words;
+            }
+        }
         echo "<h2>".count($foundItems)." Found Items</h2>";
         foreach ($foundItems as $awardNo => $text) {
             echo "<h4>$awardNo</h4>";
