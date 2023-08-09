@@ -17,7 +17,7 @@ $sql = "SELECT event_id
 $eventId = sanitize(db_result(db_query($sql), 0));
 
 if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
-    $minSimilarityPercent = 85;
+    $minSimilarityPercent = 80;
     $searchTerms = $_GET['searchTerms'];
     $terms = [];
     while (preg_match("/\"(.+)\"/", $searchTerms, $matches)) {
