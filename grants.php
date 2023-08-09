@@ -44,21 +44,30 @@ if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
                     $tokens = preg_split("/\s+/", $wordsInLC);
                     $wordMatch = FALSE;
                     $percentMatch = 0;
+                    $matchedWord = "";
                     foreach ($tokens as $token) {
+                        $token = preg_replace("/[^\w]/", "", $token);
                         similar_text($token, $term, $percent);
                         if ($percent >= $minSimilarityPercent) {
                             $wordMatch = TRUE;
                             $percentMatch = $percent;
+                            $matchedWord = $token;
                         }
                     }
                     if (($pos !== FALSE) || $wordMatch) {
                         $percentAsInt = round($percentMatch);
                         $pi = sanitize($row["grants_pi"]);
-                        $textWithSpan = "<span style='background-color: #f4ff00;'>".substr($words, $pos, $len)."</span>";
+                        if ($pos !== FALSE) {
+                            $textWithSpan = "<span style='background-color: #f4ff00;'>".substr($words, $pos, $len)."</span>";
+                            $text = substr_replace($words, $textWithSpan, $pos, $len);
+                        } else {
+                            $textWithSpan = "<span style='background-color: #f4ff00;'>$matchedWord</span>";
+                            $text = str_replace($matchedWord, $textWithSpan, $words);
+                        }
                         $url = "download.php?p=$grantsProjectId&id=" .
                             sanitize($row['grants_file']) . "&s=&page=register_grants&record=" . sanitize($row['record_id']) . "&event_id=" .
                             $eventId . "&field_name=grants_file";
-                        $foundItems["<a href='$url'>".sanitize($row['grants_number'])." ($pi) - ".$displayField." ($percentAsInt% overlap)</a>"] = substr_replace($words, $textWithSpan, $pos, $len);
+                        $foundItems["<a href='$url'>".sanitize($row['grants_number'])." ($pi) - ".$displayField." ($percentAsInt% overlap)</a>"] = $text;
                     }
                 }
             }
