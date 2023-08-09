@@ -41,15 +41,24 @@ if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
                     $words = sanitize($row[$field]);
                     $wordsInLC = strtolower($words);
                     $pos = strpos($wordsInLC, $term);
-                    similar_text($wordsInLC, $term, $percent);
-                    if (($pos !== FALSE) || ($percent >= $minSimilarityPercent)) {
-                        $percentAsInt = round($percent);
+                    $tokens = preg_split("/\s+/", $wordsInLC);
+                    $wordMatch = FALSE;
+                    $percentMatch = 0;
+                    foreach ($tokens as $token) {
+                        similar_text($token, $term, $percent);
+                        if ($percent >= $minSimilarityPercent) {
+                            $wordMatch = TRUE;
+                            $percentMatch = $percent;
+                        }
+                    }
+                    if (($pos !== FALSE) || $wordMatch) {
+                        $percentAsInt = round($percentMatch);
                         $pi = sanitize($row["grants_pi"]);
                         $textWithSpan = "<span style='background-color: #f4ff00;'>".substr($words, $pos, $len)."</span>";
                         $url = "download.php?p=$grantsProjectId&id=" .
                             sanitize($row['grants_file']) . "&s=&page=register_grants&record=" . sanitize($row['record_id']) . "&event_id=" .
                             $eventId . "&field_name=grants_file";
-                        $foundItems["<a href='$url'>".sanitize($row['grants_number'])." ($pi) - ".$displayField." ($percent% overlap)</a>"] = substr_replace($words, $textWithSpan, $pos, $len);
+                        $foundItems["<a href='$url'>".sanitize($row['grants_number'])." ($pi) - ".$displayField." ($percentAsInt% overlap)</a>"] = substr_replace($words, $textWithSpan, $pos, $len);
                     }
                 }
             }
