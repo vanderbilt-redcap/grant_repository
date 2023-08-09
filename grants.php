@@ -48,10 +48,12 @@ if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
                     foreach ($tokens as $token) {
                         $token = preg_replace("/\W+/", "", $token);
                         similar_text(strtolower($token), $term, $percent);
-                        if (($percent >= $minSimilarityPercent) && ($percentMatch < $percent)) {
-                            $wordMatch = TRUE;
+                        if ($percentMatch < $percent) {
+                            if ($percent >= $minSimilarityPercent) {
+                                $wordMatch = TRUE;
+                                $matchedWord = $token;
+                            }
                             $percentMatch = $percent;
-                            $matchedWord = $token;
                         }
                     }
                     if (($pos !== FALSE) || $wordMatch) {
