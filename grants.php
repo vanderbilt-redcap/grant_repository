@@ -14,7 +14,6 @@ $sql = "SELECT event_id
 			(SELECT arm_id
 			FROM redcap_events_arms
 			WHERE project_id = $grantsProjectId)";
-$eventId = sanitize(db_result(db_query($sql), 0));
 
 if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
     $searchTerms = $_GET['searchTerms'];

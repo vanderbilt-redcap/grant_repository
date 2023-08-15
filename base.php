@@ -5,14 +5,17 @@ if (strpos($_SERVER['HTTP_HOST'], 'redcap.vanderbilt.edu') !== false) {
     $grantsProjectId = 27635;  // original
     // $grantsProjectId = 165634;   // backup from 2023-01-23
 	$userProjectId = 27636;
+    $eventId = 52818;
 }
 else if (strpos($_SERVER['HTTP_HOST'], 'redcaptest.vanderbilt.edu') !== false) {
 	$grantsProjectId = 266;
 	$userProjectId = 265;
+    $eventId = 1089;
 }
 else {
 	$grantsProjectId = 242;
 	$userProjectId = 243;
+    $eventId = 1089;
 }
 
 require_once("../../redcap_connect.php");

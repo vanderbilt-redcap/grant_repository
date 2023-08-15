@@ -13,7 +13,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) exit("{$lang['global_01']}!
 
 // need to set the project id since we are using a different variable name
 if (!isset($_GET['p']) || !is_numeric($_GET['p'])) exit("{$lang['global_01']}!");
-$project_id = $_GET['p'];
+$project_id = sanitize($_GET['p']);
 define("PROJECT_ID", $project_id);
 
 //Download file from the "edocs" web server directory
