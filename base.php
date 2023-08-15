@@ -54,3 +54,42 @@ function getChoices($metadata) {
 	return $choices;
 }
 
+function searchForTerms($pid, $eventId, $terms) {
+    $fields = ["record_id", "grants_number", "grants_pi", "grants_abstract", "grants_thesaurus", "grants_file"];
+    $fieldsToInspect = ["grants_abstract" => "Abstract", "grants_thesaurus" => "Terms or Public Health Relevance"];
+    $redcapData = \REDCap::getData($pid, "json-array", NULL, $fields);
+
+    $foundItems = [];
+    foreach ($terms as $term) {
+        if ($term) {
+            $term = strtolower($term);
+            $len = strlen($term);
+            foreach ($redcapData as $row) {
+                foreach ($fieldsToInspect as $field => $displayField) {
+                    $words = sanitize($row[$field]);
+                    $wordsInLC = strtolower($words);
+                    $pos = strpos($wordsInLC, $term);
+                    if ($pos !== FALSE) {
+                        $pi = sanitize($row["grants_pi"]);
+                        $textWithSpan = "<span style='background-color: #f4ff00;'>".substr($words, $pos, $len)."</span>";
+                        $text = substr_replace($words, $textWithSpan, $pos, $len);
+                        $url = "download.php?p=$pid&id=" .
+                            sanitize($row['grants_file']) . "&s=&page=register_grants&record=" . sanitize($row['record_id']) . "&event_id=" .
+                            $eventId . "&field_name=grants_file";
+                        $foundItems["<a href='$url'>".sanitize($row['grants_number'])." ($pi) - ".$displayField."</a>"] = $text;
+                    }
+                }
+            }
+        }
+    }
+    return $foundItems;
+}
+
+function makeSearchHTML($foundItems) {
+    $html = "<h2>".count($foundItems)." Found Items</h2>";
+    foreach ($foundItems as $awardNo => $text) {
+        $html .= "<h4>$awardNo</h4>";
+        $html .= "<p>$text</p>";
+    }
+    return $html;
+}
