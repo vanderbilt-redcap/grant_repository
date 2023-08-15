@@ -31,7 +31,7 @@ if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
     $fieldsToInspect = ["grants_abstract" => "Abstract", "grants_thesaurus" => "Terms or Public Health Relevance"];
     $redcapData = \REDCap::getData($grantsProjectId, "json-array", NULL, $fields);
 
-    $foundItemsByPercent = [];
+    $foundItems = [];
     foreach ($terms as $term) {
         if ($term) {
             $term = strtolower($term);
@@ -41,51 +41,20 @@ if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
                     $words = sanitize($row[$field]);
                     $wordsInLC = strtolower($words);
                     $pos = strpos($wordsInLC, $term);
-                    $tokens = preg_split("/\s+/", $words);
-                    $wordMatch = FALSE;
-                    $percentMatch = 0;
-                    $matchedWord = "";
-                    foreach ($tokens as $token) {
-                        $token = preg_replace("/\W+/", "", $token);
-                        similar_text(strtolower($token), $term, $percent);
-                        if ($percentMatch < $percent) {
-                            if ($percent >= $minSimilarityPercent) {
-                                $wordMatch = TRUE;
-                                $matchedWord = $token;
-                            }
-                            $percentMatch = $percent;
-                        }
-                    }
-                    if (($pos !== FALSE) || $wordMatch) {
-                        $percentAsInt = round($percentMatch);
+                    if ($pos !== FALSE) {
                         $pi = sanitize($row["grants_pi"]);
-                        if ($pos !== FALSE) {
-                            $textWithSpan = "<span style='background-color: #f4ff00;'>".substr($words, $pos, $len)."</span>";
-                            $text = substr_replace($words, $textWithSpan, $pos, $len);
-                        } else {
-                            $textWithSpan = "<span style='background-color: #f4ff00;'>$matchedWord</span>";
-                            $text = str_replace($matchedWord, $textWithSpan, $words);
-                        }
+                        $textWithSpan = "<span style='background-color: #f4ff00;'>".substr($words, $pos, $len)."</span>";
+                        $text = substr_replace($words, $textWithSpan, $pos, $len);
                         $url = "download.php?p=$grantsProjectId&id=" .
                             sanitize($row['grants_file']) . "&s=&page=register_grants&record=" . sanitize($row['record_id']) . "&event_id=" .
                             $eventId . "&field_name=grants_file";
-                        if (!isset($foundItemsByPercent[$percentAsInt])) {
-                            $foundItemsByPercent[$percentAsInt] = [];
-                        }
-                        $foundItemsByPercent[$percentAsInt]["<a href='$url'>".sanitize($row['grants_number'])." ($pi) - ".$displayField." ($percentAsInt% overlap)</a>"] = $text;
+                        $foundItems["<a href='$url'>".sanitize($row['grants_number'])." ($pi) - ".$displayField."</a>"] = $text;
                     }
                 }
             }
         }
     }
-    if (!empty($foundItemsByPercent)) {
-        krsort($foundItemsByPercent, SORT_NUMERIC);
-        $foundItems = [];
-        foreach ($foundItemsByPercent as $percent => $items) {
-            foreach ($items as $header => $words) {
-                $foundItems[$header] = $words;
-            }
-        }
+    if (!empty($foundItems)) {
         echo "<h2>".count($foundItems)." Found Items</h2>";
         foreach ($foundItems as $awardNo => $text) {
             echo "<h4>$awardNo</h4>";
