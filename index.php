@@ -25,10 +25,17 @@ $sql = "SELECT a.value as 'userid', a2.value as 'role'
 $result = db_query($sql);
 //echo "$sql<br/>";
 
+$validRoles = [1, 2, 3];
 # get vunet and role
 if (db_num_rows($result) > 0) {
 	$vunet = sanitize(db_result($result, 0, 0));
-	$role = sanitize(db_result($result, 0, 1));
+	$dbRole = sanitize(db_result($result, 0, 1));
+    foreach ($validRoles as $roleOption) {
+        if ($dbRole == $roleOption) {
+            $role = $roleOption;
+            break;
+        }
+    }
 }
 
 # if they have agreed to the terms, create the cookie and redirect them to the grants page
