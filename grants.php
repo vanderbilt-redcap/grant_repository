@@ -16,7 +16,7 @@ $sql = "SELECT event_id
 			WHERE project_id = $grantsProjectId)";
 
 if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
-    $searchTerms = $_GET['searchTerms'];
+    $searchTerms = sanitize($_GET['searchTerms']);
     $terms = [];
     while (preg_match("/\"(.+)\"/", $searchTerms, $matches)) {
         $quotedTerm = $matches[1];
@@ -79,7 +79,7 @@ elseif ($sort == 'format') {
 $awardClause = "";
 foreach ($awards as $award => $awardTitle) {
 	if (isset($_GET[$award]) && $_GET[$award]) {
-		$awardValues = explode(",", $_GET[$award]);
+		$awardValues = explode(",", sanitize($_GET[$award]));
 		if (in_array("ALL", $awardValues)) {
 			$awardField = $award;
 			$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value IN ('".implode("','", array_keys($choices[$award]))."'))";
