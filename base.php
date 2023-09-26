@@ -57,10 +57,10 @@ function getChoices($metadata) {
 	return $choices;
 }
 
-function searchForTerms($pid, $eventId, $terms) {
+function searchForTerms($pid, $eventId, $terms, $record) {
     $fields = ["record_id", "grants_number", "grants_pi", "grants_abstract", "grants_thesaurus", "grants_file"];
     $fieldsToInspect = ["grants_abstract" => "Abstract", "grants_thesaurus" => "Terms or Public Health Relevance"];
-    $redcapData = \REDCap::getData($pid, "json-array", NULL, $fields);
+    $redcapData = \REDCap::getData($pid, "json-array", [$record], $fields);
 
     $foundItems = [];
     foreach ($terms as $term) {
