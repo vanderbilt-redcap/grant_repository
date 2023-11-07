@@ -10,18 +10,19 @@ else if (isset($_COOKIE['grant_repo']) && ($_COOKIE['grant_repo'] == 1 )) {
 require_once("base.php");
 
 $role = $_COOKIE['grant_repo'];
+$dataTable = method_exists('\REDCap', 'getDataTable') ? \REDCap::getDataTable($grantsProjectId) : "redcap_data";
 
 # if role=2, then we only want to show stats for their specific grants
 if (($userid !== "pearsosj") && ($role == 2)) {
 	$filterDataSql = " AND d.record IN
 		(SELECT record
-		FROM redcap_data
+		FROM $dataTable
 		WHERE project_id = $grantsProjectId
 			AND field_name = 'pi_vunet_id'
 			AND value = '$userid')";
 	$filterLogSql = " AND e.pk IN
 		(SELECT record
-		FROM redcap_data
+		FROM $dataTable
 		WHERE project_id = $grantsProjectId
 		AND field_name = 'pi_vunet_id'
 		AND value = '$userid')";
@@ -31,9 +32,9 @@ if (($userid !== "pearsosj") && ($role == 2)) {
 }
 
 $sql = "SELECT d.record, d.value as title, d2.value as number, d3.value as pi
-		FROM redcap_data d
-		LEFT JOIN redcap_data d2 ON (d2.project_id = d.project_id AND d2.record = d.record AND d2.field_name ='grants_number')
-		JOIN redcap_data d3
+		FROM $dataTable d
+		LEFT JOIN $dataTable d2 ON (d2.project_id = d.project_id AND d2.record = d.record AND d2.field_name ='grants_number')
+		JOIN $dataTable d3
 		WHERE d.project_id = $grantsProjectId
 			AND d.field_name = 'grants_title'
 			AND d3.project_id = d.project_id
@@ -53,10 +54,11 @@ while ($row = db_fetch_array($result)) {
 }
 
 # get all log events for file downloads
+$userDataTable = method_exists('\REDCap', 'getDataTable') ? \REDCap::getDataTable($userProjectId) : "redcap_data";
 $sql = "SELECT u.value as vunet, u2.value as firstName, u3.value as lastName
-                        FROM redcap_data u
-                        LEFT JOIN redcap_data u2 ON (u2.project_id = u.project_id AND u.record = u2.record AND u2.field_name = 'first_name')
-                        LEFT JOIN redcap_data u3 ON (u3.project_id = u.project_id AND u.record = u3.record AND u3.field_name = 'last_name')
+                        FROM $userDataTable u
+                        LEFT JOIN $userDataTable u2 ON (u2.project_id = u.project_id AND u.record = u2.record AND u2.field_name = 'first_name')
+                        LEFT JOIN $userDataTable u3 ON (u3.project_id = u.project_id AND u.record = u3.record AND u3.field_name = 'last_name')
             WHERE u.project_id = $userProjectId
                 AND u.field_name = 'vunet_id'";
 $result = db_query($sql);
