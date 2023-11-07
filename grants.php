@@ -7,6 +7,7 @@ if (!isset($_COOKIE['grant_repo'])) {
 
 require_once("base.php");
 
+$dataTable = method_exists('\REDCap', 'getDataTable') ? \REDCap::getDataTable($grantsProjectId) : "redcap_data";
 # get event_id
 $sql = "SELECT event_id
 		FROM redcap_events_metadata           
@@ -56,7 +57,7 @@ $choices = getChoices(json_decode($metadataJSON, true));
 
 # if search term has been submitted then search for term else show all grants
 if ($search != "") {
-	$searchSql = "AND d.record in (SELECT DISTINCT record FROM redcap_data WHERE project_id = $grantsProjectId AND value like '%$search%')";
+	$searchSql = "AND d.record in (SELECT DISTINCT record FROM $dataTable WHERE project_id = $grantsProjectId AND value like '%$search%')";
 }
 
 # sort - if sort item selected then order by field
@@ -82,12 +83,12 @@ foreach ($awards as $award => $awardTitle) {
 		$awardValues = explode(",", sanitize($_GET[$award]));
 		if (in_array("ALL", $awardValues)) {
 			$awardField = $award;
-			$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value IN ('".implode("','", array_keys($choices[$award]))."'))";
+			$awardClause = "INNER JOIN $dataTable d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value IN ('".implode("','", array_keys($choices[$award]))."'))";
 			$search = "all ".$awardTitle;
 		} else {
 			$awardField = $award;
             $awardValueStr = "('".implode("','", $awardValues)."')";
-			$awardClause = "INNER JOIN redcap_data d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value IN $awardValueStr)";
+			$awardClause = "INNER JOIN $dataTable d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value IN $awardValueStr)";
             $awardStrs = [];
             foreach ($awardValues as $awardValue) {
                 $awardStrs[] = $choices[$award][$awardValue];
@@ -99,12 +100,12 @@ foreach ($awards as $award => $awardTitle) {
 
 # Get the list of grants
 $sql = "SELECT DISTINCT d.record as 'record', d.value as 'title', d2.value as 'pi', d3.value as 'number', d4.value as 'file', d5.value as 'date', d6.value as 'format'
-		FROM redcap_data d
-		JOIN redcap_data d2
-		LEFT JOIN redcap_data d3 ON (d3.project_id =d.project_id AND d3.record = d.record AND d3.field_name = 'grants_number')
-		JOIN redcap_data d4
-		LEFT JOIN redcap_data d5 ON (d5.project_id =d.project_id AND d5.record = d.record AND d5.field_name = 'grants_date')
-		LEFT JOIN redcap_data d6 ON (d6.project_id =d.project_id AND d6.record = d.record AND d6.field_name = 'nih_format')
+		FROM $dataTable d
+		JOIN $dataTable d2
+		LEFT JOIN $dataTable d3 ON (d3.project_id =d.project_id AND d3.record = d.record AND d3.field_name = 'grants_number')
+		JOIN $dataTable d4
+		LEFT JOIN $dataTable d5 ON (d5.project_id =d.project_id AND d5.record = d.record AND d5.field_name = 'grants_date')
+		LEFT JOIN $dataTable d6 ON (d6.project_id =d.project_id AND d6.record = d.record AND d6.field_name = 'nih_format')
 		$awardClause
 		WHERE d.project_id = $grantsProjectId
 			$searchSql

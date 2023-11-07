@@ -10,11 +10,12 @@ $vunet = "";
 	// $userid = $_GET['uid'];
 // }
 
+$dataTable = method_exists('\REDCap', 'getDataTable') ? \REDCap::getDataTable($userProjectId) : "redcap_data";
 # query table to authenticate user
 $sql = "SELECT a.value as 'userid', a2.value as 'role'
-		FROM redcap_data a
-		JOIN redcap_data a2
-		LEFT JOIN redcap_data a3 ON (a3.project_id =a.project_id AND a3.record = a.record AND a3.field_name = 'user_expiration')
+		FROM $dataTable a
+		JOIN $dataTable a2
+		LEFT JOIN $dataTable a3 ON (a3.project_id =a.project_id AND a3.record = a.record AND a3.field_name = 'user_expiration')
 		WHERE a.project_id = $userProjectId
 			AND a.field_name = 'vunet_id'
 			AND a.value = '$userid'
