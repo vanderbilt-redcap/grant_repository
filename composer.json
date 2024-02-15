@@ -10,5 +10,10 @@
         "ext-gd": "*",
         "phpoffice/common": "^0.2.9",
         "hfig/mapi": "^1.1"
+    },
+    "config": {
+        "platform": {
+            "php": "7.3"
+        }
     }
 }
