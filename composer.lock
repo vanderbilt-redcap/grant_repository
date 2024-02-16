@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cf0a472bf341290d184644d26137c882",
+    "content-hash": "0a9ac0b7033e084743e8330f1451a74e",
     "packages": [
         {
             "name": "brick/math",
@@ -1224,29 +1224,26 @@
         },
         {
             "name": "phpoffice/common",
-            "version": "0.2.9",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/Common.git",
-                "reference": "edb5d32b1e3400a35a5c91e2539ed6f6ce925e4d"
+                "reference": "1e968b24692bac8120b60e2ce3b7015eca0e7c00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/Common/zipball/edb5d32b1e3400a35a5c91e2539ed6f6ce925e4d",
-                "reference": "edb5d32b1e3400a35a5c91e2539ed6f6ce925e4d",
+                "url": "https://api.github.com/repos/PHPOffice/Common/zipball/1e968b24692bac8120b60e2ce3b7015eca0e7c00",
+                "reference": "1e968b24692bac8120b60e2ce3b7015eca0e7c00",
                 "shasum": ""
             },
             "require": {
                 "pclzip/pclzip": "^2.8",
-                "php": ">=5.3.0"
+                "php": ">=7.1"
             },
             "require-dev": {
-                "phpdocumentor/phpdocumentor": "2.*",
-                "phploc/phploc": "2.*",
                 "phpmd/phpmd": "2.*",
-                "phpunit/phpunit": "^4.8.36 || ^7.0",
-                "sebastian/phpcpd": "2.*",
-                "squizlabs/php_codesniffer": "2.*"
+                "phpstan/phpstan": "^0.12.88 || ^1.0.0",
+                "phpunit/phpunit": ">=7"
             },
             "type": "library",
             "autoload": {
@@ -1256,7 +1253,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "LGPL"
+                "LGPL-3.0-only"
             ],
             "authors": [
                 {
@@ -1277,9 +1274,62 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/Common/issues",
-                "source": "https://github.com/PHPOffice/Common/tree/master"
+                "source": "https://github.com/PHPOffice/Common/tree/1.0.2"
             },
-            "time": "2018-07-13T14:12:34+00:00"
+            "time": "2023-12-11T13:11:02+00:00"
+        },
+        {
+            "name": "phpoffice/math",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPOffice/Math.git",
+                "reference": "f0f8cad98624459c540cdd61d2a174d834471773"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPOffice/Math/zipball/f0f8cad98624459c540cdd61d2a174d834471773",
+                "reference": "f0f8cad98624459c540cdd61d2a174d834471773",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-xml": "*",
+                "php": "^7.1|^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.88 || ^1.0.0",
+                "phpunit/phpunit": "^7.0 || ^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpOffice\\Math\\": "src/Math/",
+                    "Tests\\PhpOffice\\Math\\": "tests/Math/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Progi1984",
+                    "homepage": "https://lefevre.dev"
+                }
+            ],
+            "description": "Math - Manipulate Math Formula",
+            "homepage": "https://phpoffice.github.io/Math/",
+            "keywords": [
+                "MathML",
+                "officemathml",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/PHPOffice/Math/issues",
+                "source": "https://github.com/PHPOffice/Math/tree/0.1.0"
+            },
+            "time": "2023-09-25T12:08:20+00:00"
         },
         {
             "name": "phpoffice/phpspreadsheet",
@@ -1388,36 +1438,37 @@
         },
         {
             "name": "phpoffice/phpword",
-            "version": "0.17.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PHPWord.git",
-                "reference": "b8346af548d399acd9e30fc76ab0c55c2fec03a5"
+                "reference": "e76b701ef538cb749641514fcbc31a68078550fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPWord/zipball/b8346af548d399acd9e30fc76ab0c55c2fec03a5",
-                "reference": "b8346af548d399acd9e30fc76ab0c55c2fec03a5",
+                "url": "https://api.github.com/repos/PHPOffice/PHPWord/zipball/e76b701ef538cb749641514fcbc31a68078550fa",
+                "reference": "e76b701ef538cb749641514fcbc31a68078550fa",
                 "shasum": ""
             },
             "require": {
+                "ext-dom": "*",
+                "ext-json": "*",
                 "ext-xml": "*",
-                "php": "^5.3.3 || ^7.0",
-                "phpoffice/common": "^0.2.9",
-                "zendframework/zend-escaper": "^2.2"
+                "php": "^7.1|^8.0",
+                "phpoffice/math": "^0.1"
             },
             "require-dev": {
-                "dompdf/dompdf": "0.8.*",
+                "dompdf/dompdf": "^2.0",
                 "ext-gd": "*",
+                "ext-libxml": "*",
                 "ext-zip": "*",
-                "friendsofphp/php-cs-fixer": "^2.2",
-                "mpdf/mpdf": "5.7.4 || 6.* || 7.*",
-                "php-coveralls/php-coveralls": "1.1.0 || ^2.0",
-                "phploc/phploc": "2.* || 3.* || 4.*",
-                "phpmd/phpmd": "2.*",
-                "phpunit/phpunit": "^4.8.36 || ^7.0",
-                "squizlabs/php_codesniffer": "^2.9",
-                "tecnickcom/tcpdf": "6.*"
+                "friendsofphp/php-cs-fixer": "^3.3",
+                "mpdf/mpdf": "^8.1",
+                "phpmd/phpmd": "^2.13",
+                "phpstan/phpstan-phpunit": "@stable",
+                "phpunit/phpunit": ">=7.0",
+                "symfony/process": "^4.4 || ^5.0",
+                "tecnickcom/tcpdf": "^6.5"
             },
             "suggest": {
                 "dompdf/dompdf": "Allows writing PDF",
@@ -1427,11 +1478,6 @@
                 "ext-zip": "Allows writing OOXML and ODF"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "0.18-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "PhpOffice\\PhpWord\\": "src/PhpWord"
@@ -1467,7 +1513,7 @@
                 }
             ],
             "description": "PHPWord - A pure PHP library for reading and writing word processing documents (OOXML, ODF, RTF, HTML, PDF)",
-            "homepage": "http://phpoffice.github.io",
+            "homepage": "https://phpoffice.github.io/PHPWord/",
             "keywords": [
                 "ISO IEC 29500",
                 "OOXML",
@@ -1495,9 +1541,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PHPWord/issues",
-                "source": "https://github.com/PHPOffice/PHPWord/tree/develop"
+                "source": "https://github.com/PHPOffice/PHPWord/tree/1.2.0"
             },
-            "time": "2019-10-01T20:43:33+00:00"
+            "time": "2023-11-30T11:22:23+00:00"
         },
         {
             "name": "psr/http-client",
@@ -2602,60 +2648,6 @@
                 }
             ],
             "time": "2023-09-06T15:09:26+00:00"
-        },
-        {
-            "name": "zendframework/zend-escaper",
-            "version": "2.6.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/zendframework/zend-escaper.git",
-                "reference": "3801caa21b0ca6aca57fa1c42b08d35c395ebd5f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-escaper/zipball/3801caa21b0ca6aca57fa1c42b08d35c395ebd5f",
-                "reference": "3801caa21b0ca6aca57fa1c42b08d35c395ebd5f",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.6 || ^7.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^5.7.27 || ^6.5.8 || ^7.1.2",
-                "zendframework/zend-coding-standard": "~1.0.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.6.x-dev",
-                    "dev-develop": "2.7.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Zend\\Escaper\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Securely and safely escape HTML, HTML attributes, JavaScript, CSS, and URLs",
-            "keywords": [
-                "ZendFramework",
-                "escaper",
-                "zf"
-            ],
-            "support": {
-                "chat": "https://zendframework-slack.herokuapp.com",
-                "docs": "https://docs.zendframework.com/zend-escaper/",
-                "forum": "https://discourse.zendframework.com/c/questions/components",
-                "issues": "https://github.com/zendframework/zend-escaper/issues",
-                "rss": "https://github.com/zendframework/zend-escaper/releases.atom",
-                "source": "https://github.com/zendframework/zend-escaper"
-            },
-            "abandoned": "laminas/laminas-escaper",
-            "time": "2019-09-05T20:03:20+00:00"
         }
     ],
     "packages-dev": [],
