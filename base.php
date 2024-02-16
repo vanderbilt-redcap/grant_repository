@@ -13,9 +13,10 @@ else if (strpos($_SERVER['HTTP_HOST'], 'redcaptest.vanderbilt.edu') !== false) {
     $eventId = 1089;
 }
 else {
-	$grantsProjectId = 242;
-	$userProjectId = 243;
-    $eventId = 1089;
+    # SJP's localhost does not have imagick installed and so won't rasterize MS Word into PDFs
+	$grantsProjectId = 122;
+	$userProjectId = 124;
+    $eventId = 145;
 }
 
 require_once("../../redcap_connect.php");
