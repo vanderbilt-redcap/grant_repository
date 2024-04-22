@@ -1,13 +1,19 @@
 <?php
 /** Author: Jon Scherdin */
 
-if (strpos($_SERVER['HTTP_HOST'], 'redcap.vanderbilt.edu') !== false) {
+if (
+    (strpos($_SERVER['HTTP_HOST'], 'redcap.vanderbilt.edu') !== false)
+    || (strpos($_SERVER['HTTP_HOST'], 'redcap.vumc.org') !== false)
+) {
     $grantsProjectId = 27635;  // original
     // $grantsProjectId = 165634;   // backup from 2023-01-23
 	$userProjectId = 27636;
     $eventId = 52818;
 }
-else if (strpos($_SERVER['HTTP_HOST'], 'redcaptest.vanderbilt.edu') !== false) {
+else if (
+    (strpos($_SERVER['HTTP_HOST'], 'redcaptest.vanderbilt.edu') !== false)
+    || (strpos($_SERVER['HTTP_HOST'], 'redcaptest.vumc.org') !== false)
+) {
 	$grantsProjectId = 266;
 	$userProjectId = 265;
     $eventId = 1089;
