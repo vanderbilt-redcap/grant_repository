@@ -112,7 +112,11 @@ while ($row = db_fetch_array($result)) {
 			<?php
 			# loop through each grant
 			foreach ($downloads as $id => $value) {
-				$count = count($value['hits']);
+                if (is_countable($value['hits'])) {
+                    $count = count($value['hits']);
+                } else {
+                    $count = 0;
+                }
 
 				echo "<strong>".$value['pi'] . " - " . $value['title'] . " (" . $value['number'] . ")</strong><br/>";
 				echo "Record logs indicate " . $count . " download(s) for this project:";
