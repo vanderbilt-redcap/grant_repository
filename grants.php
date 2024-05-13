@@ -119,7 +119,7 @@ $sql = "SELECT DISTINCT d.record as 'record', d.value as 'title', d2.value as 'p
 			AND d4.record = d.record
 			AND d4.field_name = 'grants_file'
 		    AND (
-		        d5.value = ''
+		        d5.value IS NULL
 		        OR d5.value >= '$thresholdDate'
 		    )
 		$sortSql";
