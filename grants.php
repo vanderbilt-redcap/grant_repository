@@ -6,6 +6,8 @@ if (!isset($_COOKIE['grant_repo'])) {
 }
 
 require_once("base.php");
+$thresholdTs = strtotime("-10 years");
+$thresholdDate = date("Y-m-d", $thresholdTs);
 
 $dataTable = method_exists('\REDCap', 'getDataTable') ? \REDCap::getDataTable($grantsProjectId) : "redcap_data";
 # get event_id
@@ -116,6 +118,10 @@ $sql = "SELECT DISTINCT d.record as 'record', d.value as 'title', d2.value as 'p
 			AND d4.project_id = d.project_id
 			AND d4.record = d.record
 			AND d4.field_name = 'grants_file'
+		    AND (
+		        d5.value = ''
+		        OR d5.value >= '$thresholdDate'
+		    )
 		$sortSql";
 // echo "$sql<br/>";
 $grants = db_query($sql);
