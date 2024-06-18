@@ -22,7 +22,7 @@ $phpOfficeObj = NULL;
 $pdfOut = $filename."_pdf.pdf";
 
 \Logging::logEvent("", "redcap_edocs_metadata", "MANAGE", $_GET['record'] ?? "", "", "Download uploaded document", "", $userid, $grantsProjectId);
-if (preg_match("/\.doc$/i", $filename) || preg_match("/\.docx$/i", $filename)) {
+if (preg_match("/\.docx$/i", $filename)) {
 	# Word doc
 	$domPdfPath = realpath(dirname(__FILE__). '/vendor/dompdf/dompdf');
 	\PhpOffice\PhpWord\Settings::setPdfRendererPath($domPdfPath);
