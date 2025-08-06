@@ -2,7 +2,7 @@
 
 # verify user access
 if (!isset($_COOKIE['grant_repo'])) {
-	header("Location: index.php");
+    header("Location: index.php");
 }
 
 require_once("base.php");
@@ -38,13 +38,13 @@ if (isset($_GET['searchTerms']) && $_GET['searchTerms']) {
 }
 
 $awards = array(
-		"k_awards" => "K Awards",
-		"r_awards" => "R Awards",
-		"misc_awards" => "Misc. Awards",
-		"lrp_awards" => "LRP Awards",
-		"va_merit_awards" => "VA Merit Awards",
-		"f_awards" => "F Awards",
-		);
+        "k_awards" => "K Awards",
+        "r_awards" => "R Awards",
+        "misc_awards" => "Misc. Awards",
+        "lrp_awards" => "LRP Awards",
+        "va_merit_awards" => "VA Merit Awards",
+        "f_awards" => "F Awards",
+        );
 
 # get query string variables
 $search = (isset($_GET['s'])) ? preg_replace('#[^a-z 0-9?!]#i', '', sanitize($_GET['s'])) : "";
@@ -59,45 +59,41 @@ $choices = getChoices(json_decode($metadataJSON, true));
 
 # if search term has been submitted then search for term else show all grants
 if ($search != "") {
-	$searchSql = "AND d.record in (SELECT DISTINCT record FROM $dataTable WHERE project_id = $grantsProjectId AND value like '%$search%')";
+    $searchSql = "AND d.record in (SELECT DISTINCT record FROM $dataTable WHERE project_id = $grantsProjectId AND value like '%$search%')";
 }
 
 # sort - if sort item selected then order by field
 if ($sort == 'pi') {
-	$sortSql = "ORDER BY d2.value";
-}
-elseif ($sort == 'title') {
-	$sortSql = "ORDER BY d.value";
-}
-elseif ($sort == 'number') {
-	$sortSql = "ORDER BY d3.value";
-}
-else if ($sort == 'date') {
-	$sortSql = "ORDER BY d5.value";
-}
-elseif ($sort == 'format') {
-	$sortSql = "ORDER BY d6.value";
+    $sortSql = "ORDER BY d2.value";
+} elseif ($sort == 'title') {
+    $sortSql = "ORDER BY d.value";
+} elseif ($sort == 'number') {
+    $sortSql = "ORDER BY d3.value";
+} elseif ($sort == 'date') {
+    $sortSql = "ORDER BY d5.value";
+} elseif ($sort == 'format') {
+    $sortSql = "ORDER BY d6.value";
 }
 
 $awardClause = "";
 foreach ($awards as $award => $awardTitle) {
-	if (isset($_GET[$award]) && $_GET[$award]) {
-		$awardValues = explode(",", sanitize($_GET[$award]));
-		if (in_array("ALL", $awardValues)) {
-			$awardField = $award;
-			$awardClause = "INNER JOIN $dataTable d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value IN ('".implode("','", array_keys($choices[$award]))."'))";
-			$search = "all ".$awardTitle;
-		} else {
-			$awardField = $award;
+    if (isset($_GET[$award]) && $_GET[$award]) {
+        $awardValues = explode(",", sanitize($_GET[$award]));
+        if (in_array("ALL", $awardValues)) {
+            $awardField = $award;
+            $awardClause = "INNER JOIN $dataTable d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value IN ('".implode("','", array_keys($choices[$award]))."'))";
+            $search = "all ".$awardTitle;
+        } else {
+            $awardField = $award;
             $awardValueStr = "('".implode("','", $awardValues)."')";
-			$awardClause = "INNER JOIN $dataTable d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value IN $awardValueStr)";
+            $awardClause = "INNER JOIN $dataTable d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value IN $awardValueStr)";
             $awardStrs = [];
             foreach ($awardValues as $awardValue) {
                 $awardStrs[] = $choices[$award][$awardValue];
             }
-			$search = $awardTitle." as ".implode(" OR ", $awardStrs);
-		}
-	}
+            $search = $awardTitle." as ".implode(" OR ", $awardStrs);
+        }
+    }
 }
 
 # Get the list of grants
@@ -128,13 +124,14 @@ $grants = db_query($sql);
 $grantCount = db_num_rows($grants);
 
 # display message to user
-if ($search == "")
-	$message = "Displaying all $grantCount grants";
-else
-	$message = "Displaying $grantCount grants for: $search";
+if ($search == "") {
+    $message = "Displaying all $grantCount grants";
+} else {
+    $message = "Displaying $grantCount grants for: $search";
+}
 
 if (isset($_GET['test'])) {
-    $redcapData = \REDCap::getData($grantsProjectId, "json-array", NULL, ["record_id"]);
+    $redcapData = \REDCap::getData($grantsProjectId, "json-array", null, ["record_id"]);
     $message .= " ".count($redcapData)." rows of REDCap records";
     $records = [];
     foreach ($redcapData as $row) {
@@ -146,7 +143,7 @@ if (isset($_GET['test'])) {
 
 <html>
 	<head>
-		<title>The Grant Repository from Edge for Scholars</title> 
+		<title>The Funded Grants Library from Edge for Scholars</title>
 		<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
         	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="//cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
@@ -176,16 +173,16 @@ if (isset($_GET['test'])) {
 				<hr>
 				<a href="grants.php">Grants</a> | 
 				<?php
-				if ($_COOKIE['grant_repo'] != 1) {
-					echo '<a href="statistics.php">Use Statistics</a> | ';
-				}
-				if ($_COOKIE['grant_repo'] == 3) {
-					echo "<a href='".APP_PATH_WEBROOT."index.php?pid=$grantsProjectId' target='_blank'>Register Grants</a> | ";
-					echo "<a href='".APP_PATH_WEBROOT."index.php?pid=$userProjectId' target='_blank'>Administer Users</a> | ";
-				} ?>
+                if ($_COOKIE['grant_repo'] != 1) {
+                    echo '<a href="statistics.php">Use Statistics</a> | ';
+                }
+if ($_COOKIE['grant_repo'] == 3) {
+    echo "<a href='".APP_PATH_WEBROOT."index.php?pid=$grantsProjectId' target='_blank'>Register Grants</a> | ";
+    echo "<a href='".APP_PATH_WEBROOT."index.php?pid=$userProjectId' target='_blank'>Administer Users</a> | ";
+} ?>
 				<a href ="http://projectreporter.nih.gov/reporter.cfm">NIH RePORTER</a> | 
 				<a href ="http://grants.nih.gov/grants/oer.htm">NIH-OER</a>
-				<h3>Edge for Scholars Funded Grant Repository</h3>
+				<h3>Edge for Scholars Funded Grants Library</h3>
 				<i>You may vew grant documents by clicking "View" links below. The use of the grants document repository is strictly limited to authorized individuals and you are not permitted to share files or any embedded content with other individuals. All file downloads are logged.</i>
 				<hr/>
 			</div>
@@ -198,22 +195,22 @@ if (isset($_GET['test'])) {
 						Filter By: <select id='award_type' onchange='displayAwardList();'>
 							<option value=''>---SELECT---</option>
 							<?php
-							foreach ($awards as $award => $awardTitle) {
-								echo "<option value='$award'>$awardTitle</option>";
-							}
-							?>
+            foreach ($awards as $award => $awardTitle) {
+                echo "<option value='$award'>$awardTitle</option>";
+            }
+?>
 						</select>
 					</td>
 					<td colspan='2' style='vertical-align: middle;'>
 <?php
 echo "<div style='float: left; max-width: 600px;'>";
 echo "<form style='margin-bottom: 0px;' method='get'>";
-foreach($awards as $award => $awardTitle) {
-	echo "<select name='$award' id='$award' onchange='displayFilterButton();' style='display: none;'>";
-	echo "<option value=''>---SELECT---</option>";
-	echo "<option value='ALL'>---ALL---</option>";
+foreach ($awards as $award => $awardTitle) {
+    echo "<select name='$award' id='$award' onchange='displayFilterButton();' style='display: none;'>";
+    echo "<option value=''>---SELECT---</option>";
+    echo "<option value='ALL'>---ALL---</option>";
     $items = [];
-	foreach ($choices[$award] as $value => $label) {
+    foreach ($choices[$award] as $value => $label) {
         $shortenedLabel = preg_replace("/^Original /", "", $label);
         $shortenedLabel = preg_replace("/^Resub /", "", $shortenedLabel);
         if (!isset($items[$shortenedLabel])) {
@@ -221,10 +218,10 @@ foreach($awards as $award => $awardTitle) {
         }
         $items[$shortenedLabel][] = $value;
     }
-	foreach ($items as $label => $values) {
-		echo "<option value='".implode(",", $values)."'>$label</option>";
-	}
-	echo "</select>";
+    foreach ($items as $label => $values) {
+        echo "<option value='".implode(",", $values)."'>$label</option>";
+    }
+    echo "</select>";
 }
 echo "<input type='submit' style='display: none;' id='filterButton' value='Filter'>";
 echo "<input type='hidden' name='s' value='' />";
@@ -281,26 +278,26 @@ echo "</div>";
 				</thead>
 				<tbody>
 					<?php
-					$recordsWithAwards = [];
-                    $recordsSeen = [];
-					while ($row = db_fetch_assoc($grants)) {
-                        $recordsSeen[] = sanitize($row['record']);
-						$url = "download.php?p=$grantsProjectId&id=" .
-							sanitize($row['file']) . "&s=&page=register_grants&record=" . sanitize($row['record']) . "&event_id=" .
-							$eventId . "&field_name=grants_file";
+                    $recordsWithAwards = [];
+$recordsSeen = [];
+while ($row = db_fetch_assoc($grants)) {
+    $recordsSeen[] = sanitize($row['record']);
+    $url = "download.php?p=$grantsProjectId&id=" .
+        sanitize($row['file']) . "&s=&page=register_grants&record=" . sanitize($row['record']) . "&event_id=" .
+        $eventId . "&field_name=grants_file";
 
-						echo "<tr>";
-                        if (isset($_GET['test'])) {
-                            echo "<td>".sanitize($row['record'])."</td>";
-                        }
-						echo "<td style='white-space:nowrap;'>" . sanitize($row['pi']) . "</td>";
-						echo "<td>" . sanitize($row['title']) . "</td>";
-						echo "<td style='text-align: center;'>" . sanitize($row['date']) ."</td>";
-						echo "<td style='white-space:nowrap;'>" . sanitize($row['number']) . "</td>";
-						echo "<td style='text-align: center;'><a href='$url'>View</a></td>";
-						echo "</tr>";
-					}
-					?>
+    echo "<tr>";
+    if (isset($_GET['test'])) {
+        echo "<td>".sanitize($row['record'])."</td>";
+    }
+    echo "<td style='white-space:nowrap;'>" . sanitize($row['pi']) . "</td>";
+    echo "<td>" . sanitize($row['title']) . "</td>";
+    echo "<td style='text-align: center;'>" . sanitize($row['date']) ."</td>";
+    echo "<td style='white-space:nowrap;'>" . sanitize($row['number']) . "</td>";
+    echo "<td style='text-align: center;'><a href='$url'>View</a></td>";
+    echo "</tr>";
+}
+?>
 				</tbody>
 				</table>
 			</div>
@@ -315,7 +312,7 @@ echo "</div>";
             }
             echo "<p>Records Missing: ".implode(", ", $recordsMissing)."</p>";
         }
-        ?>
+?>
     </body>
 </html>
 

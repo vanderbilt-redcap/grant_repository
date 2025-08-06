@@ -1,0 +1,30 @@
+{{ addJS('js/base.js') }}
+
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ getUrl('css/base.css') }}">
+</head>
+<body class="body" style="background-color:#f8f8f8">
+    <div style="padding-left:8%;  padding-right:10%; margin-left:auto; margin-right:auto; ">
+        <img src="{{ getUrl('img/efs_small.png') }}" style="vertical-align:middle"/>
+        <hr>
+        <h3>Edge for Scholars Funded Grants Library</h3>
+        <br/>
+        {% if userID|length and userStatus matches '/^\\d+$/' %}
+            <p><strong>NOTICE: You must agree to the following terms before using the Edge for Scholars Funded Grants Library</strong></p>
+            <ul>
+                <li>I agree to keep the contents of the example grants confidential.</li>
+                <li>I will not share any part(s) of the grants in the repository. <strong>To protect against plagiarism, grants are only viewable in your browser and cannot be downloaded for offline use.</strong></li>
+                <li>I agree not to utilize any text of the grant in my own grant.</li>
+                <li>I understand that the individuals who provided grants will be able to view a list of names of those who accessed their grants.</li>
+                <li>I agree to provide a copy of my grant to the Office of Research after submission to be kept on file and reviewed for compliance to this agreement.</li>
+            </ul>
+            <form  method="post">
+                <input type="submit" value="I agree to all terms above" name="submit">
+                <input type="hidden" name="redcap_csrf_token" value="{{ getCSRFToken() }}" />
+            </form>
+        {% else %}
+            <p class="login_error">{{ userStatus }}</p>
+            Please contact Adrienne Babcock at <a href='mailto:adrienne.babcock@vumc.org'>adrienne.babcock@vumc.org</a> to gain access to the Edge for Scholars Funded Grants Library.
+        {% endif %}
+    </div>
+</body>

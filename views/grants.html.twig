@@ -1,0 +1,31 @@
+{% extends "base.html.twig" %}
+
+{% block page_content %}
+    <i class="fa-sharp-duotone fa-regular fa-comment"></i>
+    <table id='grants_table' class='dataTable stripe row-border'>
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+    <div class="grant_modal" id="grant_modal">
+        <div class="modal_header">
+            <span class="modal_header_text" id="modal_header_text">Grant Comment Log</span>
+            <span class="modal_close" id="modal_close">&times;</span>
+        </div>
+        <div class="modal_content">
+            <span class="modal_new_comment">
+                <textarea id="add_comment_text"></textarea>
+                <button id="submit_comment" onclick="addComment('add_comment_text')">Submit Comment</button>
+            </span>
+            <div style="display:none;" id="comment_loader"><img width="150px" src="{{ getUrl('img/loader.gif') }}"/></div>
+            <span class="modal_table_container">
+                <table id="modal_table" class="modal_table">
+                </table>
+            </span>
+        </div>
+        <input type="hidden" id="comment_record"/>
+    </div>
+{% endblock %}
+
+{% block js_block %}
+    {{ addJS('js/grants.js') }}
+{% endblock %}

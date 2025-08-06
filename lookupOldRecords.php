@@ -9,25 +9,25 @@ $data = \REDCap::getData($userProjectId, "json-array");
 
 $upload = [];
 foreach ($data as $row) {
-	if (!$row['first_name'] || !$row['last_name']) {
-		$userid = sanitize($row['vunet_id']);
+    if (!$row['first_name'] || !$row['last_name']) {
+        $userid = sanitize($row['vunet_id']);
         $userid = ldap_escape($userid);
-		list($first, $last) = preg_split("/\s+/", LDAP::getName($userid));
-		if ($first && $last) {
+        list($first, $last) = preg_split("/\s+/", LDAP::getName($userid));
+        if ($first && $last) {
             $first = sanitize($first);
             $last = sanitize($last);
-			$upload[] = [
-				"vunet_id" => $userid,
-				"first_name" => $first,
-				"last_name" => $last,
-			];
-			echo "Adding $first $last for $userid<br>";
-		} else {
-			echo "Could not find name for $userid<br>";
-		}
-	}
+            $upload[] = [
+                "vunet_id" => $userid,
+                "first_name" => $first,
+                "last_name" => $last,
+            ];
+            echo "Adding $first $last for $userid<br>";
+        } else {
+            echo "Could not find name for $userid<br>";
+        }
+    }
 }
 if (!empty($upload)) {
-	$json = json_encode($upload);
-	\REDCap::saveData($userProjectId, "json", $json);
+    $json = json_encode($upload);
+    \REDCap::saveData($userProjectId, "json", $json);
 }

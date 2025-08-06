@@ -49,94 +49,94 @@ $records = array(
 );
 
 $records2 = array(
-		'226 %' => '226 - Stolldorf DP IMPLEMENTING AND SUSTAINING COMPLEX INTERDISCIPLINARY HEALTHCARE INTERVENTIONS',
-		'180 Monroe, T - Brain Activation and Pain Reports in People with Alzheimer\'s Disease' => '180 Monroe, T - Brain Activation and Pain Reports in People with Alzheimers Disease',
-		);
+        '226 %' => '226 - Stolldorf DP IMPLEMENTING AND SUSTAINING COMPLEX INTERDISCIPLINARY HEALTHCARE INTERVENTIONS',
+        '180 Monroe, T - Brain Activation and Pain Reports in People with Alzheimer\'s Disease' => '180 Monroe, T - Brain Activation and Pain Reports in People with Alzheimers Disease',
+        );
 
 $records3 = array(
-		'1 %',
+        '1 %',
 );
 
 $allEdocs = array();
 $cntTotal = 0;
 foreach ($records3 as $record) {
-	$cntRecord = 0;
-	if (preg_match("/\%/", $record)) {
-		$sign = "LIKE";
-	} else {
-		$sign = "=";
-	}
-	$sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND (event = 'UPDATE' OR event='INSERT') AND sql_log IS NOT NULL";
-	$q = db_query($sql);
-	if (db_num_rows($q) === 0 || preg_match("/186 /", $record)) {
-		$sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND sql_log IS NOT NULL";
-		$q = db_query($sql);
-	}
-	echo db_num_rows($q).": $record<br>";
-	$sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND event = 'DOC_UPLOAD' AND sql_log IS NOT NULL";
-	$q = db_query($sql);
+    $cntRecord = 0;
+    if (preg_match("/\%/", $record)) {
+        $sign = "LIKE";
+    } else {
+        $sign = "=";
+    }
+    $sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND (event = 'UPDATE' OR event='INSERT') AND sql_log IS NOT NULL";
+    $q = db_query($sql);
+    if (db_num_rows($q) === 0 || preg_match("/186 /", $record)) {
+        $sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND sql_log IS NOT NULL";
+        $q = db_query($sql);
+    }
+    echo db_num_rows($q).": $record<br>";
+    $sql = "SELECT sql_log FROM redcap_log_event WHERE pk $sign '".db_real_escape_string($record)."' AND project_id = 27635 AND event = 'DOC_UPLOAD' AND sql_log IS NOT NULL";
+    $q = db_query($sql);
 
-	$sqls = array();
-	while ($row = db_fetch_assoc($q)) {
-		if (preg_match("/INSERT/", sanitize($row['sql_log']))) {
-			$sqls2 = preg_split("/INSERT/", sanitize($row['sql_log']));
-			foreach ($sqls2 as $sql) {
-				if ($sql) {
-					$sqls[] = "INSERT".$sql;
-				}
-			}
-		} else if (preg_match("/UPDATE/", sanitize($row['sql_log']))) {
-			$sqls2 = preg_split("/UPDATE/", sanitize($row['sql_log']));
-			foreach ($sqls2 as $sql) {
-				if ($sql) {
-					$sqls[] = "UPDATE".$sql;
-				}
-			}
-		}
-	}
-	$sqls2 = array_reverse($sqls);
-	echo count($sqls2)." filtered out<br><br>";
-	$sqls = array();
-	$hasGrantFile = false;
-	$edocs = array();
-	foreach ($sqls2 as $sql) {
-		echo "PROPOSED ".$sql."<br><br>";
-		$sql = preg_replace("/heimer\\'s/", "heimers", $sql);
-		$sql = preg_replace("/= '226 - .+?'/", "LIKE '226 - %'", $sql);
-		$sql = preg_replace("/ - Hernandez A - Enhancement of innate anti-microbial immunity using novel/", "", $sql);
-		$edocID = "";
-		if (preg_match("/'\d\d\d\d\d\d\d'/", $sql, $matches)) {
-			$edocID = preg_replace("/'/", "", $matches[0]);
-		}
-		if (!$hasGrantFile && preg_match("/grants_file/", $sql)) {
-			$sqls[] = $sql;
-			$hasGrantFile = true;
-			$edocs[] = $edocID;
-		} else if (!preg_match("/grants_file/", $sql)) {
-			$sqls[] = $sql;
-			$edocs[] = $edocID;
-		}
-	}
+    $sqls = array();
+    while ($row = db_fetch_assoc($q)) {
+        if (preg_match("/INSERT/", sanitize($row['sql_log']))) {
+            $sqls2 = preg_split("/INSERT/", sanitize($row['sql_log']));
+            foreach ($sqls2 as $sql) {
+                if ($sql) {
+                    $sqls[] = "INSERT".$sql;
+                }
+            }
+        } elseif (preg_match("/UPDATE/", sanitize($row['sql_log']))) {
+            $sqls2 = preg_split("/UPDATE/", sanitize($row['sql_log']));
+            foreach ($sqls2 as $sql) {
+                if ($sql) {
+                    $sqls[] = "UPDATE".$sql;
+                }
+            }
+        }
+    }
+    $sqls2 = array_reverse($sqls);
+    echo count($sqls2)." filtered out<br><br>";
+    $sqls = array();
+    $hasGrantFile = false;
+    $edocs = array();
+    foreach ($sqls2 as $sql) {
+        echo "PROPOSED ".$sql."<br><br>";
+        $sql = preg_replace("/heimer\\'s/", "heimers", $sql);
+        $sql = preg_replace("/= '226 - .+?'/", "LIKE '226 - %'", $sql);
+        $sql = preg_replace("/ - Hernandez A - Enhancement of innate anti-microbial immunity using novel/", "", $sql);
+        $edocID = "";
+        if (preg_match("/'\d\d\d\d\d\d\d'/", $sql, $matches)) {
+            $edocID = preg_replace("/'/", "", $matches[0]);
+        }
+        if (!$hasGrantFile && preg_match("/grants_file/", $sql)) {
+            $sqls[] = $sql;
+            $hasGrantFile = true;
+            $edocs[] = $edocID;
+        } elseif (!preg_match("/grants_file/", $sql)) {
+            $sqls[] = $sql;
+            $edocs[] = $edocID;
+        }
+    }
 
-	foreach ($sqls as $sql) {
-		echo $sql."<br><br>";
-		// db_query($sql);
-		// echo db_error();
-		$cntRecord++;
-		$cntTotal++;
-	}
-	foreach ($edocs as $edocID) {
-		$allEdocs[] = $edocID;
-		$sql = "UPDATE redcap_edocs_metadata SET delete_date = NULL, date_deleted_server = NULL WHERE doc_id = $edocID";
-		echo $sql."<br><br>";
-		// db_query($sql);
-		// echo db_error();
-		$cntRecord++;
-		$cntTotal++;
-	}
-	if ($cntRecord > 0) {
-		echo $cntRecord." queries run for $record.<br>";
-	}
+    foreach ($sqls as $sql) {
+        echo $sql."<br><br>";
+        // db_query($sql);
+        // echo db_error();
+        $cntRecord++;
+        $cntTotal++;
+    }
+    foreach ($edocs as $edocID) {
+        $allEdocs[] = $edocID;
+        $sql = "UPDATE redcap_edocs_metadata SET delete_date = NULL, date_deleted_server = NULL WHERE doc_id = $edocID";
+        echo $sql."<br><br>";
+        // db_query($sql);
+        // echo db_error();
+        $cntRecord++;
+        $cntTotal++;
+    }
+    if ($cntRecord > 0) {
+        echo $cntRecord." queries run for $record.<br>";
+    }
 }
 echo $cntTotal." queries run for all<br>";
 echo "SELECT * FROM redcap_edocs_metadata WHERE doc_id IN (".implode(", ", $allEdocs).")<br>";

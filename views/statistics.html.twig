@@ -1,0 +1,9 @@
+{% extends "base.html.twig" %}
+
+{% block page_content %}
+    {{ statsHTML | raw }}
+{% endblock %}
+
+{% block js_block %}
+    {{ addJS('js/statistics.js') }}
+{% endblock %}

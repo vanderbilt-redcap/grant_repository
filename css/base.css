@@ -1,0 +1,135 @@
+.body {
+    border-collapse: separate;
+    border-spacing: 1em 0.5em;
+    font-family:Segoe UI, system-ui
+}
+
+.footer {
+    width:100%;
+    text-align:center;
+    font-style:italic;
+    border-top: 1px solid #50B851;
+}
+
+.header {
+    font-weight:bold;
+    font-size:24px;
+    width:100%;
+    display:table-row;
+}
+
+.header_link {
+    text-decoration: none;
+    color: #319F48;
+}
+
+.logoimg {
+    max-width:150px;
+    vertical-align:middle;
+    display:table-cell;
+}
+
+.logotext {
+    display:table-cell;
+}
+
+.fulldiv {
+    margin-top:25px;
+    margin-bottom:25px;
+}
+
+.sidebar {
+    display:table-cell;
+    //background-color: #319F48;
+    border: 1px solid #50B851;
+    padding:3px;
+    vertical-align: top;
+}
+
+.content {
+    display:table-cell;
+}
+
+.textlink, .textlink a {
+    color: #26a4cd;
+    margin:1px;
+    font-weight:bold;
+    text-decoration: none;
+}
+
+.smalllink {
+    font-size: 70%;
+}
+
+.grant_modal {
+    display:none;
+    position: fixed;
+    background-color: white;
+    z-index: 1;
+    left: 250px;
+    top: 250px;
+    width: 550px;
+    height: 300px;
+    border: 1px gray solid;
+}
+
+.modal_header {
+    background-color: #319F48;
+    color: lightgray;
+    font-weight:bold;
+    margin: 2px;
+    border-bottom: 1px lightgray solid;
+    padding:5px;
+}
+
+.modal_close {
+    float: right;
+    cursor: pointer;
+}
+
+.modal_content {
+    text-align:center;
+}
+
+.modal_new_comment {
+    margin-bottom:5px;
+    display:inline-block;
+}
+
+.modal_table_container {
+    overflow: auto;
+    max-height: 185px;
+    display:inline-block;
+    width: 95%;
+    border: 1px solid black;
+}
+
+.modal_table {
+    width:100%;
+}
+
+.modal_table td, .modal_table th {
+    border: 1px solid black;
+    padding:3px;
+    text-align:center;
+}
+
+.modal_table th:nth-child(1),
+.modal_table td:nth-child(1) {
+    width: 100px;}
+
+.modal_table th:nth-child(2),
+.modal_table td:nth-child(2) {
+    width: 200px;}
+
+.comment_link {
+    font-size:75%;
+    color: #50B851;
+    display:inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.footerline {
+    margin-bottom: 0;
+}

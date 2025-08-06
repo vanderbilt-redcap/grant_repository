@@ -1,10 +1,9 @@
 <?php
 # verify user access
 if (!isset($_COOKIE['grant_repo'])) {
-	header("Location: index.php");
-}
-else if (isset($_COOKIE['grant_repo']) && ($_COOKIE['grant_repo'] == 1 )) {
-	header("Location: index.php");
+    header("Location: index.php");
+} elseif (isset($_COOKIE['grant_repo']) && ($_COOKIE['grant_repo'] == 1)) {
+    header("Location: index.php");
 }
 
 require_once("base.php");
@@ -14,13 +13,13 @@ $dataTable = method_exists('\REDCap', 'getDataTable') ? \REDCap::getDataTable($g
 
 # if role=2, then we only want to show stats for their specific grants
 if (($userid !== "pearsosj") && ($role == 2)) {
-	$filterDataSql = " AND d.record IN
+    $filterDataSql = " AND d.record IN
 		(SELECT record
 		FROM $dataTable
 		WHERE project_id = $grantsProjectId
 			AND field_name = 'pi_vunet_id'
 			AND value = '$userid')";
-	$filterLogSql = " AND e.pk IN
+    $filterLogSql = " AND e.pk IN
 		(SELECT record
 		FROM $dataTable
 		WHERE project_id = $grantsProjectId
@@ -48,9 +47,9 @@ $result = db_query($sql);
 # create array to hold log events
 $downloads = array();
 while ($row = db_fetch_array($result)) {
-	$downloads[$row['record']]['title'] = sanitize($row['title']);
-	$downloads[$row['record']]['number'] = sanitize($row['number']);
-	$downloads[$row['record']]['pi'] = sanitize($row['pi']);
+    $downloads[$row['record']]['title'] = sanitize($row['title']);
+    $downloads[$row['record']]['number'] = sanitize($row['number']);
+    $downloads[$row['record']]['pi'] = sanitize($row['pi']);
 }
 
 # get all log events for file downloads
@@ -64,7 +63,7 @@ $sql = "SELECT u.value as vunet, u2.value as firstName, u3.value as lastName
 $result = db_query($sql);
 $vuNets = array();
 while ($row = db_fetch_assoc($result)) {
-	$vuNets[sanitize($row['vunet'])] = array(sanitize($row['firstName']), sanitize($row['lastName']));
+    $vuNets[sanitize($row['vunet'])] = array(sanitize($row['firstName']), sanitize($row['lastName']));
 }
 
 $sql = "SELECT e.ts, e.user, e.pk
@@ -77,12 +76,13 @@ $result = db_query($sql);
 //echo "$sql<br/>";
 
 while ($row = db_fetch_array($result)) {
-	if ($vuNets[sanitize($row['user'])] && $vuNets[sanitize($row['user'])][0])
-		$name = $vuNets[sanitize($row['user'])][0] . " " . $vuNets[sanitize($row['user'])][1] . " (" . sanitize($row['user']) . ")";
-	else if ($vuNets[sanitize($row['user'])])
-		$name = sanitize($row['user']);
+    if ($vuNets[sanitize($row['user'])] && $vuNets[sanitize($row['user'])][0]) {
+        $name = $vuNets[sanitize($row['user'])][0] . " " . $vuNets[sanitize($row['user'])][1] . " (" . sanitize($row['user']) . ")";
+    } elseif ($vuNets[sanitize($row['user'])]) {
+        $name = sanitize($row['user']);
+    }
 
-	$downloads[sanitize($row['pk'])]['hits'][] = array('ts' => sanitize($row['ts']), 'user' => $name);
+    $downloads[sanitize($row['pk'])]['hits'][] = array('ts' => sanitize($row['ts']), 'user' => $name);
 }
 ?>
 
@@ -97,39 +97,39 @@ while ($row = db_fetch_array($result)) {
 			<hr>
 			<a href="grants.php">Grants</a> |
 			<?php
-			if ($_COOKIE['grant_repo'] != 1) {
-				echo '<a href="statistics.php">Use Statistics</a> |';
-			}
-			if ($_COOKIE['grant_repo'] == 3) {
-				echo "<a href='".APP_PATH_WEBROOT."index.php?pid=$grantsProjectId' target='_blank'>Register Grants</a> |";
-				echo "<a href='".APP_PATH_WEBROOT."index.php?pid=$userProjectId' target='_blank'>Administer Users</a> |";
-			}
-			?>
+            if ($_COOKIE['grant_repo'] != 1) {
+                echo '<a href="statistics.php">Use Statistics</a> |';
+            }
+if ($_COOKIE['grant_repo'] == 3) {
+    echo "<a href='".APP_PATH_WEBROOT."index.php?pid=$grantsProjectId' target='_blank'>Register Grants</a> |";
+    echo "<a href='".APP_PATH_WEBROOT."index.php?pid=$userProjectId' target='_blank'>Administer Users</a> |";
+}
+?>
 			<a href ="http://projectreporter.nih.gov/reporter.cfm">NIH RePORTER</a> |
 			<a href ="http://grants.nih.gov/grants/oer.htm">NIH-OER</a>
-			<h3>Edge for Scholars Funded Grant Repository - Usage Statistics</h3>
+			<h3>Edge for Scholars Funded Grants Library - Usage Statistics</h3>
 			<hr><br/>
 			<?php
-			# loop through each grant
-			foreach ($downloads as $id => $value) {
-                if (is_countable($value['hits'])) {
-                    $count = count($value['hits']);
-                } else {
-                    $count = 0;
-                }
+# loop through each grant
+foreach ($downloads as $id => $value) {
+    if (is_countable($value['hits'])) {
+        $count = count($value['hits']);
+    } else {
+        $count = 0;
+    }
 
-				echo "<strong>".$value['pi'] . " - " . $value['title'] . " (" . $value['number'] . ")</strong><br/>";
-				echo "Record logs indicate " . $count . " download(s) for this project:";
+    echo "<strong>".$value['pi'] . " - " . $value['title'] . " (" . $value['number'] . ")</strong><br/>";
+    echo "Record logs indicate " . $count . " download(s) for this project:";
 
-				# loop through array of files download and display
-				echo "<ul>";
-				foreach ($value['hits'] as $log) {
-					$timestamp = strtotime($log['ts']);
-					echo "<li>".date('Y-m-d H:i:s', $timestamp) . " --- " . $log['user'] . "</li>";
-				}
-				echo "</ul>";
-			}
-			?>
+    # loop through array of files download and display
+    echo "<ul>";
+    foreach ($value['hits'] as $log) {
+        $timestamp = strtotime($log['ts']);
+        echo "<li>".date('Y-m-d H:i:s', $timestamp) . " --- " . $log['user'] . "</li>";
+    }
+    echo "</ul>";
+}
+?>
 		</div>
 	</body>
 </html>

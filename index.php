@@ -7,7 +7,7 @@ $vunet = "";
 
 # spoofing tool - provide uid in the GET params in the URL
 // if ($_GET['uid']) {
-	// $userid = $_GET['uid'];
+// $userid = $_GET['uid'];
 // }
 
 $dataTable = method_exists('\REDCap', 'getDataTable') ? \REDCap::getDataTable($userProjectId) : "redcap_data";
@@ -29,8 +29,8 @@ $result = db_query($sql);
 $validRoles = [1, 2, 3];
 # get vunet and role
 if (db_num_rows($result) > 0) {
-	$vunet = sanitize(db_result($result, 0, 0));
-	$dbRole = sanitize(db_result($result, 0, 1));
+    $vunet = sanitize(db_result($result, 0, 0));
+    $dbRole = sanitize(db_result($result, 0, 1));
     foreach ($validRoles as $roleOption) {
         if ($dbRole == $roleOption) {
             $role = $roleOption;
@@ -44,18 +44,18 @@ if (isset($_POST['submit'])) {
     if ($userid == "pearsosj") {
         $role = 2;
     }
-	setcookie('grant_repo', $role);
-	header("Location: grants.php");
+    setcookie('grant_repo', $role);
+    header("Location: grants.php");
 }
- 
+
 $startTs = strtotime("2021-01-01");
 if (($vunet != "") && ($startTs <= time())) {
-	$saveData = [
-			"vunet_id" => $vunet,
-			"accessed" => '1',
-			];
-	$json = json_encode([$saveData]);
-	\REDCap::saveData($userProjectId, "json", $json, "overwrite");
+    $saveData = [
+            "vunet_id" => $vunet,
+            "accessed" => '1',
+            ];
+    $json = json_encode([$saveData]);
+    \REDCap::saveData($userProjectId, "json", $json, "overwrite");
 }
 
 ?>
@@ -69,10 +69,10 @@ if (($vunet != "") && ($startTs <= time())) {
         <div style="padding-left:8%;  padding-right:10%; margin-left:auto; margin-right:auto; ">  
             <img src="img/efs_small.png" style="vertical-align:middle"/>
             <hr>
-            <h3>Edge for Scholars Funded Grant Repository</h3>
+            <h3>Edge for Scholars Funded Grants Library</h3>
             <br/>
             <?php if ($vunet != ""): ?>
-                <p><strong>NOTICE: You must agree to the following terms before using the Edge for Scholars Grant Repository</strong></p>
+                <p><strong>NOTICE: You must agree to the following terms before using the Edge for Scholars Funded Grants Library</strong></p>
                 <ul> 
                     <li>I agree to keep the contents of the example grants confidential.</li>
                     <li>I will not share any part(s) of the grants in the repository. <strong>To protect against plagiarism, grants are only viewable in your browser and cannot be downloaded for offline use.</strong></li>
@@ -84,7 +84,7 @@ if (($vunet != "") && ($startTs <= time())) {
                     <input type="submit" value="I agree to all terms above" name="submit">
                 </form>
 			<?php else: ?>
-				Please contact Adrienne Babcock at <a href='mailto:adrienne.babcock@vumc.org'>adrienne.babcock@vumc.org</a> to gain access to the Edge for Scholars Funded Grant Repository.
+				Please contact Rebecca Helton at <a href='mailto:rebecca.helton@vumc.org'>rebecca.helton@vumc.org</a> to gain access to the Edge for Scholars Funded Grants Library.
 			<?php endif ?>
         </div>
     </html>
