@@ -48,7 +48,12 @@ function ajaxDataTable(ajax_function,payload,dest_id) {
                 paging: false,
                 scrollCollapse: true,
                 scrollX: false,
-                scrollY: 450
+                scrollY: 450,
+                columnDefs: [{
+                    targets: 5,
+                    searchable: true,
+                    visible: false
+                }]
             });
         }
     }).catch((err) => {

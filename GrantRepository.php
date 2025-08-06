@@ -199,11 +199,12 @@ class GrantRepository extends AbstractExternalModule
                 ['title'=>'Grant Number'],
                 ['title'=>'Date'],
                 ['title'=>'View'],
+                ['title'=>'Abstract']
             ]];
         $result = Records::getData([
             'project_id' => $this->getGrantProjectId(),
             'return_format' => 'json-array',
-            'fields' => [$grantsProject->table_pk,'grants_title','grants_pi','grants_file','grants_number','grants_date','nih_format'],
+            'fields' => [$grantsProject->table_pk,'grants_title','grants_abstract','grants_pi','grants_file','grants_number','grants_date','nih_format'],
             'filterLogic' => "[grants_date] > '$thresholdDate'",
         ]);
 
@@ -223,8 +224,9 @@ class GrantRepository extends AbstractExternalModule
                 $row['grants_pi'],
                 $row['grants_number']."&nbsp;<div class='comment_link' onclick='viewCommentModal(\"".$row[$grantsProject->table_pk]."\");'><img style='height:15px;' src='".$this->getUrl('img/comment.svg')."'/></div>",
                 date('m-d-Y', strtotime($row['grants_date'])),
-                "<div class='textlink'><a href='".$this->getUrl('download.php')."'>View</a></div>"
+                "<div class='textlink'><a href='".$this->getUrl('download.php')."'>View</a></div>",
                 //https://redcap.vumc.org/plugins/grant_repository/download.php?p=27635&id=8393100&s=&page=register_grants&record=20&event_id=52818&field_name=grants_file
+                $row['grants_abstract']
             ];
         }
         return $returnData;
