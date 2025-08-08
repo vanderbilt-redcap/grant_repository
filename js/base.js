@@ -34,6 +34,7 @@ function ajaxDataToTable(ajax_function,payload,dest_id) {
 
 function ajaxDataTable(ajax_function,payload,dest_id) {
     // Default sort PI then title
+    //console.log(payload);
     module.ajax(ajax_function, payload).then((response) => {
         //console.log(response);
         if (response['data'] && response['columns']) {
@@ -42,15 +43,21 @@ function ajaxDataTable(ajax_function,payload,dest_id) {
                 columns: response['columns'],
                 layout: {
                     topStart: 'search',
-                    topEnd: ''
+                    topEnd: {
+                        buttons: [{
+                            extend: 'colvis',
+                            text: 'Column Visibility'
+                        }]
+                    }
                 },
+                destroy: true,
                 fixedColumns: true,
                 paging: false,
                 scrollCollapse: true,
                 scrollX: false,
                 scrollY: 450,
                 columnDefs: [{
-                    targets: 5,
+                    targets: 8,
                     searchable: true,
                     visible: false
                 }]

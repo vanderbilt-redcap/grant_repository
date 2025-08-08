@@ -132,4 +132,11 @@
 
 .footerline {
     margin-bottom: 0;
+    font-weight: bold;
+    font-style: normal;
+    color: #50B851;
+}
+
+.filter_checkbox {
+    margin-right:3px;
 }

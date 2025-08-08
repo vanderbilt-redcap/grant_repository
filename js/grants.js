@@ -23,6 +23,7 @@ var modal = document.getElementById("grant_modal");
 // Get the <span> element that closes the modal
 var span = document.getElementsByClassName("modal_close")[0];
 var commentBox = document.getElementById("modal_table");
+var dateFilterCheckbox = document.getElementById("toggle_date_filter");
 
 // When the user clicks on <span> (x), close the modal
 span.onclick = function() {
@@ -35,6 +36,15 @@ window.onclick = function(event) {
         modal.style.display = "none";
     }
 }
+
+dateFilterCheckbox.addEventListener('change', function(e) {
+    const searchParams = {};
+
+    if (this.checked) {
+        searchParams['show_all'] = 'true';
+    }
+    ajaxDataTable('grantList',{'searchParams':searchParams},'grants_table')
+})
 
 function viewCommentModal(recordId) {
     modal.style.display = "block";

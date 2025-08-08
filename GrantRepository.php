@@ -20,6 +20,18 @@ class GrantRepository extends AbstractExternalModule
         "va_merit_awards" => "VA Merit Awards",
         "f_awards" => "F Awards"
     ];
+
+    const DATA_TABLE_HEADERS = [
+        ['title'=>'Title'],
+        ['title'=>'PI'],
+        ['title'=>'Grant Number'],
+        ['title'=>'NIH Submission Number'],
+        ['title'=>'NIH Score'],
+        ['title'=>'Awards'],
+        ['title'=>'Date'],
+        ['title'=>'View'],
+        ['title'=>'Abstract']
+    ];
     private $userProjectId;
     private $grantProjectId;
     public function __construct()
@@ -192,23 +204,24 @@ class GrantRepository extends AbstractExternalModule
         $grantEventID = $grantsProject->firstEventId;
 
         $returnData = [
+            'all_award_types'=>$this->getAwards(),
+            'this_award_type'=>'',
             'data'=>[],
-            'columns'=>[
-                ['title'=>'Title'],
-                ['title'=>'PI'],
-                ['title'=>'Grant Number'],
-                ['title'=>'Date'],
-                ['title'=>'View'],
-                ['title'=>'Abstract']
-            ]];
-        $result = Records::getData([
+            'columns'=> $this->getDataTableHeaders()];
+        $getDataParams = [
             'project_id' => $this->getGrantProjectId(),
             'return_format' => 'json-array',
-            'fields' => [$grantsProject->table_pk,'grants_title','grants_abstract','grants_pi','grants_file','grants_number','grants_date','nih_format'],
-            'filterLogic' => "[grants_date] > '$thresholdDate'",
-        ]);
+            'fields' => array_merge([$grantsProject->table_pk,'grants_title','grants_abstract','grants_pi','grants_file','grants_number','grants_date','nih_format','nih_submission_number','nih_score'],array_keys(self::AWARDS)),
+            'exportAsLabels' => true,
+            'combine_checkbox_values' => true
+        ];
 
-        // Include the abstract for the grant. Hidden column on the table?
+        if (!isset($searchParams['show_all'])) {
+            $getDataParams['filterLogic'] = "[grants_date] > '$thresholdDate'";
+        }
+
+        $result = Records::getData($getDataParams);
+
         // Dropdown list of filter options for different grant types
         // Add a link to the comments (load as modal) to the grant # column
         /*Green (primary) RGB 79, 184, 82 CMYK 70, 00, 93, 00 HEX #4eb851
@@ -216,13 +229,15 @@ class GrantRepository extends AbstractExternalModule
         Yellow RGB 253, 186, 99 CMYK 01, 25, 88, 00 HEX #fbc23b*/
 
         // Sidebar in-line with the data tables header?
-        // 'Making Research Careers Easier' tagline on page (bottom?), also 'Contact Us' for info@edgeforscholars.org
         // Names need filter to do proper casing (look for 1-2 letter all caps to be left alone as initials)
         foreach ($result as $row) {
             $returnData['data'][] = [
                 (strtoupper($row['grants_title']) == $row['grants_title'] ? mb_convert_case($row['grants_title'], MB_CASE_TITLE, 'UTF-8') : $row['grants_title']),
                 $row['grants_pi'],
                 $row['grants_number']."&nbsp;<div class='comment_link' onclick='viewCommentModal(\"".$row[$grantsProject->table_pk]."\");'><img style='height:15px;' src='".$this->getUrl('img/comment.svg')."'/></div>",
+                $row['nih_submission_number'],
+                $row['nih_score'],
+                $this->processAwards($row),
                 date('m-d-Y', strtotime($row['grants_date'])),
                 "<div class='textlink'><a href='".$this->getUrl('download.php')."'>View</a></div>",
                 //https://redcap.vumc.org/plugins/grant_repository/download.php?p=27635&id=8393100&s=&page=register_grants&record=20&event_id=52818&field_name=grants_file
@@ -230,6 +245,19 @@ class GrantRepository extends AbstractExternalModule
             ];
         }
         return $returnData;
+    }
+
+    public function processAwards($data) {
+        $returnString = "";
+
+        foreach (self::AWARDS as $field => $award) {
+            if (isset($data[$field]) && !empty($data[$field])) {
+                $returnString .= "<p>$award</p><ul><li>";
+                $returnString .= str_replace(",","</li><li>", $data[$field]);
+                $returnString .= "</li></ul>";
+            }
+        }
+        return $returnString;
     }
 
     public function getStatResults(array $searchParams)
@@ -251,7 +279,10 @@ class GrantRepository extends AbstractExternalModule
     {
         return self::AWARDS;
     }
-
+    public function getDataTableHeaders(): array
+    {
+        return self::DATA_TABLE_HEADERS;
+    }
     public function loadTwigExtensions():void
     {
         $this->initializeTwig();
@@ -266,6 +297,10 @@ class GrantRepository extends AbstractExternalModule
 
         $this->getTwig()->addFunction(new TwigFunction('getCSRFToken', function () {
             return $this->getCSRFToken();
+        }));
+
+        $this->getTwig()->addFunction(new TwigFunction('getDataTableHeaders', function () {
+            return $this->getDataTableHeaders();
         }));
     }
 
@@ -342,9 +377,9 @@ class GrantRepository extends AbstractExternalModule
     {
         $this->initializeJavascriptModuleObject();
         echo "<script src='".$this->getUrl($path)."'></script>
-            <script src='https://code.jquery.com/jquery-3.7.1.slim.js' integrity='sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc=' crossorigin='anonymous'></script>
-            <link rel='stylesheet' href='https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css' />  
-            <script src='https://cdn.datatables.net/2.3.2/js/dataTables.js'></script>
+            <script src='https://code.jquery.com/jquery-3.7.1.slim.js' integrity='sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc=' crossorigin='anonymous'></script>  
+            <link href='https://cdn.datatables.net/v/dt/dt-2.3.2/b-3.2.4/b-colvis-3.2.4/datatables.min.css' rel='stylesheet' integrity='sha384-XPuogoBP+FZ8OyAeG98HZK8AwqEncT0ApG1/dLGPTF2/hDZ1mgVIApEy0nYV7ESE' crossorigin='anonymous'>
+            <script src='https://cdn.datatables.net/v/dt/dt-2.3.2/b-3.2.4/b-colvis-3.2.4/datatables.min.js' integrity='sha384-0orDQyjg1TNlLwCB04+J6pfHi6xcljp58sU3QacbK1exhnsX8jZfjyKs0cY3DTYN' crossorigin='anonymous'></script>
         ";
     }
 
