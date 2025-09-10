@@ -1,0 +1,12 @@
+{% extends "base.html.twig" %}
+
+{% block page_content %}
+    <h2>Files Uploaded for Grant {{ grant }}</h2>
+    {% for index,file in files['files'] %}
+        <div class="textlink"><a href="{{ file.path }}" onclick="logFileDownload('{{ record }}','{{ userID }}')" download>{{ file.name }}</a></div>
+    {% endfor %}
+{% endblock %}
+
+{% block js_block %}
+    {{ addJS('js/download.js') }}
+{% endblock %}
