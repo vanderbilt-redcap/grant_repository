@@ -1,7 +1,25 @@
 {% extends "base.html.twig" %}
 
 {% block page_content %}
-    {{ statsHTML | raw }}
+    {% if userStatus == 3 %}
+        <p>
+            <a href='{{ grantProjectPath }}' target='_blank'>Register Grants</a> -
+            <a href='{{ userProjectPath }}' target='_blank'>Administer Users</a>
+        </p>
+    {% endif %}
+    <h3>Edge for Scholars Funded Grants Library - Usage Statistics</h3>
+    {% for grant,values in statList %}
+        {% set count = values.hits | length %}
+        <strong>{{ values.pi }} - {{ values.title }} ({{ values.number }})</strong>
+        <div>Record logs indicate {{ count }} download(s) for this project <span onclick="toggleDrilldown('stats_drilldown_{{ grant }}')"><img src="{{ getUrl('img/arrow-down-up.svg') }}"/></span></div>
+        <div class="stats_drilldown" id="stats_drilldown_{{ grant }}">
+            <ul>
+                {% for log in values.hits %}
+                    <li>{{ log.ts }} --- {{ log.user }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
 {% endblock %}
 
 {% block js_block %}
