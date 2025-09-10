@@ -7,11 +7,11 @@
     </div>
     <div class="fulldiv col-md-12">
         <div id="sidebar" class="sidebar col-md-1">
-            <p class="textlink"><a href='{{ getUrl('interfaces/grants.php') }}'>Grants</a></p>
-            <p class="textlink"><a href='{{ getUrl('interfaces/statistics.php') }}'>Use Statistics</a></p>
-            <p class="textlink"><a href='{{ grantProjectPath }}' target='_blank'>Add Your Grant</a></p>
-            <p class="textlink"><a href='{{ userProjectPath }}' target='_blank'>Administer Users</a></p>
-            <p class="textlink"><a href ="http://projectreporter.nih.gov/reporter.cfm">NIH RePORTER</a></p>
+            <p class="textlink"><a style="display:block;text-align:center;line-height:1;" href='{{ getUrl('interfaces/grants.php') }}'>Grants</a></p>
+            <p class="textlink"><a style="display:block;text-align:center;line-height:1;" href='{{ getUrl('interfaces/statistics.php') }}'>Use Statistics</a></p>
+            <p class="textlink"><a style="display:block;text-align:center;line-height:1;" href='{{ grantProjectPath }}' target='_blank'>Add Your Grant</a></p>
+            <p class="textlink"><a style="display:block;text-align:center;line-height:1;" href='{{ userProjectPath }}' target='_blank'>Administer Users</a></p>
+            <p class="textlink"><a style="display:block;text-align:center;line-height:1;" href ="http://projectreporter.nih.gov/reporter.cfm">NIH RePORTER</a></p>
         </div>
         <div id="content" class="content col-md-10">
             {% block page_content %}
@@ -21,7 +21,10 @@
 
     <footer class="footer">
         <p class="footerline">Edge for Scholars: Making Research Careers Easier</p>
-        <p class="textlink smalllink"><a href="mailto:info@edgeforscholars.org">Contact Us</a></p>
+        <p class="textlink smalllink">
+            <a href="mailto:info@edgeforscholars.org">Contact Us</a>
+            <a href="https://edgeforscholars.vumc.org/edge-team/team/adrienne-leigh-babcock/" target="_blank">Remembering Adrienne Babcock</a>
+        </p>
     </footer>
 </body>
 {% block js_block %}

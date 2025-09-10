@@ -52,7 +52,7 @@
 
 .textlink, .textlink a {
     color: #26a4cd;
-    margin:1px;
+    margin:15px;
     font-weight:bold;
     text-decoration: none;
 }
@@ -68,8 +68,8 @@
     z-index: 1;
     left: 250px;
     top: 250px;
-    width: 550px;
-    height: 300px;
+    width: 850px;
+    height: 500px;
     border: 1px gray solid;
 }
 
@@ -98,7 +98,7 @@
 
 .modal_table_container {
     overflow: auto;
-    max-height: 185px;
+    max-height: 300px;
     display:inline-block;
     width: 95%;
     border: 1px solid black;
@@ -106,6 +106,10 @@
 
 .modal_table {
     width:100%;
+}
+
+.modal_table thead {
+    background-color: lightgray;
 }
 
 .modal_table td, .modal_table th {
@@ -125,9 +129,10 @@
 .comment_link {
     font-size:75%;
     color: #50B851;
-    display:inline-block;
     vertical-align: middle;
+    display:inline;
     cursor: pointer;
+    height:100%;
 }
 
 .footerline {
@@ -139,4 +144,9 @@
 
 .filter_checkbox {
     margin-right:3px;
+}
+
+.stats_drilldown {
+    transition: display 1s;
+    display:none;
 }

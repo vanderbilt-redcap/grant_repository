@@ -42,8 +42,11 @@ function ajaxDataTable(ajax_function,payload,dest_id) {
                 data: response['data'],
                 columns: response['columns'],
                 layout: {
-                    topStart: 'search',
+                    topStart: function () {
+                        return 'Filter by Award:&nbsp;<select id="award_select"></select>'
+                    },
                     topEnd: {
+                        search: {},
                         buttons: [{
                             extend: 'colvis',
                             text: 'Column Visibility'
@@ -56,11 +59,32 @@ function ajaxDataTable(ajax_function,payload,dest_id) {
                 scrollCollapse: true,
                 scrollX: false,
                 scrollY: 450,
-                columnDefs: [{
-                    targets: 8,
-                    searchable: true,
-                    visible: false
-                }]
+                bAutoWidth: false,
+                columnDefs: [
+                    {
+                        targets: 7,
+                        searchable: true,
+                        visible: false
+                    }],
+                initComplete: function () {
+                    let column = this.api().column(4);
+                    console.log(column);
+                    let select = document.getElementById('award_select');
+
+                    select.addEventListener('change', function () {
+                        column
+                            .search(select.value, {exact: true})
+                            .draw();
+                    });
+
+                    column
+                        .data()
+                        .unique()
+                        .sort()
+                        .each(function (d, j) {
+                            select.add(new Option(d));
+                        });
+                }
             });
         }
     }).catch((err) => {
@@ -113,6 +137,14 @@ function pageRedirect(page) {
         else {
             alert(response['errors'])
         }
+    }).catch((err) => {
+        console.log(err);
+    })
+}
+
+function logFileDownload(record,userid) {
+    module.ajax('logFileDownload', {'record':record,'userid':userid}).then((response) => {
+        console.log(response);
     }).catch((err) => {
         console.log(err);
     })
