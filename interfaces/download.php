@@ -9,8 +9,7 @@ $record = $module->escape($_GET["id"]);
 if (is_numeric($project_id) && is_numeric($edoc_id)) {
     $module->loadTwigExtensions();
 
-    echo $module->loadDownloadTwig((defined("USERID") ? USERID : ''),$record,$edoc_id,$grant);
-}
-else {
+    echo $module->loadDownloadTwig((defined("USERID") ? USERID : ''), $record, $edoc_id, $grant);
+} else {
     echo "A valid project ID and edoc ID are required to view this page.";
 }

@@ -54,9 +54,9 @@ class GrantRepository extends AbstractExternalModule
         } elseif ($action == "addComment") {
             $result = $this->addComment($payload['record'], $payload['comment']);
         } elseif ($action == "getComments") {
-            $result = $this->getComments($payload['record'],$payload['user']);
+            $result = $this->getComments($payload['record'], $payload['user']);
         } elseif ($action == "logFileDownload") {
-            $result = $this->logFileDownload($payload['record'],$payload['userid']);
+            $result = $this->logFileDownload($payload['record'], $payload['userid']);
         }
         return $result;
     }
@@ -116,7 +116,8 @@ class GrantRepository extends AbstractExternalModule
         return $returnArray;
     }
 
-    public function logFileDownload($record,$userid) {
+    public function logFileDownload($record, $userid)
+    {
         $return = \Logging::logEvent("", "redcap_edocs_metadata", "MANAGE", $record, "", "Download uploaded document", "", $userid, $this->getGrantProjectId());
         return $return;
     }
@@ -253,7 +254,7 @@ class GrantRepository extends AbstractExternalModule
                 }
             }
 
-            $downloads[$this->escape($row['pk'])]['hits'][] = array('ts' => $this->escape(date("Y-m-d H:i:s",strtotime($row['ts']))), 'user' => $name);
+            $downloads[$this->escape($row['pk'])]['hits'][] = array('ts' => $this->escape(date("Y-m-d H:i:s", strtotime($row['ts']))), 'user' => $name);
         }
 
         return $downloads;
@@ -467,7 +468,7 @@ class GrantRepository extends AbstractExternalModule
         } else {
             $inFile = $this->framework->getSafePath(EDOC_PATH.$this->escape($this_file['stored_name']), EDOC_PATH);
             $saveFile = $this->framework->getSafePath($outDir.$this->escape($this_file['doc_name']), $outDir);
-            $outFile = $this->convertFileToPDF($inFile,$saveFile);
+            $outFile = $this->convertFileToPDF($inFile, $saveFile);
         }
         $files = $this->inspectDir($outDir, $linkDir);
 
@@ -503,7 +504,8 @@ class GrantRepository extends AbstractExternalModule
         return $files;
     }
     
-    public function convertFileToPDF($sourceFile,$output) {
+    public function convertFileToPDF($sourceFile, $output)
+    {
         $pdfOut = $output."_pdf.pdf";
         
         if (preg_match("/\.docx$/i", $sourceFile)) {
@@ -533,8 +535,7 @@ class GrantRepository extends AbstractExternalModule
             \PhpOffice\PhpSpreadsheet\IOFactory::registerWriter('PDF', $class);
             $xmlWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "PDF");
             $xmlWriter->save($pdfOut);
-        }
-        else {
+        } else {
             return $sourceFile;
         }
         return $pdfOut;
