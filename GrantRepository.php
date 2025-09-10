@@ -7,7 +7,9 @@ use ExternalModules\ExternalModules;
 use Records;
 use REDCap;
 use Project;
+use Logging;
 use Twig\TwigFunction;
+use ZipArchive;
 
 class GrantRepository extends AbstractExternalModule
 {
@@ -26,7 +28,6 @@ class GrantRepository extends AbstractExternalModule
         ['title'=>'PI'],
         ['title'=>'Grant Number'],
         ['title'=>'NIH Submission Number'],
-        ['title'=>'NIH Score'],
         ['title'=>'Awards'],
         ['title'=>'Date'],
         ['title'=>'View'],
@@ -50,22 +51,24 @@ class GrantRepository extends AbstractExternalModule
             $result = $this->getStatResults($payload['searchParams']);
         } elseif ($action == "redirect") {
             $result = $this->getUrl("interfaces/".$payload['page']);
-        }
-        elseif ($action == "addComment") {
-            $result = $this->addComment($payload['record'],$payload['comment']);
-        }
-        elseif ($action == "getComments") {
-            $result = $this->getComments($payload['record']);
+        } elseif ($action == "addComment") {
+            $result = $this->addComment($payload['record'], $payload['comment']);
+        } elseif ($action == "getComments") {
+            $result = $this->getComments($payload['record'],$payload['user']);
+        } elseif ($action == "logFileDownload") {
+            $result = $this->logFileDownload($payload['record'],$payload['userid']);
         }
         return $result;
     }
 
-    public function addComment($record, $comment) {
+    public function addComment($record, $comment)
+    {
         $grantProject = new Project($this->getGrantProjectId());
-        $formInstances = array_keys(\RepeatInstance::getRepeatEventInstanceList($record, $grantProject->firstEventId, $grantProject) ?? []);
+        $formInstances = array_keys(\RepeatInstance::getRepeatFormInstanceList($record, $grantProject->firstEventId, $grantProject->metadata['comment_user']['form_name'], $grantProject) ?? []);
+        $newInstance = 1;
 
         if (!empty($formInstances)) {
-            $newInstance = max($formInstances);
+            $newInstance = max($formInstances)+1;
         }
 
         $result = Records::saveData([
@@ -83,122 +86,44 @@ class GrantRepository extends AbstractExternalModule
         if (empty($result['errors'])) {
             return $returnStatus['status'] = true;
         }
-        return $result;
+        return $returnStatus;
     }
 
-    public function getComments($recordId) {
+    public function getComments($recordId)
+    {
         $grantProject = new Project($this->getGrantProjectId());
         $returnArray = ['headers'=>['Author','Comment'],'rows'=>[]];
         $result = Records::getData([
             'project_id' => $this->getGrantProjectId(),
             'return_format' => 'json-array',
             'records' => [$this->escape($recordId)],
-            'fields' => [$grantProject->table_pk,'comment','comment_user','comment_date']
+            'fields' => [$grantProject->table_pk,'comment','comment_user','comment_date','comment_approved'],
+            'filterLogic' => "[comment_approved] = '1' or [comment_user] = '".USERID."'"
         ]);
         foreach ($result as $row) {
-            if ($row['redcap_repeat_instance'] == "") continue;
+            if ($row['redcap_repeat_instance'] == "") {
+                continue;
+            }
             $returnArray['rows'][(int)$row['redcap_repeat_instance']] = [
                 'comment'=>$row['comment'],
-                'info'=>$row['comment_user']."<br/>".date('m-d-Y H:i:s',strtotime($row['comment_date']))
+                'info'=>$row['comment_user']."<br/>".date('m-d-Y H:i:s', strtotime($row['comment_date']))
             ];
         }
-        if (empty($returnArray['rows'])) { $returnArray['rows'] = ['comment'=>'','info'=>'']; }
+        if (empty($returnArray['rows'])) {
+            $returnArray['rows'] = ['comment'=>'','info'=>''];
+        }
         $returnArray['rows'] = array_reverse($returnArray['rows']);
         return $returnArray;
+    }
+
+    public function logFileDownload($record,$userid) {
+        $return = \Logging::logEvent("", "redcap_edocs_metadata", "MANAGE", $record, "", "Download uploaded document", "", $userid, $this->getGrantProjectId());
+        return $return;
     }
 
     public function getGrantList(array $searchParams)
     {
         $thresholdDate = date("Y-m-d", strtotime("-10 years"));
-        /*$sortSql = "";
-        $searchSql = "";
-
-# get metadata
-        $metadataJSON = \REDCap::getDataDictionary($grantsProjectId, "json");
-        $choices = getChoices(json_decode($metadataJSON, true));
-
-# if search term has been submitted then search for term else show all grants
-        if ($search != "") {
-            $searchSql = "AND d.record in (SELECT DISTINCT record FROM $dataTable WHERE project_id = $grantsProjectId AND value like '%$search%')";
-        }
-
-# sort - if sort item selected then order by field
-        if ($sort == 'pi') {
-            $sortSql = "ORDER BY d2.value";
-        } elseif ($sort == 'title') {
-            $sortSql = "ORDER BY d.value";
-        } elseif ($sort == 'number') {
-            $sortSql = "ORDER BY d3.value";
-        } elseif ($sort == 'date') {
-            $sortSql = "ORDER BY d5.value";
-        } elseif ($sort == 'format') {
-            $sortSql = "ORDER BY d6.value";
-        }
-
-        $awardClause = "";
-        foreach ($awards as $award => $awardTitle) {
-            if (isset($_GET[$award]) && $_GET[$award]) {
-                $awardValues = explode(",", sanitize($_GET[$award]));
-                if (in_array("ALL", $awardValues)) {
-                    $awardField = $award;
-                    $awardClause = "INNER JOIN $dataTable d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value IN ('" . implode("','", array_keys($choices[$award])) . "'))";
-                    $search = "all " . $awardTitle;
-                } else {
-                    $awardField = $award;
-                    $awardValueStr = "('" . implode("','", $awardValues) . "')";
-                    $awardClause = "INNER JOIN $dataTable d7 ON (d7.project_id =d.project_id AND d7.record = d.record AND d7.field_name = '$awardField' AND d7.value IN $awardValueStr)";
-                    $awardStrs = [];
-                    foreach ($awardValues as $awardValue) {
-                        $awardStrs[] = $choices[$award][$awardValue];
-                    }
-                    $search = $awardTitle . " as " . implode(" OR ", $awardStrs);
-                }
-            }
-        }
-        # Get the list of grants
-        $sql = "SELECT DISTINCT d.record as 'record', d.value as 'title', d2.value as 'pi', d3.value as 'number', d4.value as 'file', d5.value as 'date', d6.value as 'format'
-		FROM $dataTable d
-		JOIN $dataTable d2
-		LEFT JOIN $dataTable d3 ON (d3.project_id =d.project_id AND d3.record = d.record AND d3.field_name = 'grants_number')
-		JOIN $dataTable d4
-		LEFT JOIN $dataTable d5 ON (d5.project_id =d.project_id AND d5.record = d.record AND d5.field_name = 'grants_date')
-		LEFT JOIN $dataTable d6 ON (d6.project_id =d.project_id AND d6.record = d.record AND d6.field_name = 'nih_format')
-		$awardClause
-		WHERE d.project_id = $grantsProjectId
-			$searchSql
-			AND d.field_name = 'grants_title'
-			AND d2.project_id = d.project_id
-			AND d2.record = d.record
-			AND d2.field_name = 'grants_pi'
-			AND d4.project_id = d.project_id
-			AND d4.record = d.record
-			AND d4.field_name = 'grants_file'
-		    AND (
-		        d5.value IS NULL
-		        OR d5.value >= '$thresholdDate'
-		    )
-		$sortSql";
-// echo "$sql<br/>";
-        $grants = db_query($sql);
-        $grantCount = db_num_rows($grants);
-
-        while ($row = db_fetch_assoc($grants)) {
-            $recordsSeen[] = sanitize($row['record']);
-            $url = "download.php?p=$grantsProjectId&id=" .
-                sanitize($row['file']) . "&s=&page=register_grants&record=" . sanitize($row['record']) . "&event_id=" .
-                $eventId . "&field_name=grants_file";
-
-            echo "<tr>";
-            if (isset($_GET['test'])) {
-                echo "<td>" . sanitize($row['record']) . "</td>";
-            }
-            echo "<td style='white-space:nowrap;'>" . sanitize($row['pi']) . "</td>";
-            echo "<td>" . sanitize($row['title']) . "</td>";
-            echo "<td style='text-align: center;'>" . sanitize($row['date']) . "</td>";
-            echo "<td style='white-space:nowrap;'>" . sanitize($row['number']) . "</td>";
-            echo "<td style='text-align: center;'><a href='$url'>View</a></td>";
-            echo "</tr>";
-        }*/
 
         $grantsProject = new Project($this->getGrantProjectId());
         $grantEventID = $grantsProject->firstEventId;
@@ -211,7 +136,7 @@ class GrantRepository extends AbstractExternalModule
         $getDataParams = [
             'project_id' => $this->getGrantProjectId(),
             'return_format' => 'json-array',
-            'fields' => array_merge([$grantsProject->table_pk,'grants_title','grants_abstract','grants_pi','grants_file','grants_number','grants_date','nih_format','nih_submission_number','nih_score'],array_keys(self::AWARDS)),
+            'fields' => array_merge([$grantsProject->table_pk,'grants_title','grants_abstract','grants_pi','grants_file','grants_number','grants_date','nih_format','nih_submission_number'], array_keys(self::AWARDS)),
             'exportAsLabels' => true,
             'combine_checkbox_values' => true
         ];
@@ -222,48 +147,118 @@ class GrantRepository extends AbstractExternalModule
 
         $result = Records::getData($getDataParams);
 
-        // Dropdown list of filter options for different grant types
-        // Add a link to the comments (load as modal) to the grant # column
         /*Green (primary) RGB 79, 184, 82 CMYK 70, 00, 93, 00 HEX #4eb851
         Blue (secondary) RGB 38, 165, 205 CMYK 73, 17, 10, 00 HEX #26a4cd
         Yellow RGB 253, 186, 99 CMYK 01, 25, 88, 00 HEX #fbc23b*/
 
-        // Sidebar in-line with the data tables header?
         // Names need filter to do proper casing (look for 1-2 letter all caps to be left alone as initials)
         foreach ($result as $row) {
+            $grantProject = new Project($this->getGrantProjectId());
+            $formInstances = array_keys(\RepeatInstance::getRepeatFormInstanceList($row[$grantProject->table_pk], $grantEventID, $grantProject->metadata['comment_user']['form_name'], $grantProject) ?? []);
             $returnData['data'][] = [
                 (strtoupper($row['grants_title']) == $row['grants_title'] ? mb_convert_case($row['grants_title'], MB_CASE_TITLE, 'UTF-8') : $row['grants_title']),
                 $row['grants_pi'],
-                $row['grants_number']."&nbsp;<div class='comment_link' onclick='viewCommentModal(\"".$row[$grantsProject->table_pk]."\");'><img style='height:15px;' src='".$this->getUrl('img/comment.svg')."'/></div>",
+                "<div style='display:inline;'>".$row['grants_number']."</div>&nbsp;<div class='comment_link' onclick='viewCommentModal(\"".$row[$grantsProject->table_pk]."\");'><img style='height:15px;' src='".(!empty($formInstances) ? $this->getUrl('img/chat-fill.svg') : $this->getUrl('img/comment.svg'))."'/></div>",
                 $row['nih_submission_number'],
-                $row['nih_score'],
                 $this->processAwards($row),
-                date('m-d-Y', strtotime($row['grants_date'])),
-                "<div class='textlink'><a href='".$this->getUrl('download.php')."'>View</a></div>",
-                //https://redcap.vumc.org/plugins/grant_repository/download.php?p=27635&id=8393100&s=&page=register_grants&record=20&event_id=52818&field_name=grants_file
+                ($row['grants_date'] != "" ? date('m-d-Y', strtotime($row['grants_date'])) : ""),
+                (is_numeric($row['grants_file']) ? "<div class='textlink'><a href='".$this->getUrl('interfaces/download.php')."&id=".$row[$grantProject->table_pk]."&edoc_id=".$row['grants_file']."&grant=".$this->escape($row['grants_number'])."'>View</a></div>" : "<div class='textlink'>N/A</div>"),
                 $row['grants_abstract']
             ];
         }
         return $returnData;
     }
 
-    public function processAwards($data) {
+    public function processAwards($data): string
+    {
         $returnString = "";
 
         foreach (self::AWARDS as $field => $award) {
             if (isset($data[$field]) && !empty($data[$field])) {
-                $returnString .= "<p>$award</p><ul><li>";
-                $returnString .= str_replace(",","</li><li>", $data[$field]);
-                $returnString .= "</li></ul>";
+                /*$returnString .= "<p>$award</p><ul><li>";
+                $returnString .= str_replace(",", "</li><li>", $data[$field]);
+                $returnString .= "</li></ul>";*/
+                $returnString .= "$award";
             }
         }
         return $returnString;
     }
 
-    public function getStatResults(array $searchParams)
+    public function getStatResults($userid, array $searchParams)
     {
-        
+        $userid = $this->escape($userid);
+        $userStatus = $this->processUserAccess($userid);
+
+        if ($userid == '' || !is_numeric($userStatus)) {
+            header("Location: " . $this->getUrl('interfaces/index.php'));
+        }
+
+        $grantsProject = new Project($this->getGrantProjectId());
+        $usersProject = new Project($this->getUserProjectId());
+        $filterGrantLogic = $filterUserLogic = "";
+        # Anyone with role = 2 needs to only see grants specific to them
+        if (($userid !== "pearsosj" && $userid !== "moorejr5") && ($userStatus == 2)) {
+            $filterGrantLogic = "[pi_vunet_id] = '$userid'";
+            $filterUserLogic = "[vunet_id] = '$userid'";
+        }
+
+        $grantsResult = Records::getData([
+            'project_id' => $this->getGrantProjectId(),
+            'return_format' => 'json-array',
+            'fields' => [$grantsProject->table_pk,'grants_title','grants_pi','grants_number'],
+            'exportAsLabels' => true,
+            'combine_checkbox_values' => true,
+            'filterLogic' => $filterGrantLogic,
+        ]);
+        $downloads = array();
+
+        foreach ($grantsResult as $row) {
+            $downloads[$this->escape($row[$grantsProject->table_pk])]['title'] = $this->escape($row['grants_title']);
+            $downloads[$this->escape($row[$grantsProject->table_pk])]['number'] = $this->escape($row['grants_number']);
+            $downloads[$this->escape($row[$grantsProject->table_pk])]['pi'] = $this->escape($row['grants_pi']);
+        }
+
+        $usersResult = Records::getData([
+            'project_id' => $this->getUserProjectId(),
+            'return_format' => 'json-array',
+            'fields' => [$usersProject->table_pk,'vunet_id','first_name','last_name'],
+            'exportAsLabels' => true,
+            'combine_checkbox_values' => true,
+            'filterLogic' => $filterUserLogic,
+        ]);
+
+        $vuNets = array();
+        foreach ($usersResult as $row) {
+            $vuNets[$this->escape($row['vunet_id'])] = array('first_name'=>$this->escape($row['first_name']),"last_name" => $this->escape($row['last_name']));
+        }
+
+        $logEventTable = method_exists('\Logging', 'getLogEventTable') ? \Logging::getLogEventTable($this->getGrantProjectId()) : "redcap_log_event";
+        # get all log events for file downloads
+        $sql = "SELECT ts, user, pk
+            FROM $logEventTable
+            WHERE project_id = ?
+                AND description = 'Download uploaded document'
+                AND pk IN (".implode(",", array_keys($downloads)).")
+            ORDER BY ts DESC";
+        $logsResult = $this->query($sql, [$this->getGrantProjectId()]);
+
+        while ($row = $logsResult->fetch_assoc()) {
+            $user = $this->escape($row['user']);
+            $name = "";
+            if (isset($vuNets[$user])) {
+                if ($vuNets[$user]['first_name'] != "" && $vuNets[$user]['last_name'] != "") {
+                    $name = $vuNets[$user]['first_name'] . " " . $vuNets[$user]['last_name']." (".$this->escape($user).")";
+                } else {
+                    $name = $this->escape($user);
+                }
+            }
+
+            $downloads[$this->escape($row['pk'])]['hits'][] = array('ts' => $this->escape(date("Y-m-d H:i:s",strtotime($row['ts']))), 'user' => $name);
+        }
+
+        return $downloads;
     }
+
 
     public function getGrantProjectId()
     {
@@ -337,7 +332,7 @@ class GrantRepository extends AbstractExternalModule
             header("Location: ".$this->getUrl('interfaces/index.php'));
         }
 
-        $grantProjectPath = APP_PATH_WEBROOT."index.php?pid=".$this->getgrantProjectId();
+        $grantProjectPath = APP_PATH_WEBROOT."index.php?pid=".$this->getGrantProjectId();
         $userProjectPath = APP_PATH_WEBROOT."index.php?pid=".$this->getuserProjectId();
 
         return $this->getTwig()->render('grants.html.twig', [
@@ -347,6 +342,25 @@ class GrantRepository extends AbstractExternalModule
             'grantProjectPath' => $grantProjectPath,
             'userProjectPath' => $userProjectPath,
             'grantList' => $this->getGrantList([])
+        ]);
+    }
+
+    public function loadDownloadTwig($userid, $record, int $edocid, $grantNum)
+    {
+        $userid = $this->escape($userid);
+        $userStatus = $this->processUserAccess($userid);
+
+        if ($userid == '' || !is_numeric($userStatus)) {
+            header("Location: ".$this->getUrl('interfaces/index.php'));
+        }
+
+        return $this->getTwig()->render('download.html.twig', [
+            'project_id' => $this->getProjectId(),
+            'record' => $this->escape($record),
+            'userID' => $this->escape($userid),
+            'userStatus' => $userStatus,
+            'grant' => $this->escape($grantNum),
+            'files' => $this->processGrantsFile($edocid)
         ]);
     }
 
@@ -368,7 +382,7 @@ class GrantRepository extends AbstractExternalModule
             'userStatus' => $userStatus,
             'grantProjectPath' => $grantProjectPath,
             'userProjectPath' => $userProjectPath,
-            'statList' => $this->getGrantList([]),
+            'statList' => $this->getStatResults($userid, []),
             'statsHTML' => "<table id='stats_table'></table>"
         ]);
     }
@@ -411,5 +425,127 @@ class GrantRepository extends AbstractExternalModule
         }
 
         return $returnStatus;
+    }
+
+    public function processGrantsFile(int $edocid)
+    {
+        $returnArray = ['errors' => [], 'files' => []];
+
+        $sql = "select * from redcap_edocs_metadata where project_id = ? and doc_id = ?";
+        $q = $this->query($sql, [$this->getGrantProjectId(),$this->escape($edocid)]);
+        $this_file = db_fetch_array($q);
+
+        $basename = preg_replace("/\.[^\.]*$/", "", $this->escape($this_file['stored_name']));
+        if (!preg_match("/\/$/", $basename)) {
+            $basename.= "/";
+        }
+        $outDir = $this->framework->getSafePath(APP_PATH_TEMP.$basename, APP_PATH_TEMP);
+        $linkDir = APP_PATH_WEBROOT_FULL."temp/".$basename;
+        mkdir($outDir);
+
+        $files = array();
+        if (preg_match("/\.zip$/i", $this->escape($this_file['stored_name'])) || ($this->escape($this_file['mime_type']) == "application/x-zip-compressed")) {
+            $zip = new ZipArchive;
+            $zipFile = $this->framework->getSafePath(EDOC_PATH.$this->escape($this_file['stored_name']), EDOC_PATH);
+
+            $res = $zip->open($zipFile);
+            if ($res) {
+                for ($i = 0; $i < $zip->numFiles; $i++) {
+                    $fileContent = $zip->getFromIndex($i);
+                    $fileName = $zip->getNameIndex($i);
+                    if (preg_match("/\.xls$/i", $fileName) || preg_match("/\.xlsx$/i", $fileName) || preg_match("/\.csv$/i", $fileName) || preg_match("/\.docx$/i", $fileName)) {
+                        $fileName .= "_pdf.pdf";
+                    }
+
+                    if ($fileContent !== false) {
+                        // Write the content to a new file with the desired name and extension
+                        file_put_contents($outDir . $fileName, $fileContent);
+                    }
+                }
+                $zip->close();
+            }
+        } else {
+            $inFile = $this->framework->getSafePath(EDOC_PATH.$this->escape($this_file['stored_name']), EDOC_PATH);
+            $saveFile = $this->framework->getSafePath($outDir.$this->escape($this_file['doc_name']), $outDir);
+            $outFile = $this->convertFileToPDF($inFile,$saveFile);
+        }
+        $files = $this->inspectDir($outDir, $linkDir);
+
+        if (!empty($files)) {
+            $returnArray['files'] = $files;
+        } else {
+            $returnArray['errors'] = "No files were found.";
+        }
+        
+        return $returnArray;
+    }
+
+    public function truncateFile($filename)
+    {
+        return str_replace(APP_PATH_TEMP, "", $filename);
+    }
+
+    public function inspectDir($dir, $linkdir)
+    {
+        $files = array();
+
+        $allFiles = scandir($dir);
+        $skip = array(".", "..");
+        foreach ($allFiles as $filename) {
+            if (!in_array($filename, $skip)) {
+                if (is_dir($dir.$filename)) {
+                    $files = array_merge($files, $this->inspectDir($dir.$filename."/", $linkdir.$filename."/"));
+                } else {
+                    $files[] = ['path'=>$linkdir . $filename,'name'=>$filename];
+                }
+            }
+        }
+        return $files;
+    }
+    
+    public function convertFileToPDF($sourceFile,$output) {
+        $pdfOut = $output."_pdf.pdf";
+        
+        if (preg_match("/\.docx$/i", $sourceFile)) {
+            # Word doc
+            $domPdfPath = realpath(dirname(__FILE__). '/vendor/dompdf/dompdf');
+            \PhpOffice\PhpWord\Settings::setPdfRendererPath($domPdfPath);
+            \PhpOffice\PhpWord\Settings::setPdfRendererName('DomPDF');
+
+            $phpOfficeObj = \PhpOffice\PhpWord\IOFactory::load($sourceFile);
+            $xmlWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpOfficeObj, 'PDF');
+            $xmlWriter->save($pdfOut);
+        } elseif (preg_match("/\.csv$/i", $sourceFile)) {
+            # CSV
+            $reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+            $spreadsheet = $reader->load($sourceFile);
+            setupSpreadsheet($spreadsheet);
+            $class = \PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf::class;
+            \PhpOffice\PhpSpreadsheet\IOFactory::registerWriter('PDF', $class);
+            $xmlWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "PDF");
+            $xmlWriter->save($pdfOut);
+        } elseif (preg_match("/\.xls$/i", $sourceFile) || preg_match("/\.xlsx$/i", $sourceFile)) {
+            # Excel
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($sourceFile);
+            $spreadsheet = $reader->load($sourceFile);
+            setupSpreadsheet($spreadsheet);
+            $class = \PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf::class;
+            \PhpOffice\PhpSpreadsheet\IOFactory::registerWriter('PDF', $class);
+            $xmlWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "PDF");
+            $xmlWriter->save($pdfOut);
+        }
+        else {
+            return $sourceFile;
+        }
+        return $pdfOut;
+    }
+
+    public function setupSpreadsheet(&$spreadsheet): void
+    {
+        $spreadsheet->getActiveSheet()->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        $spreadsheet->getActiveSheet()->getPageMargins()->setTop(0.5);
+        $spreadsheet->getActiveSheet()->getPageMargins()->setRight(0.5);
+        $spreadsheet->getActiveSheet()->getPageMargins()->setLeft(0.5);
+        $spreadsheet->getActiveSheet()->getPageMargins()->setBottom(0.5);
     }
 }

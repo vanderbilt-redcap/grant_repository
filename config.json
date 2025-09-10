@@ -26,7 +26,8 @@
     "grantList",
     "statResults",
     "addComment",
-    "getComments"
+    "getComments",
+    "logFileDownload"
   ],
   "project-settings": [
     {
