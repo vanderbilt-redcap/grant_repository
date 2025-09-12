@@ -54,7 +54,7 @@ class GrantRepository extends AbstractExternalModule
         } elseif ($action == "addComment") {
             $result = $this->addComment($payload['record'], $payload['comment']);
         } elseif ($action == "getComments") {
-            $result = $this->getComments($payload['record'], $payload['user']);
+            $result = $this->getComments($payload['record']);
         } elseif ($action == "logFileDownload") {
             $result = $this->logFileDownload($payload['record'], $payload['userid']);
         }
@@ -496,7 +496,7 @@ class GrantRepository extends AbstractExternalModule
             if (!in_array($filename, $skip)) {
                 if (is_dir($dir.$filename)) {
                     $files = array_merge($files, $this->inspectDir($dir.$filename."/", $linkdir.$filename."/"));
-                } else {
+                } elseif (!preg_match("/^\./", $filename)) {
                     $files[] = ['path'=>$linkdir . $filename,'name'=>$filename];
                 }
             }

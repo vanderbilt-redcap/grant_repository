@@ -29,7 +29,7 @@
     "getComments",
     "logFileDownload"
   ],
-  "project-settings": [
+  "system-settings": [
     {
       "key": "user-project",
       "name": "Project ID of the Funded Grants Library User Project",
