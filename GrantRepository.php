@@ -35,12 +35,6 @@ class GrantRepository extends AbstractExternalModule
     ];
     private $userProjectId;
     private $grantProjectId;
-    public function __construct()
-    {
-        parent::__construct();
-        $this->userProjectId = $this->getSystemSetting('user-project');
-        $this->grantProjectId = $this->getSystemSetting('grant-project');
-    }
 
     public function redcap_module_ajax($action, $payload)
     {
@@ -263,11 +257,17 @@ class GrantRepository extends AbstractExternalModule
 
     public function getGrantProjectId()
     {
+        if (empty($this->grantProjectId)) {
+            $this->grantProjectId = $this->getSystemSetting('grant-project');
+        }
         return $this->grantProjectId;
     }
 
     public function getUserProjectId()
     {
+        if (empty($this->userProjectId)) {
+            $this->userProjectId = $this->getSystemSetting('user-project');
+        }
         return $this->userProjectId;
     }
 
