@@ -1,0 +1,49 @@
+{
+  "name": "Funded Grants Library",
+  "namespace": "Vanderbilt\\GrantRepository",
+  "description": "Dashboard for displaying awarded grants.",
+  "authors": [
+    {
+      "name": "Ryan Moore",
+      "email": "datacore@vumc.org",
+      "institution": "Vanderbilt University Medical Center"
+    }
+  ],
+  "framework-version": 16,
+  "links": {
+    "project": [
+      {
+        "name": "Grants Repository",
+        "key": "grantsinterfacelink",
+        "icon": "fa-receipt",
+        "url": "interfaces/index.php",
+        "show-header-and-footer": false
+      }
+    ]
+  },
+  "auth-ajax-actions": [
+    "redirect",
+    "grantList",
+    "statResults",
+    "addComment",
+    "getComments",
+    "logFileDownload"
+  ],
+  "system-settings": [
+    {
+      "key": "user-project",
+      "name": "Project ID of the Funded Grants Library User Project",
+      "type": "project-id"
+    },
+    {
+      "key": "grant-project",
+      "name": "Project ID of the Funded Grants Library Project",
+      "type": "project-id"
+    }
+  ],
+  "log-file": "log.txt",
+  "compatibility": {
+    "php-version-min": "8.0.0",
+    "php-version-max": ""
+  }
+}

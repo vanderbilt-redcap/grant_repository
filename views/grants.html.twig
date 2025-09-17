@@ -1,0 +1,33 @@
+{% extends "base.html.twig" %}
+
+{% block page_content %}
+    <i class="fa-sharp-duotone fa-regular fa-comment"></i>
+    <input type="checkbox" class="filter_checkbox" id="toggle_date_filter" /><label for="toggle_date_filter">Show Older Grants</label>
+    <table id='grants_table' class='dataTable stripe row-border'>
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+    <div class="grant_modal" id="grant_modal">
+        <div class="modal_header">
+            <span class="modal_header_text" id="modal_header_text">Grant Comment Log</span>
+            <span class="modal_close" id="modal_close">&times;</span>
+        </div>
+        <div class="modal_content">
+            <h5>Please leave positive comments only since these will be publicly displayed. Your comments will be reviewed, and your name will be attached to your comment.</h5>
+            <span class="modal_new_comment">
+                <textarea style="width:450px;height:75px;" id="add_comment_text"></textarea>
+                <button id="submit_comment" onclick="addComment('add_comment_text')">Submit Comment</button>
+            </span>
+            <div style="display:none;" id="comment_loader"><img width="50px" src="{{ getUrl('img/loader.gif') }}"/></div>
+            <span class="modal_table_container">
+                <table id="modal_table" class="modal_table">
+                </table>
+            </span>
+        </div>
+        <input type="hidden" id="comment_record"/>
+    </div>
+{% endblock %}
+
+{% block js_block %}
+    {{ addJS('js/grants.js') }}
+{% endblock %}
