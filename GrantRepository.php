@@ -406,7 +406,7 @@ class GrantRepository extends AbstractExternalModule
 
         if ($userid != '') {
             $result = \REDCap::getData([
-                'project_id' => $this->userProjectId,
+                'project_id' => $this->getUserProjectId(),
                 'return_format' => 'json-array',
                 'fields' => ['vunet_id', 'user_role', 'user_expiration'],
                 'filterLogic' => "[vunet_id] = '$userid'",
