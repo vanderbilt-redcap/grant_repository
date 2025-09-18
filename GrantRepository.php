@@ -473,7 +473,7 @@ class GrantRepository extends AbstractExternalModule
                                 }
                             }
                             // Write the content to a new file with the desired name and extension
-                            file_put_contents($outDir . $fileName, $fileContent);
+                            file_put_contents($fullFilePath, $fileContent);
                         }
                     }
                 }
