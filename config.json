@@ -10,17 +10,6 @@
     }
   ],
   "framework-version": 16,
-  "links": {
-    "project": [
-      {
-        "name": "Grants Repository",
-        "key": "grantsinterfacelink",
-        "icon": "fa-receipt",
-        "url": "interfaces/index.php",
-        "show-header-and-footer": false
-      }
-    ]
-  },
   "auth-ajax-actions": [
     "redirect",
     "grantList",
