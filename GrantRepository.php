@@ -454,13 +454,27 @@ class GrantRepository extends AbstractExternalModule
                 for ($i = 0; $i < $zip->numFiles; $i++) {
                     $fileContent = $zip->getFromIndex($i);
                     $fileName = $zip->getNameIndex($i);
-                    if (preg_match("/\.xls$/i", $fileName) || preg_match("/\.xlsx$/i", $fileName) || preg_match("/\.csv$/i", $fileName) || preg_match("/\.docx$/i", $fileName)) {
-                        $fileName .= "_pdf.pdf";
-                    }
+                    if (str_ends_with($fileName, '/')) {
+                        continue;
+                    } else {
+                        if (preg_match("/\.xls$/i", $fileName) || preg_match("/\.xlsx$/i", $fileName) || preg_match("/\.csv$/i", $fileName) || preg_match("/\.docx$/i", $fileName)) {
+                            $fileName .= "_pdf.pdf";
+                        }
 
-                    if ($fileContent !== false) {
-                        // Write the content to a new file with the desired name and extension
-                        file_put_contents($outDir . $fileName, $fileContent);
+                        if ($fileContent !== false) {
+                            $fullFilePath = $outDir.$fileName;
+                            $parts = explode('/', $fullFilePath);
+                            $file = array_pop($parts);
+                            $dir = '';
+                            // If file name includes directories then need to make sure they exist.
+                            foreach ($parts as $part) {
+                                if (!is_dir($dir .= "/$part")) {
+                                    mkdir($dir);
+                                }
+                            }
+                            // Write the content to a new file with the desired name and extension
+                            file_put_contents($outDir . $fileName, $fileContent);
+                        }
                     }
                 }
                 $zip->close();
