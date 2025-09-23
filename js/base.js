@@ -62,13 +62,13 @@ function ajaxDataTable(ajax_function,payload,dest_id) {
                 bAutoWidth: false,
                 columnDefs: [
                     {
-                        targets: 7,
+                        targets: [4,7],
                         searchable: true,
                         visible: false
                     }],
                 initComplete: function () {
                     let column = this.api().column(4);
-                    console.log(column);
+                    //console.log(column);
                     let select = document.getElementById('award_select');
 
                     select.addEventListener('change', function () {

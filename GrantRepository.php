@@ -35,12 +35,6 @@ class GrantRepository extends AbstractExternalModule
     ];
     private $userProjectId;
     private $grantProjectId;
-    public function __construct()
-    {
-        parent::__construct();
-        $this->userProjectId = $this->getSystemSetting('user-project');
-        $this->grantProjectId = $this->getSystemSetting('grant-project');
-    }
 
     public function redcap_module_ajax($action, $payload)
     {
@@ -64,27 +58,24 @@ class GrantRepository extends AbstractExternalModule
     public function addComment($record, $comment)
     {
         $grantProject = new Project($this->getGrantProjectId());
-        $formInstances = array_keys(\RepeatInstance::getRepeatFormInstanceList($record, $grantProject->firstEventId, $grantProject->metadata['comment_user']['form_name'], $grantProject) ?? []);
-        $newInstance = 1;
 
-        if (!empty($formInstances)) {
-            $newInstance = max($formInstances)+1;
-        }
+        $userName = $this->getUserNameById(USERID);
 
         $result = Records::saveData([
             'project_id'=>$this->getGrantProjectId(),'dataFormat'=>'json-array','overwriteBehavior'=>'overwrite',
             'data' => [0 => [
                 $grantProject->table_pk=>$this->escape($record),
                 'comment'=>$this->escape($comment),
-                'comment_user'=>USERID,
+                'comment_user'=>$this->escape($userName),
+                'comment_user_id'=>USERID,
                 'comment_date'=>date('Y-m-d H:i:s'),
-                'redcap_repeat_instance'=>$newInstance,
+                'redcap_repeat_instance'=>'new',
                 'redcap_repeat_instrument'=>'comment_log'
             ]]
         ]);
         $returnStatus = ['status'=>false];
         if (empty($result['errors'])) {
-            return $returnStatus['status'] = true;
+            $returnStatus['status'] = true;
         }
         return $returnStatus;
     }
@@ -97,8 +88,8 @@ class GrantRepository extends AbstractExternalModule
             'project_id' => $this->getGrantProjectId(),
             'return_format' => 'json-array',
             'records' => [$this->escape($recordId)],
-            'fields' => [$grantProject->table_pk,'comment','comment_user','comment_date','comment_approved'],
-            'filterLogic' => "[comment_approved] = '1' or [comment_user] = '".USERID."'"
+            'fields' => [$grantProject->table_pk,'comment','comment_user','comment_user_id','comment_date','comment_approved'],
+            'filterLogic' => "[comment_approved] = '1' or [comment_user_id] = '".USERID."'"
         ]);
         foreach ($result as $row) {
             if ($row['redcap_repeat_instance'] == "") {
@@ -162,7 +153,7 @@ class GrantRepository extends AbstractExternalModule
                 "<div style='display:inline;'>".$row['grants_number']."</div>&nbsp;<div class='comment_link' onclick='viewCommentModal(\"".$row[$grantsProject->table_pk]."\");'><img style='height:15px;' src='".(!empty($formInstances) ? $this->getUrl('img/chat-fill.svg') : $this->getUrl('img/comment.svg'))."'/></div>",
                 $row['nih_submission_number'],
                 $this->processAwards($row),
-                ($row['grants_date'] != "" ? date('m-d-Y', strtotime($row['grants_date'])) : ""),
+                ($row['grants_date'] != "" ? date('Y-m', strtotime($row['grants_date'])) : ""),
                 (is_numeric($row['grants_file']) ? "<div class='textlink'><a href='".$this->getUrl('interfaces/download.php')."&id=".$row[$grantProject->table_pk]."&edoc_id=".$row['grants_file']."&grant=".$this->escape($row['grants_number'])."'>View</a></div>" : "<div class='textlink'>N/A</div>"),
                 $row['grants_abstract']
             ];
@@ -263,11 +254,17 @@ class GrantRepository extends AbstractExternalModule
 
     public function getGrantProjectId()
     {
+        if (empty($this->grantProjectId)) {
+            $this->grantProjectId = $this->getSystemSetting('grant-project');
+        }
         return $this->grantProjectId;
     }
 
     public function getUserProjectId()
     {
+        if (empty($this->userProjectId)) {
+            $this->userProjectId = $this->getSystemSetting('user-project');
+        }
         return $this->userProjectId;
     }
 
@@ -406,7 +403,7 @@ class GrantRepository extends AbstractExternalModule
 
         if ($userid != '') {
             $result = \REDCap::getData([
-                'project_id' => $this->userProjectId,
+                'project_id' => $this->getUserProjectId(),
                 'return_format' => 'json-array',
                 'fields' => ['vunet_id', 'user_role', 'user_expiration'],
                 'filterLogic' => "[vunet_id] = '$userid'",
@@ -426,6 +423,29 @@ class GrantRepository extends AbstractExternalModule
         }
 
         return $returnStatus;
+    }
+
+    public function getUserNameById(string $userid)
+    {
+        $userid = $this->escape($userid);
+        $name = $userid;
+
+        if ($userid != '') {
+            $result = \REDCap::getData([
+                'project_id' => $this->getUserProjectId(),
+                'return_format' => 'json-array',
+                'fields' => ['vunet_id', 'first_name', 'last_name'],
+                'filterLogic' => "[vunet_id] = '$userid'",
+            ]);
+
+            foreach ($result as $data) {
+                if ($data['vunet_id'] == $userid) {
+                    $name = $data['first_name']." ".$data['last_name'];
+                }
+            }
+        }
+
+        return $name;
     }
 
     public function processGrantsFile(int $edocid)
@@ -454,13 +474,27 @@ class GrantRepository extends AbstractExternalModule
                 for ($i = 0; $i < $zip->numFiles; $i++) {
                     $fileContent = $zip->getFromIndex($i);
                     $fileName = $zip->getNameIndex($i);
-                    if (preg_match("/\.xls$/i", $fileName) || preg_match("/\.xlsx$/i", $fileName) || preg_match("/\.csv$/i", $fileName) || preg_match("/\.docx$/i", $fileName)) {
-                        $fileName .= "_pdf.pdf";
-                    }
+                    if (str_ends_with($fileName, '/')) {
+                        continue;
+                    } else {
+                        if (preg_match("/\.xls$/i", $fileName) || preg_match("/\.xlsx$/i", $fileName) || preg_match("/\.csv$/i", $fileName) || preg_match("/\.docx$/i", $fileName)) {
+                            $fileName .= "_pdf.pdf";
+                        }
 
-                    if ($fileContent !== false) {
-                        // Write the content to a new file with the desired name and extension
-                        file_put_contents($outDir . $fileName, $fileContent);
+                        if ($fileContent !== false) {
+                            $fullFilePath = $outDir.$fileName;
+                            $parts = explode('/', $fullFilePath);
+                            $file = array_pop($parts);
+                            $dir = '';
+                            // If file name includes directories then need to make sure they exist.
+                            foreach ($parts as $part) {
+                                if (!is_dir($dir .= "/$part")) {
+                                    mkdir($dir);
+                                }
+                            }
+                            // Write the content to a new file with the desired name and extension
+                            file_put_contents($fullFilePath, $fileContent);
+                        }
                     }
                 }
                 $zip->close();
