@@ -11,7 +11,7 @@
     {% for grant,values in statList %}
         {% set count = values.hits | length %}
         <strong>{{ values.pi }} - {{ values.title }} ({{ values.number }})</strong>
-        <div>Record logs indicate {{ count }} download(s) for this project <span onclick="toggleDrilldown('stats_drilldown_{{ grant }}')"><img src="{{ getUrl('img/arrow-down-up.svg') }}"/></span></div>
+        <div>Record logs indicate {{ count }} view(s) for this project <span onclick="toggleDrilldown('stats_drilldown_{{ grant }}')"><img src="{{ getUrl('img/arrow-down-up.svg') }}"/></span></div>
         <div class="stats_drilldown" id="stats_drilldown_{{ grant }}">
             <ul>
                 {% for log in values.hits %}
