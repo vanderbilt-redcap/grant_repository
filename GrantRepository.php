@@ -209,6 +209,7 @@ class GrantRepository extends AbstractExternalModule
             $downloads[$this->escape($row[$grantsProject->table_pk])]['title'] = $this->escape($row['grants_title']);
             $downloads[$this->escape($row[$grantsProject->table_pk])]['number'] = $this->escape($row['grants_number']);
             $downloads[$this->escape($row[$grantsProject->table_pk])]['pi'] = $this->escape($row['grants_pi']);
+            $piList[] = $this->escape($row['grants_pi']);
         }
 
         $usersResult = Records::getData([
@@ -249,6 +250,9 @@ class GrantRepository extends AbstractExternalModule
             $downloads[$this->escape($row['pk'])]['hits'][] = array('ts' => $this->escape(date("Y-m-d H:i:s", strtotime($row['ts']))), 'user' => $name);
         }
 
+        usort($downloads, function($a, $b) {
+            return strcmp($a['pi'], $b['pi']);
+        });
         return $downloads;
     }
 
