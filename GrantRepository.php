@@ -101,7 +101,7 @@ class GrantRepository extends AbstractExternalModule
             ];
         }
         if (empty($returnArray['rows'])) {
-            $returnArray['rows'] = ['comment'=>'','info'=>''];
+            $returnArray['rows'][] = ['comment'=>'','info'=>''];
         }
         $returnArray['rows'] = array_reverse($returnArray['rows']);
         return $returnArray;
@@ -146,11 +146,11 @@ class GrantRepository extends AbstractExternalModule
         // Names need filter to do proper casing (look for 1-2 letter all caps to be left alone as initials)
         foreach ($result as $row) {
             $grantProject = new Project($this->getGrantProjectId());
-            $formInstances = array_keys(\RepeatInstance::getRepeatFormInstanceList($row[$grantProject->table_pk], $grantEventID, $grantProject->metadata['comment_user']['form_name'], $grantProject) ?? []);
+            $formInstances = $this->getComments($row[$grantsProject->table_pk]);
             $returnData['data'][] = [
                 (strtoupper($row['grants_title']) == $row['grants_title'] ? mb_convert_case($row['grants_title'], MB_CASE_TITLE, 'UTF-8') : $row['grants_title']),
                 $row['grants_pi'],
-                "<div style='display:inline;'>".$row['grants_number']."</div>&nbsp;<div class='comment_link' onclick='viewCommentModal(\"".$row[$grantsProject->table_pk]."\");'><img style='height:15px;' src='".(!empty($formInstances) ? $this->getUrl('img/chat-fill.svg') : $this->getUrl('img/comment.svg'))."'/></div>",
+                "<div style='display:inline;'>".$row['grants_number']."</div>&nbsp;<div class='comment_link' onclick='viewCommentModal(\"".$row[$grantsProject->table_pk]."\");'><img style='height:15px;' src='".(!empty($formInstances['rows'][0]['comment']) ? $this->getUrl('img/chat-fill.svg') : $this->getUrl('img/comment.svg'))."'/></div>",
                 $row['nih_submission_number'],
                 $this->processAwards($row),
                 ($row['grants_date'] != "" ? date('Y-m', strtotime($row['grants_date'])) : ""),
@@ -203,11 +203,13 @@ class GrantRepository extends AbstractExternalModule
             'filterLogic' => $filterGrantLogic,
         ]);
         $downloads = array();
+        $piList = array();
 
         foreach ($grantsResult as $row) {
             $downloads[$this->escape($row[$grantsProject->table_pk])]['title'] = $this->escape($row['grants_title']);
             $downloads[$this->escape($row[$grantsProject->table_pk])]['number'] = $this->escape($row['grants_number']);
             $downloads[$this->escape($row[$grantsProject->table_pk])]['pi'] = $this->escape($row['grants_pi']);
+            $piList[] = $this->escape($row['grants_pi']);
         }
 
         $usersResult = Records::getData([
@@ -248,6 +250,9 @@ class GrantRepository extends AbstractExternalModule
             $downloads[$this->escape($row['pk'])]['hits'][] = array('ts' => $this->escape(date("Y-m-d H:i:s", strtotime($row['ts']))), 'user' => $name);
         }
 
+        usort($downloads, function($a, $b) {
+            return strcmp($a['pi'], $b['pi']);
+        });
         return $downloads;
     }
 
