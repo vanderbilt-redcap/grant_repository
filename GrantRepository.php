@@ -509,6 +509,7 @@ class GrantRepository extends AbstractExternalModule
             $saveFile = $this->framework->getSafePath($outDir.$this->escape($this_file['doc_name']), $outDir);
             $outFile = $this->convertFileToPDF($inFile, $saveFile);
         }
+
         $files = $this->inspectDir($outDir, $linkDir);
 
         if (!empty($files)) {
@@ -575,7 +576,8 @@ class GrantRepository extends AbstractExternalModule
             $xmlWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "PDF");
             $xmlWriter->save($pdfOut);
         } else {
-            return $sourceFile;
+            copy($sourceFile, $output);
+            return $output;
         }
         return $pdfOut;
     }
