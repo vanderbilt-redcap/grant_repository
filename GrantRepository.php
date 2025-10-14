@@ -573,6 +573,9 @@ class GrantRepository extends AbstractExternalModule
                 \PhpOffice\PhpSpreadsheet\IOFactory::registerWriter('PDF', $class);
                 $xmlWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "PDF");
                 $xmlWriter->save($pdfOut);
+            } else {
+                copy($sourceFile, $output);
+                return $output;
             }
         } elseif (preg_match("/\.xls$/i", $sourceFile) || preg_match("/\.xlsx$/i", $sourceFile)) {
             # Excel
