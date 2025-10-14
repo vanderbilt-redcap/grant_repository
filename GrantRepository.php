@@ -485,10 +485,6 @@ class GrantRepository extends AbstractExternalModule
                     if (str_ends_with($fileName, '/')) {
                         continue;
                     } else {
-                        if (preg_match("/\.xls$/i", $fileName) || preg_match("/\.xlsx$/i", $fileName) || preg_match("/\.csv$/i", $fileName) || preg_match("/\.docx$/i", $fileName)) {
-                            $fileName .= "_pdf.pdf";
-                        }
-
                         if ($fileContent !== false) {
                             $fullFilePath = $outDir.$fileName;
                             $parts = explode('/', $fullFilePath);
@@ -501,7 +497,12 @@ class GrantRepository extends AbstractExternalModule
                                 }
                             }
                             // Write the content to a new file with the desired name and extension
-                            file_put_contents($fullFilePath, $fileContent);
+                            if (preg_match("/\.xls$/i", $fileName) || preg_match("/\.xlsx$/i", $fileName) || preg_match("/\.csv$/i", $fileName) || preg_match("/\.docx$/i", $fileName)) {
+                                file_put_contents(APP_PATH_TEMP.$fileName, $fileContent);
+                                $fileName = $this->convertFileToPDF(APP_PATH_TEMP.$fileName, $fullFilePath);
+                            } else {
+                                file_put_contents($fullFilePath, $fileContent);
+                            }
                         }
                     }
                 }
