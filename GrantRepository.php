@@ -4,6 +4,8 @@ namespace Vanderbilt\GrantRepository;
 
 use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf;
 use Records;
 use REDCap;
 use Project;
@@ -250,7 +252,7 @@ class GrantRepository extends AbstractExternalModule
             $downloads[$this->escape($row['pk'])]['hits'][] = array('ts' => $this->escape(date("Y-m-d H:i:s", strtotime($row['ts']))), 'user' => $name);
         }
 
-        usort($downloads, function($a, $b) {
+        usort($downloads, function ($a, $b) {
             return strcmp($a['pi'], $b['pi']);
         });
         return $downloads;
@@ -283,6 +285,7 @@ class GrantRepository extends AbstractExternalModule
     }
     public function loadTwigExtensions():void
     {
+        include_once(__DIR__ . "/vendor/autoload.php");
         $this->initializeTwig();
 
         $this->getTwig()->addFunction(new TwigFunction('loadREDCapFiles', function () {
@@ -482,10 +485,6 @@ class GrantRepository extends AbstractExternalModule
                     if (str_ends_with($fileName, '/')) {
                         continue;
                     } else {
-                        if (preg_match("/\.xls$/i", $fileName) || preg_match("/\.xlsx$/i", $fileName) || preg_match("/\.csv$/i", $fileName) || preg_match("/\.docx$/i", $fileName)) {
-                            $fileName .= "_pdf.pdf";
-                        }
-
                         if ($fileContent !== false) {
                             $fullFilePath = $outDir.$fileName;
                             $parts = explode('/', $fullFilePath);
@@ -498,7 +497,12 @@ class GrantRepository extends AbstractExternalModule
                                 }
                             }
                             // Write the content to a new file with the desired name and extension
-                            file_put_contents($fullFilePath, $fileContent);
+                            if (preg_match("/\.xls$/i", $fileName) || preg_match("/\.xlsx$/i", $fileName) || preg_match("/\.csv$/i", $fileName) || preg_match("/\.docx$/i", $fileName)) {
+                                file_put_contents(APP_PATH_TEMP.$fileName, $fileContent);
+                                $fileName = $this->convertFileToPDF(APP_PATH_TEMP.$fileName, $fullFilePath);
+                            } else {
+                                file_put_contents($fullFilePath, $fileContent);
+                            }
                         }
                     }
                 }
@@ -509,6 +513,7 @@ class GrantRepository extends AbstractExternalModule
             $saveFile = $this->framework->getSafePath($outDir.$this->escape($this_file['doc_name']), $outDir);
             $outFile = $this->convertFileToPDF($inFile, $saveFile);
         }
+
         $files = $this->inspectDir($outDir, $linkDir);
 
         if (!empty($files)) {
@@ -516,7 +521,7 @@ class GrantRepository extends AbstractExternalModule
         } else {
             $returnArray['errors'] = "No files were found.";
         }
-        
+
         return $returnArray;
     }
 
@@ -542,11 +547,12 @@ class GrantRepository extends AbstractExternalModule
         }
         return $files;
     }
-    
+
     public function convertFileToPDF($sourceFile, $output)
     {
-        $pdfOut = $output."_pdf.pdf";
-        
+        $pdfOut = str_replace(".", "_", $output)."_pdf.pdf";
+        $phpOfficeObj = null;
+
         if (preg_match("/\.docx$/i", $sourceFile)) {
             # Word doc
             $domPdfPath = realpath(dirname(__FILE__). '/vendor/dompdf/dompdf');
@@ -558,24 +564,32 @@ class GrantRepository extends AbstractExternalModule
             $xmlWriter->save($pdfOut);
         } elseif (preg_match("/\.csv$/i", $sourceFile)) {
             # CSV
-            $reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
-            $spreadsheet = $reader->load($sourceFile);
-            setupSpreadsheet($spreadsheet);
-            $class = \PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf::class;
-            \PhpOffice\PhpSpreadsheet\IOFactory::registerWriter('PDF', $class);
-            $xmlWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "PDF");
-            $xmlWriter->save($pdfOut);
+            $fileSize = filesize($sourceFile);
+            if ($fileSize < 1048576) {
+                $reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+                $reader->setReadDataOnly(true);
+                $spreadsheet = $reader->load($sourceFile);
+                $this->setupSpreadsheet($spreadsheet);
+                $class = \PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf::class;
+                \PhpOffice\PhpSpreadsheet\IOFactory::registerWriter('PDF', $class);
+                $xmlWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "PDF");
+                $xmlWriter->save($pdfOut);
+            } else {
+                copy($sourceFile, $output);
+                return $output;
+            }
         } elseif (preg_match("/\.xls$/i", $sourceFile) || preg_match("/\.xlsx$/i", $sourceFile)) {
             # Excel
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($sourceFile);
             $spreadsheet = $reader->load($sourceFile);
-            setupSpreadsheet($spreadsheet);
+            $this->setupSpreadsheet($spreadsheet);
             $class = \PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf::class;
             \PhpOffice\PhpSpreadsheet\IOFactory::registerWriter('PDF', $class);
             $xmlWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "PDF");
             $xmlWriter->save($pdfOut);
         } else {
-            return $sourceFile;
+            copy($sourceFile, $output);
+            return $output;
         }
         return $pdfOut;
     }

@@ -30,9 +30,5 @@
       "type": "project-id"
     }
   ],
-  "log-file": "log.txt",
-  "compatibility": {
-    "php-version-min": "8.0.0",
-    "php-version-max": ""
-  }
+  "log-file": "log.txt"
 }

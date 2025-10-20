@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fb26354b641c3ee02026018518c3b3e6",
+    "content-hash": "a0cf4a964cadfea530680bf372f8e105",
     "packages": [
         {
             "name": "brick/math",
@@ -147,32 +147,34 @@
         },
         {
             "name": "dompdf/dompdf",
-            "version": "v2.0.8",
+            "version": "v3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dompdf/dompdf.git",
-                "reference": "c20247574601700e1f7c8dab39310fca1964dc52"
+                "reference": "b3493e35d31a5e76ec24c3b64a29b0034b2f32a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dompdf/dompdf/zipball/c20247574601700e1f7c8dab39310fca1964dc52",
-                "reference": "c20247574601700e1f7c8dab39310fca1964dc52",
+                "url": "https://api.github.com/repos/dompdf/dompdf/zipball/b3493e35d31a5e76ec24c3b64a29b0034b2f32a6",
+                "reference": "b3493e35d31a5e76ec24c3b64a29b0034b2f32a6",
                 "shasum": ""
             },
             "require": {
+                "dompdf/php-font-lib": "^1.0.0",
+                "dompdf/php-svg-lib": "^1.0.0",
                 "ext-dom": "*",
                 "ext-mbstring": "*",
                 "masterminds/html5": "^2.0",
-                "phenx/php-font-lib": ">=0.5.4 <1.0.0",
-                "phenx/php-svg-lib": ">=0.5.2 <1.0.0",
                 "php": "^7.1 || ^8.0"
             },
             "require-dev": {
+                "ext-gd": "*",
                 "ext-json": "*",
                 "ext-zip": "*",
                 "mockery/mockery": "^1.3",
-                "phpunit/phpunit": "^7.5 || ^8 || ^9",
-                "squizlabs/php_codesniffer": "^3.5"
+                "phpunit/phpunit": "^7.5 || ^8 || ^9 || ^10 || ^11",
+                "squizlabs/php_codesniffer": "^3.5",
+                "symfony/process": "^4.4 || ^5.4 || ^6.2 || ^7.0"
             },
             "suggest": {
                 "ext-gd": "Needed to process images",
@@ -203,9 +205,100 @@
             "homepage": "https://github.com/dompdf/dompdf",
             "support": {
                 "issues": "https://github.com/dompdf/dompdf/issues",
-                "source": "https://github.com/dompdf/dompdf/tree/v2.0.8"
+                "source": "https://github.com/dompdf/dompdf/tree/v3.1.2"
             },
-            "time": "2024-04-29T13:06:17+00:00"
+            "time": "2025-09-23T03:06:41+00:00"
+        },
+        {
+            "name": "dompdf/php-font-lib",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dompdf/php-font-lib.git",
+                "reference": "6137b7d4232b7f16c882c75e4ca3991dbcf6fe2d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dompdf/php-font-lib/zipball/6137b7d4232b7f16c882c75e4ca3991dbcf6fe2d",
+                "reference": "6137b7d4232b7f16c882c75e4ca3991dbcf6fe2d",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": "^7.1 || ^8.0"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "^3 || ^4 || ^5 || ^6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FontLib\\": "src/FontLib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "The FontLib Community",
+                    "homepage": "https://github.com/dompdf/php-font-lib/blob/master/AUTHORS.md"
+                }
+            ],
+            "description": "A library to read, parse, export and make subsets of different types of font files.",
+            "homepage": "https://github.com/dompdf/php-font-lib",
+            "support": {
+                "issues": "https://github.com/dompdf/php-font-lib/issues",
+                "source": "https://github.com/dompdf/php-font-lib/tree/1.0.1"
+            },
+            "time": "2024-12-02T14:37:59+00:00"
+        },
+        {
+            "name": "dompdf/php-svg-lib",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dompdf/php-svg-lib.git",
+                "reference": "eb045e518185298eb6ff8d80d0d0c6b17aecd9af"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dompdf/php-svg-lib/zipball/eb045e518185298eb6ff8d80d0d0c6b17aecd9af",
+                "reference": "eb045e518185298eb6ff8d80d0d0c6b17aecd9af",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": "^7.1 || ^8.0",
+                "sabberworm/php-css-parser": "^8.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Svg\\": "src/Svg"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "The SvgLib Community",
+                    "homepage": "https://github.com/dompdf/php-svg-lib/blob/master/AUTHORS.md"
+                }
+            ],
+            "description": "A library to read, parse and export to PDF SVG files.",
+            "homepage": "https://github.com/dompdf/php-svg-lib",
+            "support": {
+                "issues": "https://github.com/dompdf/php-svg-lib/issues",
+                "source": "https://github.com/dompdf/php-svg-lib/tree/1.0.0"
+            },
+            "time": "2024-04-29T13:26:35+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -1008,96 +1101,6 @@
             "time": "2021-03-21T15:43:46+00:00"
         },
         {
-            "name": "phenx/php-font-lib",
-            "version": "0.5.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/dompdf/php-font-lib.git",
-                "reference": "a1681e9793040740a405ac5b189275059e2a9863"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/dompdf/php-font-lib/zipball/a1681e9793040740a405ac5b189275059e2a9863",
-                "reference": "a1681e9793040740a405ac5b189275059e2a9863",
-                "shasum": ""
-            },
-            "require": {
-                "ext-mbstring": "*"
-            },
-            "require-dev": {
-                "symfony/phpunit-bridge": "^3 || ^4 || ^5 || ^6"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "FontLib\\": "src/FontLib"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-2.1-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Ménager",
-                    "email": "fabien.menager@gmail.com"
-                }
-            ],
-            "description": "A library to read, parse, export and make subsets of different types of font files.",
-            "homepage": "https://github.com/PhenX/php-font-lib",
-            "support": {
-                "issues": "https://github.com/dompdf/php-font-lib/issues",
-                "source": "https://github.com/dompdf/php-font-lib/tree/0.5.6"
-            },
-            "time": "2024-01-29T14:45:26+00:00"
-        },
-        {
-            "name": "phenx/php-svg-lib",
-            "version": "0.5.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/dompdf/php-svg-lib.git",
-                "reference": "46b25da81613a9cf43c83b2a8c2c1bdab27df691"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/dompdf/php-svg-lib/zipball/46b25da81613a9cf43c83b2a8c2c1bdab27df691",
-                "reference": "46b25da81613a9cf43c83b2a8c2c1bdab27df691",
-                "shasum": ""
-            },
-            "require": {
-                "ext-mbstring": "*",
-                "php": "^7.1 || ^8.0",
-                "sabberworm/php-css-parser": "^8.4"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Svg\\": "src/Svg"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-3.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Ménager",
-                    "email": "fabien.menager@gmail.com"
-                }
-            ],
-            "description": "A library to read, parse and export to PDF SVG files.",
-            "homepage": "https://github.com/PhenX/php-svg-lib",
-            "support": {
-                "issues": "https://github.com/dompdf/php-svg-lib/issues",
-                "source": "https://github.com/dompdf/php-svg-lib/tree/0.5.4"
-            },
-            "time": "2024-04-08T12:52:34+00:00"
-        },
-        {
             "name": "phpoffice/common",
             "version": "1.0.5",
             "source": {
@@ -1313,16 +1316,16 @@
         },
         {
             "name": "phpoffice/phpword",
-            "version": "1.4.0",
+            "version": "dev-word-comments-fix",
             "source": {
                 "type": "git",
-                "url": "https://github.com/PHPOffice/PHPWord.git",
-                "reference": "6d75328229bc93790b37e93741adf70646cea958"
+                "url": "https://github.com/moorejr5/PHPWord.git",
+                "reference": "c7da41c20e06e66d1a460d29cd7e92cfc34a5cf6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPWord/zipball/6d75328229bc93790b37e93741adf70646cea958",
-                "reference": "6d75328229bc93790b37e93741adf70646cea958",
+                "url": "https://api.github.com/repos/moorejr5/PHPWord/zipball/c7da41c20e06e66d1a460d29cd7e92cfc34a5cf6",
+                "reference": "c7da41c20e06e66d1a460d29cd7e92cfc34a5cf6",
                 "shasum": ""
             },
             "require": {
@@ -1340,7 +1343,7 @@
                 "friendsofphp/php-cs-fixer": "^3.3",
                 "mpdf/mpdf": "^7.0 || ^8.0",
                 "phpmd/phpmd": "^2.13",
-                "phpstan/phpstan": "^0.12.88 || ^1.0.0",
+                "phpstan/phpstan": "^0.12.88 || ^1.0.0 || ^2.0.0",
                 "phpstan/phpstan-phpunit": "^1.0 || ^2.0",
                 "phpunit/phpunit": ">=7.0",
                 "symfony/process": "^4.4 || ^5.0",
@@ -1357,7 +1360,76 @@
                     "PhpOffice\\PhpWord\\": "src/PhpWord"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "PhpOffice\\PhpWordTests\\": "tests/PhpWordTests"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "@php vendor/bin/phpunit --color=always"
+                ],
+                "test-no-coverage": [
+                    "@php vendor/bin/phpunit --color=always --no-coverage"
+                ],
+                "check": [
+                    "@php vendor/bin/php-cs-fixer fix --ansi --dry-run --diff",
+                    "@php vendor/bin/phpmd src/,tests/ text ./phpmd.xml.dist --exclude pclzip.lib.php",
+                    "@test-no-coverage",
+                    "@php vendor/bin/phpstan analyse --ansi"
+                ],
+                "fix": [
+                    "@php vendor/bin/php-cs-fixer fix --ansi"
+                ],
+                "samples": [
+                    "php samples/Sample_01_SimpleText.php",
+                    "php samples/Sample_02_TabStops.php",
+                    "php samples/Sample_03_Sections.php",
+                    "php samples/Sample_04_Textrun.php",
+                    "php samples/Sample_05_Multicolumn.php",
+                    "php samples/Sample_06_Footnote.php",
+                    "php samples/Sample_07_TemplateCloneRow.php",
+                    "php samples/Sample_08_ParagraphPagination.php",
+                    "php samples/Sample_09_Tables.php",
+                    "php samples/Sample_10_EastAsianFontStyle.php",
+                    "php samples/Sample_11_ReadWord97.php",
+                    "php samples/Sample_11_ReadWord2007.php",
+                    "php samples/Sample_12_HeaderFooter.php",
+                    "php samples/Sample_13_Images.php",
+                    "php samples/Sample_14_ListItem.php",
+                    "php samples/Sample_15_Link.php",
+                    "php samples/Sample_16_Object.php",
+                    "php samples/Sample_17_TitleTOC.php",
+                    "php samples/Sample_18_Watermark.php",
+                    "php samples/Sample_19_TextBreak.php",
+                    "php samples/Sample_20_BGColor.php",
+                    "php samples/Sample_21_TableRowRules.php",
+                    "php samples/Sample_22_CheckBox.php",
+                    "php samples/Sample_23_TemplateBlock.php",
+                    "php samples/Sample_24_ReadODText.php",
+                    "php samples/Sample_25_TextBox.php",
+                    "php samples/Sample_26_Html.php",
+                    "php samples/Sample_27_Field.php",
+                    "php samples/Sample_28_ReadRTF.php",
+                    "php samples/Sample_29_Line.php",
+                    "php samples/Sample_30_ReadHTML.php",
+                    "php samples/Sample_31_Shape.php",
+                    "php samples/Sample_32_Chart.php",
+                    "php samples/Sample_33_FormField.php",
+                    "php samples/Sample_34_SDT.php",
+                    "php samples/Sample_35_InternalLink.php",
+                    "php samples/Sample_36_RTL.php",
+                    "php samples/Sample_37_Comments.php",
+                    "php samples/Sample_38_Protection.php",
+                    "php samples/Sample_39_TrackChanges.php",
+                    "php samples/Sample_40_TemplateSetComplexValue.php",
+                    "php samples/Sample_41_TemplateSetChart.php",
+                    "php samples/Sample_42_TemplateSetCheckbox.php",
+                    "php samples/Sample_43_RTLDefault.php",
+                    "php samples/Sample_44_ExtractVariablesFromReaderWord2007.php",
+                    "php samples/Sample_45_Autoloader.php"
+                ]
+            },
             "license": [
                 "LGPL-3.0-only"
             ],
@@ -1389,35 +1461,34 @@
             "description": "PHPWord - A pure PHP library for reading and writing word processing documents (OOXML, ODF, RTF, HTML, PDF)",
             "homepage": "https://phpoffice.github.io/PHPWord/",
             "keywords": [
+                "HTML",
                 "ISO IEC 29500",
+                "ODF",
                 "OOXML",
                 "Office Open XML",
                 "OpenDocument",
                 "OpenXML",
-                "PhpOffice",
-                "PhpWord",
+                "PDF",
+                "PHP",
+                "PHPOffice",
+                "PHPWord",
+                "RTF",
                 "Rich Text Format",
                 "WordprocessingML",
                 "doc",
                 "docx",
-                "html",
-                "odf",
                 "odt",
                 "office",
-                "pdf",
-                "php",
                 "reader",
-                "rtf",
                 "template",
                 "template processor",
                 "word",
                 "writer"
             ],
             "support": {
-                "issues": "https://github.com/PHPOffice/PHPWord/issues",
-                "source": "https://github.com/PHPOffice/PHPWord/tree/1.4.0"
+                "source": "https://github.com/moorejr5/PHPWord/tree/word-comments-fix"
             },
-            "time": "2025-06-05T10:32:36+00:00"
+            "time": "2025-10-10T00:17:29+00:00"
         },
         {
             "name": "psr/http-client",
@@ -3388,16 +3459,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v7.3.3",
+            "version": "v7.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "cb0102a1c5ac3807cf3fdf8bea96007df7fdbea7"
+                "reference": "2b9c5fafbac0399a20a2e82429e2bd735dcfb7db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/cb0102a1c5ac3807cf3fdf8bea96007df7fdbea7",
-                "reference": "cb0102a1c5ac3807cf3fdf8bea96007df7fdbea7",
+                "url": "https://api.github.com/repos/symfony/console/zipball/2b9c5fafbac0399a20a2e82429e2bd735dcfb7db",
+                "reference": "2b9c5fafbac0399a20a2e82429e2bd735dcfb7db",
                 "shasum": ""
             },
             "require": {
@@ -3462,7 +3533,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v7.3.3"
+                "source": "https://github.com/symfony/console/tree/v7.3.4"
             },
             "funding": [
                 {
@@ -3482,7 +3553,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-25T06:35:40+00:00"
+            "time": "2025-09-22T15:31:00+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -4271,16 +4342,16 @@
         },
         {
             "name": "symfony/process",
-            "version": "v7.3.3",
+            "version": "v7.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "32241012d521e2e8a9d713adb0812bb773b907f1"
+                "reference": "f24f8f316367b30810810d4eb30c543d7003ff3b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/32241012d521e2e8a9d713adb0812bb773b907f1",
-                "reference": "32241012d521e2e8a9d713adb0812bb773b907f1",
+                "url": "https://api.github.com/repos/symfony/process/zipball/f24f8f316367b30810810d4eb30c543d7003ff3b",
+                "reference": "f24f8f316367b30810810d4eb30c543d7003ff3b",
                 "shasum": ""
             },
             "require": {
@@ -4312,7 +4383,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v7.3.3"
+                "source": "https://github.com/symfony/process/tree/v7.3.4"
             },
             "funding": [
                 {
@@ -4332,7 +4403,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-18T09:42:54+00:00"
+            "time": "2025-09-11T10:12:26+00:00"
         },
         {
             "name": "symfony/service-contracts",
@@ -4481,16 +4552,16 @@
         },
         {
             "name": "symfony/string",
-            "version": "v7.3.3",
+            "version": "v7.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
-                "reference": "17a426cce5fd1f0901fefa9b2a490d0038fd3c9c"
+                "reference": "f96476035142921000338bad71e5247fbc138872"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/17a426cce5fd1f0901fefa9b2a490d0038fd3c9c",
-                "reference": "17a426cce5fd1f0901fefa9b2a490d0038fd3c9c",
+                "url": "https://api.github.com/repos/symfony/string/zipball/f96476035142921000338bad71e5247fbc138872",
+                "reference": "f96476035142921000338bad71e5247fbc138872",
                 "shasum": ""
             },
             "require": {
@@ -4505,7 +4576,6 @@
             },
             "require-dev": {
                 "symfony/emoji": "^7.1",
-                "symfony/error-handler": "^6.4|^7.0",
                 "symfony/http-client": "^6.4|^7.0",
                 "symfony/intl": "^6.4|^7.0",
                 "symfony/translation-contracts": "^2.5|^3.0",
@@ -4548,7 +4618,7 @@
                 "utf8"
             ],
             "support": {
-                "source": "https://github.com/symfony/string/tree/v7.3.3"
+                "source": "https://github.com/symfony/string/tree/v7.3.4"
             },
             "funding": [
                 {
@@ -4568,12 +4638,14 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-25T06:35:40+00:00"
+            "time": "2025-09-11T14:36:48+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "beta",
-    "stability-flags": {},
+    "stability-flags": {
+        "phpoffice/phpword": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
