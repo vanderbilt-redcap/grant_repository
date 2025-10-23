@@ -169,6 +169,7 @@ async function downloadFile(fileObject,record,userid,csrf_token) {
     const link = document.createElement('a');
     link.href = blobUrl;
     link.download = fileObject.name;
+    link.target = "_blank";
 
     document.body.appendChild(link);
     link.click();
