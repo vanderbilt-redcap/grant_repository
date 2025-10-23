@@ -16,7 +16,8 @@
     "statResults",
     "addComment",
     "getComments",
-    "logFileDownload"
+    "logFileDownload",
+    "downloadFile"
   ],
   "system-settings": [
     {

@@ -54,6 +54,7 @@ class GrantRepository extends AbstractExternalModule
         } elseif ($action == "logFileDownload") {
             $result = $this->logFileDownload($payload['record'], $payload['userid']);
         }
+
         return $result;
     }
 
@@ -109,6 +110,24 @@ class GrantRepository extends AbstractExternalModule
         return $returnArray;
     }
 
+    public function downloadFile($path, $filename)
+    {
+        $path = $this->escape($path);
+        $filename = $this->escape($filename);
+        if (file_exists($path)) {
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($path));
+            ob_clean();
+            flush();
+            readfile($path);
+            exit;
+        }
+    }
     public function logFileDownload($record, $userid)
     {
         $return = \Logging::logEvent("", "redcap_edocs_metadata", "MANAGE", $record, "", "Download uploaded document", "", $userid, $this->getGrantProjectId());
@@ -366,7 +385,8 @@ class GrantRepository extends AbstractExternalModule
             'userID' => $this->escape($userid),
             'userStatus' => $userStatus,
             'grant' => $this->escape($grantNum),
-            'files' => $this->processGrantsFile($edocid)
+            'files' => $this->processGrantsFile($edocid),
+            'csrf_token' => $this->framework->getCSRFToken()
         ]);
     }
 
@@ -541,7 +561,7 @@ class GrantRepository extends AbstractExternalModule
                 if (is_dir($dir.$filename)) {
                     $files = array_merge($files, $this->inspectDir($dir.$filename."/", $linkdir.$filename."/"));
                 } elseif (!preg_match("/^\./", $filename)) {
-                    $files[] = ['path'=>$linkdir . $filename,'name'=>$filename];
+                    $files[] = ['path'=>$dir . $filename,'name'=>$filename];
                 }
             }
         }

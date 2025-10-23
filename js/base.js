@@ -149,3 +149,30 @@ function logFileDownload(record,userid) {
         console.log(err);
     })
 }
+
+async function downloadFile(fileObject,record,userid,csrf_token) {
+    const url = "http://localhost/redcap/external_modules/?prefix=grant_repository&page=downloadFile&pid=7";
+    var data = new FormData();
+
+    data.append( "path", fileObject.path);
+    data.append("filename", fileObject.name);
+    data.append('redcap_csrf_token',csrf_token)
+
+    let response = await fetch(url, {
+        method: 'POST',
+        body: data
+    });
+    console.log(response);
+    const fileContent = await response.blob();
+    console.log(fileContent);
+    const blobUrl = URL.createObjectURL(fileContent);
+
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = fileObject.name;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
+}

@@ -3,7 +3,7 @@
 {% block page_content %}
     <h2>Files Uploaded for Grant {{ grant }}</h2>
     {% for index,file in files['files'] %}
-        <div class="textlink"><a href="{{ file.path }}" onclick="logFileDownload('{{ record }}','{{ userID }}')" target="_blank">{{ file.name }}</a></div>
+        <div><span class="textlink" onclick="downloadFile({{ file|json_encode }},'{{ record }}','{{ userID }}','{{ csrf_token }}')">{{ file.name }}</span></div>
     {% endfor %}
 {% endblock %}
 
