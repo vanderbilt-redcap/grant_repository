@@ -162,9 +162,8 @@ async function downloadFile(fileObject,record,userid,csrf_token) {
         method: 'POST',
         body: data
     });
-    console.log(response);
+
     const fileContent = await response.blob();
-    console.log(fileContent);
     const blobUrl = URL.createObjectURL(fileContent);
 
     const link = document.createElement('a');
