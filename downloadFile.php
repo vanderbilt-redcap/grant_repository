@@ -1,8 +1,9 @@
 <?php
+
 $postData = $module->escape($_POST);
-if (isset($postData['path']) && isset($postData['filename'])) {
+if (isset($postData['path']) && isset($postData['name'])) {
     $path = $postData['path'];
-    $filename = $postData['filename'];
+    $filename = $postData['name'];
     $module->downloadFile($path,$filename);
 }
 

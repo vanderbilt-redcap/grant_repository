@@ -6,7 +6,3 @@
         <div><span class="textlink" onclick="downloadFile({{ file|json_encode }},'{{ record }}','{{ userID }}','{{ csrf_token }}')">{{ file.name }}</span></div>
     {% endfor %}
 {% endblock %}
-
-{% block js_block %}
-    {{ addJS('js/download.js') }}
-{% endblock %}

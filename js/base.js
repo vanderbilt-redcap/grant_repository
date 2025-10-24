@@ -150,29 +150,30 @@ function logFileDownload(record,userid) {
     })
 }
 
-async function downloadFile(fileObject,record,userid,csrf_token) {
-    const url = module.getUrl('downloadFile.php');
-    var data = new FormData();
+function downloadFile(fileObject,record,userid,csrf_token) {
+    const url = 'http://localhost/redcap/external_modules/?type=module&prefix=grant_repository&page=downloadFile.php&pid=7';
 
-    data.append( "path", fileObject.path);
-    data.append("filename", fileObject.name);
-    data.append('redcap_csrf_token',csrf_token)
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = url;
+    form.target = '_blank'; // Opens in a new tab
 
-    let response = await fetch(url, {
-        method: 'POST',
-        body: data
-    });
+    for (const key in fileObject) {
+        if (fileObject.hasOwnProperty(key)) {
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = key;
+            hiddenField.value = fileObject[key];
+            form.appendChild(hiddenField);
+        }
+    }
+    let csrfField = document.createElement('input');
+    csrfField.type = 'hidden';
+    csrfField.name = 'redcap_csrf_token';
+    csrfField.value = csrf_token;
+    form.appendChild(csrfField);
 
-    const fileContent = await response.blob();
-    const blobUrl = URL.createObjectURL(fileContent);
-
-    const link = document.createElement('a');
-    link.href = blobUrl;
-    link.download = fileObject.name;
-    link.target = "_blank";
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(blobUrl);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
 }
