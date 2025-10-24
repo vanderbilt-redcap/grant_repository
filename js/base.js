@@ -151,7 +151,7 @@ function logFileDownload(record,userid) {
 }
 
 function downloadFile(fileObject,record,userid,csrf_token) {
-    const url = 'http://localhost/redcap/external_modules/?type=module&prefix=grant_repository&page=downloadFile.php&pid=7';
+    const url = module.getUrl('downloadFile');
 
     const form = document.createElement('form');
     form.method = 'POST';
