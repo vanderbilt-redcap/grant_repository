@@ -149,3 +149,31 @@ function logFileDownload(record,userid) {
         console.log(err);
     })
 }
+
+function downloadFile(fileObject,record,userid,csrf_token) {
+    const url = module.getUrl('downloadFile');
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = url;
+    form.target = '_blank'; // Opens in a new tab
+
+    for (const key in fileObject) {
+        if (fileObject.hasOwnProperty(key)) {
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = key;
+            hiddenField.value = fileObject[key];
+            form.appendChild(hiddenField);
+        }
+    }
+    let csrfField = document.createElement('input');
+    csrfField.type = 'hidden';
+    csrfField.name = 'redcap_csrf_token';
+    csrfField.value = csrf_token;
+    form.appendChild(csrfField);
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}

@@ -55,6 +55,7 @@
     margin:15px;
     font-weight:bold;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .smalllink {
