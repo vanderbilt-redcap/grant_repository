@@ -508,6 +508,9 @@ class GrantRepository extends AbstractExternalModule
                             $fullFilePath = $outDir.$fileName;
                             $parts = explode('/', $fullFilePath);
                             $file = array_pop($parts);
+                            if (str_starts_with($file, '.')) {
+                                continue;
+                            }
                             $dir = '';
                             // If file name includes directories then need to make sure they exist.
                             foreach ($parts as $part) {
