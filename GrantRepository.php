@@ -57,7 +57,7 @@ class GrantRepository extends AbstractExternalModule
 		return $result;
 	}
 
-	public function addComment($record, $comment) {
+	public function addComment($record, $comment): array {
 		$grantProject = new Project($this->getGrantProjectId());
 
 		$userName = $this->getUserNameById(USERID);
@@ -81,7 +81,7 @@ class GrantRepository extends AbstractExternalModule
 		return $returnStatus;
 	}
 
-	public function getComments($recordId) {
+	public function getComments($recordId): array {
 		$grantProject = new Project($this->getGrantProjectId());
 		$returnArray = ['headers' => ['Author','Comment'],'rows' => []];
 		$result = Records::getData([
@@ -189,7 +189,7 @@ class GrantRepository extends AbstractExternalModule
 		return $returnString;
 	}
 
-	public function getStatResults($userid, array $searchParams) {
+	public function getStatResults($userid, array $searchParams): array {
 		$userid = $this->escape($userid);
 		$userStatus = $this->processUserAccess($userid);
 
@@ -455,7 +455,7 @@ class GrantRepository extends AbstractExternalModule
 		return $name;
 	}
 
-	public function processGrantsFile(int $edocid) {
+	public function processGrantsFile(int $edocid): array {
 		$returnArray = ['errors' => [], 'files' => []];
 
 		$sql = "select * from redcap_edocs_metadata where project_id = ? and doc_id = ?";
@@ -530,7 +530,7 @@ class GrantRepository extends AbstractExternalModule
 		return str_replace(APP_PATH_TEMP, "", $filename);
 	}
 
-	public function inspectDir($dir, $linkdir) {
+	public function inspectDir($dir, $linkdir): array {
 		$files = [];
 
 		$allFiles = scandir($dir);
@@ -547,7 +547,7 @@ class GrantRepository extends AbstractExternalModule
 		return $files;
 	}
 
-	public function convertFileToPDF($sourceFile, $output) {
+	public function convertFileToPDF($sourceFile, $output): string {
 		$pdfOut = str_replace(".", "_", $output)."_pdf.pdf";
 		$phpOfficeObj = null;
 
@@ -600,7 +600,7 @@ class GrantRepository extends AbstractExternalModule
 		$spreadsheet->getActiveSheet()->getPageMargins()->setBottom(0.5);
 	}
 
-	private function apiCurlRequest($url, $data, $project_id) {
+	private function apiCurlRequest($url, $data, $project_id): bool|string {
 		$error_message = "";
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
@@ -619,7 +619,7 @@ class GrantRepository extends AbstractExternalModule
 		}
 		curl_close($ch);
 		if ($error_message != "") {
-			\REDCap::logEvent(self::REDCAP_LOG_MESSAGE, $error_message, '', null, null, $project_id);
+			\REDCap::logEvent("<b>NIH Error: </b>", $error_message, '', null, null, $project_id);
 			return false;
 		}
 		return $push_response;
