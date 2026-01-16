@@ -30,6 +30,9 @@ class GrantRepository extends AbstractExternalModule
 
 	public const DATA_TABLE_HEADERS = [
 		['title' => 'Title'],
+		['title' => 'Program Officers'],
+		['title' => 'Funding Institution / Agency'],
+		['title' => 'Study Section Name'],
 		['title' => 'PI'],
 		['title' => 'Grant Number'],
 		['title' => 'NIH Submission Number'],
@@ -146,13 +149,14 @@ class GrantRepository extends AbstractExternalModule
 		$getDataParams = [
 			'project_id' => $this->getGrantProjectId(),
 			'return_format' => 'json-array',
-			'fields' => array_merge([$grantsProject->table_pk,'grants_title','grants_abstract','grants_pi','grants_file','grants_number','grants_date','nih_format','nih_submission_number'], array_keys(self::AWARDS)),
+			'fields' => array_merge([$grantsProject->table_pk,'grants_title','grants_abstract','grants_pi','grants_file','grants_number','grants_date','nih_format','nih_submission_number','program_officers_full_name','agency_ic_fundings_abbreviation','full_study_section_name'], array_keys(self::AWARDS)),
 			'exportAsLabels' => true,
 			'combine_checkbox_values' => true
 		];
 
 		if (!isset($searchParams['show_all'])) {
 			$getDataParams['filterLogic'] = "[grants_date] > '$thresholdDate'";
+			$getDataParams['filterType'] = "RECORD";
 		}
 
 		$result = Records::getData($getDataParams);
@@ -164,18 +168,30 @@ class GrantRepository extends AbstractExternalModule
 		// Names need filter to do proper casing (look for 1-2 letter all caps to be left alone as initials)
 		foreach ($result as $row) {
 			$grantProject = new Project($this->getGrantProjectId());
-			$formInstances = $this->getComments($row[$grantsProject->table_pk]);
-			$returnData['data'][] = [
-				(strtoupper($row['grants_title']) == $row['grants_title'] ? mb_convert_case($row['grants_title'], MB_CASE_TITLE, 'UTF-8') : $row['grants_title']),
-				$row['grants_pi'],
-				"<div style='display:inline;'>".$row['grants_number']."</div>&nbsp;<div class='comment_link' onclick='viewCommentModal(\"".$row[$grantsProject->table_pk]."\");'><img style='height:15px;' src='".(!empty($formInstances['rows'][0]['comment']) ? $this->getUrl('img/chat-fill.svg') : $this->getUrl('img/comment.svg'))."'/></div>",
-				$row['nih_submission_number'],
-				$this->processAwards($row),
-				($row['grants_date'] != "" ? date('Y-m', strtotime($row['grants_date'])) : ""),
-				(is_numeric($row['grants_file']) ? "<div class='textlink'><a href='".$this->getUrl('interfaces/download.php')."&id=".$row[$grantProject->table_pk]."&edoc_id=".$row['grants_file']."&grant=".$this->escape($row['grants_number'])."'>View</a></div>" : "<div class='textlink'>N/A</div>"),
-				$row['grants_abstract']
-			];
+			$recordID = $row[$grantsProject->table_pk];
+			$formInstances = $this->getComments($recordID);
+			if ($row['redcap_repeat_instance'] != "") {
+				$returnData['data'][$recordID][1] = $row['program_officers_full_name'];
+				$returnData['data'][$recordID][2] = $row['agency_ic_fundings_abbreviation'];
+				$returnData['data'][$recordID][3] = $row['full_study_section_name'];
+			} else {
+				$returnData['data'][$recordID] = [
+					(strtoupper($row['grants_title']) == $row['grants_title'] ? mb_convert_case($row['grants_title'], MB_CASE_TITLE, 'UTF-8') : $row['grants_title']),
+					$row['program_officers_full_name'],
+					$row['agency_ic_fundings_abbreviation'],
+					$row['full_study_section_name'],
+					$row['grants_pi'],
+					"<div style='display:inline;'>".$row['grants_number']."</div>&nbsp;<div class='comment_link' onclick='viewCommentModal(\"".$row[$grantsProject->table_pk]."\");'><img style='height:15px;' src='".(!empty($formInstances['rows'][0]['comment']) ? $this->getUrl('img/chat-fill.svg') : $this->getUrl('img/comment.svg'))."'/></div>",
+					$row['nih_submission_number'],
+					$this->processAwards($row),
+					($row['grants_date'] != "" ? date('Y-m', strtotime($row['grants_date'])) : ""),
+					(is_numeric($row['grants_file']) ? "<div class='textlink'><a href='".$this->getUrl('interfaces/download.php')."&id=".$row[$grantProject->table_pk]."&edoc_id=".$row['grants_file']."&grant=".$this->escape($row['grants_number'])."'>View</a></div>" : "<div class='textlink'>N/A</div>"),
+					$row['grants_abstract']
+				];
+			}
 		}
+        $returnData['data'] = array_values($returnData['data']);
+
 		return $returnData;
 	}
 
