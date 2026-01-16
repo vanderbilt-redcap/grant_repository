@@ -4,6 +4,7 @@ namespace Vanderbilt\GrantRepository;
 
 use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
+use phpDocumentor\Reflection\Types\Boolean;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf;
 use Records;
@@ -12,6 +13,8 @@ use Project;
 use Logging;
 use Twig\TwigFunction;
 use ZipArchive;
+
+use function Vanderbilt\REDCap\Tests\now;
 
 class GrantRepository extends AbstractExternalModule
 {
@@ -35,6 +38,7 @@ class GrantRepository extends AbstractExternalModule
 		['title' => 'View'],
 		['title' => 'Abstract']
 	];
+
 	private $userProjectId;
 	private $grantProjectId;
 
@@ -603,14 +607,14 @@ class GrantRepository extends AbstractExternalModule
 	private function apiCurlRequest($url, $data, $project_id): bool|string {
 		$error_message = "";
 		$ch = curl_init();
+		$headers = [
+			'Content-Type: application/json',
+			'Accept: application/json'
+		];
 		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-		curl_setopt($ch, CURLOPT_FORBID_REUSE, true);
-		curl_setopt($ch, CURLOPT_VERBOSE, true);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 
 		$push_response = curl_exec($ch);
@@ -623,5 +627,119 @@ class GrantRepository extends AbstractExternalModule
 			return false;
 		}
 		return $push_response;
+	}
+
+	public function saveNIHData() {
+		$redcapData = $this->getNIHInstances();
+		$nihFormFields = $this->framework->getFieldNames("nih_data", $this->getGrantProjectId());
+		//TODO May want to cap how many project nums get passed to this to avoid partial historical pulls, how many to be able to get through everything in a week/month?
+		$nihData = json_decode($this->retrieveNIHData('"'.implode('","', array_keys($redcapData)).'"'), true);
+		$loopFields = function ($data, $previousField) use ($nihFormFields, &$loopFields) {
+			$returnArray = [];
+			foreach ($data as $key => $value) {
+				if (!is_numeric($key)) {
+					$currentField = $previousField.($previousField != "" ? "_" : "").$key;
+				} else {
+					$currentField = $previousField;
+				}
+				if (is_array($value)) {
+					$returnArray = array_merge($returnArray, $loopFields($value, $currentField));
+				} else {
+					$dateTime = \DateTime::createFromFormat('Y-m-d\TH:i:s', $value);
+					if (gettype($dateTime) == "object") {
+						$value = $dateTime->format("Y-m-d H:i:s");
+					}
+					if (in_array($currentField, $nihFormFields)) {
+						$returnArray[$currentField] = $value;
+					}
+				}
+			}
+			return $returnArray;
+		};
+
+		$saveData = [];
+		$currentRecordArray = [];
+		foreach ($nihData['results'] as $projectData) {
+			$processedData = $loopFields($projectData, "");
+
+			if (isset($redcapData[$projectData["core_project_num"]])) {
+				if (empty($currentRecordArray) || $currentRecordArray != $redcapData[$projectData["core_project_num"]]) {
+					$currentRecordArray = $redcapData[$projectData["core_project_num"]];
+					$saveData[] = [
+						'record_id' => $currentRecordArray["record"],
+						'redcap_repeat_instance' => '',
+						'redcap_repeat_instrument' => '',
+						'nih_last_update' => date("Y-m-d")
+					];
+				}
+
+				if (isset($currentRecordArray["instances"]) && in_array($projectData["project_num"], $currentRecordArray["instances"])) {
+					$repeat_instance = array_search($projectData["project_num"], $currentRecordArray["instances"]);
+				} else {
+					$repeat_instance = "new";
+				}
+				$saveData[] = array_merge($processedData, [
+					'record_id' => $currentRecordArray["record"],
+					'redcap_repeat_instance' => $repeat_instance,
+					'redcap_repeat_instrument' => 'nih_data'
+				]);
+			}
+		}
+
+		$result = \REDCap::saveData([
+			'project_id' => $this->getGrantProjectId(),
+			'dataFormat' => 'json',
+			'data' => json_encode($saveData)
+		]);
+	}
+	public function retrieveNIHData($projectNums) {
+		$apiParams = '{
+          "criteria": {
+            project_nums: [
+                '.$projectNums.'
+            ]
+          },
+          "include_fields": [
+            "ProjectNum","CoreProjectNum","FullStudySection","ProjectStartDate","ProjectEndDate","AwardAmount",
+            "PrincipalInvestigators","ProgramOfficers","AgencyIcFundings","Terms","PrefTerms",
+            "BudgetStart","BudgetEnd","ProjectTitle"
+          ],
+          limit: "50"
+        }';
+		$apiResponse = $this->apiCurlRequest("https://api.reporter.nih.gov/v2/projects/search", $apiParams, $this->getGrantProjectId());
+
+		return $apiResponse;
+	}
+	public function getNIHInstances() {
+		$returnArray = [];
+		$recordData = \REDCap::getData([
+			'project_id' => $this->getGrantProjectId(),
+			'return_format' => 'json-array',
+			'filterLogic' => '[nih_last_update] = "" OR [nih_last_update] > "'.date("Y-m-d", strtotime("-7 days")).'"',
+			'filterType' => 'RECORD'
+		]);
+
+		$grantToRecord = [];
+		if (!empty($recordData)) {
+			foreach ($recordData as $record) {
+				if ($record['record_id'] == "") {
+					continue;
+				}
+				if (!isset($grantToRecord[$record['record_id']])) {
+					//TODO Is there a safe length to be a lower limit on grant number?
+					preg_match("/[A-Z0-9]{2,}/", $record['grants_number'], $matches);
+
+					if ($matches) {
+						$grantToRecord[$record['record_id']] = $matches[0];
+						$returnArray[$grantToRecord[$record['record_id']]] = ['record' => $record['record_id']];
+					}
+				}
+				if (is_numeric($record['redcap_repeat_instance']) && isset($grantToRecord[$record['record_id']])) {
+					$returnArray[$grantToRecord[$record['record_id']]]['instances'][$record['redcap_repeat_instance']] = $record['project_num'];
+				}
+			}
+		}
+
+		return $returnArray;
 	}
 }
