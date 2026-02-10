@@ -189,12 +189,12 @@ class GrantRepository extends AbstractExternalModule
 
 	public function getStatResults($userid, array $searchParams) {
 		$userid = $this->escape($userid);
-        $alternateID = "";
-        if (str_contains($userid, "@vanderbilt.edu")) {
-            $alternateID = str_replace("@vanderbilt.edu", "@vumc.org", $userid);
-        } elseif (str_contains($userid, "@vumc.org")) {
-            $alternateID = str_replace("@vumc.org", "@vanderbilt.edu", $userid);
-        }
+		$alternateID = "";
+		if (stripos($userid, "@vanderbilt.edu")) {
+			$alternateID = preg_replace("/@vanderbilt.edu/i", "@vumc.org", $userid);
+		} elseif (stripos($userid, "@vumc.org")) {
+			$alternateID = preg_replace("/@vumc.org/i", "@vanderbilt.edu", $userid);
+		}
 		$userStatus = $this->processUserAccess($userid);
 
 		if ($userid == '' || !is_numeric($userStatus)) {
@@ -411,10 +411,10 @@ class GrantRepository extends AbstractExternalModule
 	public function processUserAccess(string $userid): string {
 		$userid = $this->escape($userid);
 		$alternateID = "";
-		if (str_contains($userid, "@vanderbilt.edu")) {
-			$alternateID = str_replace("@vanderbilt.edu", "@vumc.org", $userid);
-		} elseif (str_contains($userid, "@vumc.org")) {
-			$alternateID = str_replace("@vumc.org", "@vanderbilt.edu", $userid);
+		if (stripos($userid, "@vanderbilt.edu")) {
+			$alternateID = preg_replace("/@vanderbilt.edu/i", "@vumc.org", $userid);
+		} elseif (stripos($userid, "@vumc.org")) {
+			$alternateID = preg_replace("/@vumc.org/i", "@vanderbilt.edu", $userid);
 		}
 		$timestamp = date('Y-m-d');
 		$returnStatus = "Unable to locate user $userid.";
@@ -445,12 +445,12 @@ class GrantRepository extends AbstractExternalModule
 
 	public function getUserNameById(string $userid) {
 		$userid = $this->escape($userid);
-        $alternateID = "";
-        if (str_contains($userid, "@vanderbilt.edu")) {
-            $alternateID = str_replace("@vanderbilt.edu", "@vumc.org", $userid);
-        } elseif (str_contains($userid, "@vumc.org")) {
-            $alternateID = str_replace("@vumc.org", "@vanderbilt.edu", $userid);
-        }
+		$alternateID = "";
+		if (stripos($userid, "@vanderbilt.edu")) {
+			$alternateID = preg_replace("/@vanderbilt.edu/i", "@vumc.org", $userid);
+		} elseif (stripos($userid, "@vumc.org")) {
+			$alternateID = preg_replace("/@vumc.org/i", "@vanderbilt.edu", $userid);
+		}
 		$name = $userid;
 
 		if ($userid != '') {
@@ -458,7 +458,7 @@ class GrantRepository extends AbstractExternalModule
 				'project_id' => $this->getUserProjectId(),
 				'return_format' => 'json-array',
 				'fields' => ['vunet_id', 'email_address', 'first_name', 'last_name'],
-                'filterLogic' => "lower([email_address]) = '".strtolower($userid)."'".($alternateID != '' ? "OR lower([email_address]) = '".strtolower($alternateID)."'" : ""),
+				'filterLogic' => "lower([email_address]) = '".strtolower($userid)."'".($alternateID != '' ? "OR lower([email_address]) = '".strtolower($alternateID)."'" : ""),
 			]);
 
 			foreach ($result as $data) {
