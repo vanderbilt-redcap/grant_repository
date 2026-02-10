@@ -44,6 +44,7 @@ class GrantRepository extends AbstractExternalModule
 
 	private $userProjectId;
 	private $grantProjectId;
+	private $nihDayDelay;
 
 	public function redcap_module_ajax($action, $payload) {
 		$result = ["errors" => ["No valid action"]];
@@ -190,7 +191,7 @@ class GrantRepository extends AbstractExternalModule
 				];
 			}
 		}
-        $returnData['data'] = array_values($returnData['data']);
+		$returnData['data'] = array_values($returnData['data']);
 
 		return $returnData;
 	}
@@ -301,6 +302,14 @@ class GrantRepository extends AbstractExternalModule
 			$this->userProjectId = $this->getSystemSetting('user-project');
 		}
 		return $this->userProjectId;
+	}
+
+	public function getNIHDelay() {
+		if (empty($this->nihDayDelay)) {
+			$delaySetting = $this->getSystemSetting('grant-project');
+			$this->nihDayDelay = (is_numeric($delaySetting) ? $delaySetting : 30);
+		}
+		return $this->nihdayDelay;
 	}
 
 	public function getAwards(): array {
@@ -689,11 +698,16 @@ class GrantRepository extends AbstractExternalModule
 					];
 				}
 
+                echo "Looking for: ".$projectData["project_num"]."<br/>";
+                echo "<pre>";
+                print_r($currentRecordArray["instances"]);
+                echo "</pre>";
 				if (isset($currentRecordArray["instances"]) && in_array($projectData["project_num"], $currentRecordArray["instances"])) {
 					$repeat_instance = array_search($projectData["project_num"], $currentRecordArray["instances"]);
 				} else {
 					$repeat_instance = "new";
 				}
+                echo "Repeat instance is now $repeat_instance<br/>";
 				$saveData[] = array_merge($processedData, [
 					'record_id' => $currentRecordArray["record"],
 					'redcap_repeat_instance' => $repeat_instance,
@@ -720,19 +734,18 @@ class GrantRepository extends AbstractExternalModule
             "PrincipalInvestigators","ProgramOfficers","AgencyIcFundings","Terms","PrefTerms",
             "BudgetStart","BudgetEnd","ProjectTitle"
           ],
-          limit: "50"
+          "sort_field": "project_num"
         }';
-		$apiResponse = $this->apiCurlRequest("https://api.reporter.nih.gov/v2/projects/search", $apiParams, $this->getGrantProjectId());
-
-		return $apiResponse;
+		return $this->apiCurlRequest("https://api.reporter.nih.gov/v2/projects/search", $apiParams, $this->getGrantProjectId());
 	}
 	public function getNIHInstances() {
 		$returnArray = [];
 		$recordData = \REDCap::getData([
 			'project_id' => $this->getGrantProjectId(),
 			'return_format' => 'json-array',
-			'filterLogic' => '[nih_last_update] = "" OR [nih_last_update] > "'.date("Y-m-d", strtotime("-7 days")).'"',
-			'filterType' => 'RECORD'
+			'filterLogic' => '[nih_last_update] = "" OR [nih_last_update] > "'.date("Y-m-d", strtotime("-".$this->getNIHDelay()." days")).'"',
+			'filterType' => 'RECORD',
+			'rowLimit' => 40
 		]);
 
 		$grantToRecord = [];
@@ -757,5 +770,10 @@ class GrantRepository extends AbstractExternalModule
 		}
 
 		return $returnArray;
+	}
+
+	public function nihCron($cronInfo) {
+		$this->saveNIHData();
+		return "Cron ".$cronInfo['cron_name']." ran to retrieve NIH data.";
 	}
 }

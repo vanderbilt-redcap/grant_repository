@@ -3,5 +3,5 @@
 use Vanderbilt\GrantRepository;
 
 $module->loadTwigExtensions();
-//$module->saveNIHData();
+$module->saveNIHData();
 echo $module->loadGrantsTwig((defined("USERID") ? USERID : ''));
