@@ -206,14 +206,14 @@ class GrantRepository extends AbstractExternalModule
 		$filterGrantLogic = $filterUserLogic = "";
 		# Anyone with role = 2 needs to only see grants specific to them
 		if (($userid !== "scott.j.pearson@vumc.org" && $userid !== "james.r.moore@vumc.org") && ($userStatus == 2)) {
-			$filterGrantLogic = "[pi_vunet_id] = '$userid'";
+			$filterGrantLogic = "lower([pi_vunet_id]) = lower('$userid')".($alternateID != '' ? "OR lower([pi_vunet_id]) = '".strtolower($alternateID)."'" : "");
 			$filterUserLogic = "lower([email_address]) = '".strtolower($userid)."'".($alternateID != '' ? "OR lower([email_address]) = '".strtolower($alternateID)."'" : "");
 		}
 
 		$grantsResult = Records::getData([
 			'project_id' => $this->getGrantProjectId(),
 			'return_format' => 'json-array',
-			'fields' => [$grantsProject->table_pk,'grants_title','grants_pi','grants_number'],
+			'fields' => [$grantsProject->table_pk,'pi_vunet_id','grants_title','grants_pi','grants_number'],
 			'exportAsLabels' => true,
 			'combine_checkbox_values' => true,
 			'filterLogic' => $filterGrantLogic,
