@@ -176,4 +176,5 @@ function downloadFile(fileObject,record,userid,csrf_token) {
     document.body.appendChild(form);
     form.submit();
     document.body.removeChild(form);
+    logFileDownload(record,userid);
 }
