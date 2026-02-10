@@ -420,8 +420,6 @@ class GrantRepository extends AbstractExternalModule
 		$returnStatus = "Unable to locate user $userid.";
 
 		if ($userid != '') {
-            echo "User ID is $userid.";
-            echo "Filter logic is: lower([email_address]) = '".strtolower($userid)."'".($alternateID != '' ? " OR lower([email_address]) = '".strtolower($alternateID)."'" : "");
 			$result = \REDCap::getData([
 				'project_id' => $this->getUserProjectId(),
 				'return_format' => 'json-array',
