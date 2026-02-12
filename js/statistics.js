@@ -1,7 +1,3 @@
-waitForElm('#stats_table').then((elm) => {
-    ajaxHTMLToElement('statResults',{'searchParams':[]},elm.id)
-});
-
 function toggleDrilldown(target_id) {
     let target = document.getElementById(target_id);
 

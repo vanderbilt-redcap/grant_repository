@@ -50,8 +50,6 @@ class GrantRepository extends AbstractExternalModule
 		$result = ["errors" => ["No valid action"]];
 		if ($action == "grantList") {
 			$result = $this->getGrantList($payload['searchParams']);
-		} elseif ($action == "statResults") {
-			$result = $this->getStatResults($payload['searchParams']);
 		} elseif ($action == "redirect") {
 			$result = $this->getUrl("interfaces/".$payload['page']);
 		} elseif ($action == "addComment") {
@@ -212,6 +210,12 @@ class GrantRepository extends AbstractExternalModule
 
 	public function getStatResults($userid, array $searchParams): array {
 		$userid = $this->escape($userid);
+		$alternateID = "";
+		if (stripos($userid, "@vanderbilt.edu")) {
+			$alternateID = preg_replace("/@vanderbilt.edu/i", "@vumc.org", $userid);
+		} elseif (stripos($userid, "@vumc.org")) {
+			$alternateID = preg_replace("/@vumc.org/i", "@vanderbilt.edu", $userid);
+		}
 		$userStatus = $this->processUserAccess($userid);
 
 		if ($userid == '' || !is_numeric($userStatus)) {
@@ -222,15 +226,15 @@ class GrantRepository extends AbstractExternalModule
 		$usersProject = new Project($this->getUserProjectId());
 		$filterGrantLogic = $filterUserLogic = "";
 		# Anyone with role = 2 needs to only see grants specific to them
-		if (($userid !== "pearsosj" && $userid !== "moorejr5") && ($userStatus == 2)) {
-			$filterGrantLogic = "[pi_vunet_id] = '$userid'";
-			$filterUserLogic = "[vunet_id] = '$userid'";
+		if (($userid !== "scott.j.pearson@vumc.org" && $userid !== "james.r.moore@vumc.org") && ($userStatus == 2)) {
+			$filterGrantLogic = "lower([pi_vunet_id]) = lower('$userid')".($alternateID != '' ? "OR lower([pi_vunet_id]) = '".strtolower($alternateID)."'" : "");
+			$filterUserLogic = "lower([email_address]) = '".strtolower($userid)."'".($alternateID != '' ? "OR lower([email_address]) = '".strtolower($alternateID)."'" : "");
 		}
 
 		$grantsResult = Records::getData([
 			'project_id' => $this->getGrantProjectId(),
 			'return_format' => 'json-array',
-			'fields' => [$grantsProject->table_pk,'grants_title','grants_pi','grants_number'],
+			'fields' => [$grantsProject->table_pk,'pi_vunet_id','grants_title','grants_pi','grants_number'],
 			'exportAsLabels' => true,
 			'combine_checkbox_values' => true,
 			'filterLogic' => $filterGrantLogic,
@@ -248,7 +252,7 @@ class GrantRepository extends AbstractExternalModule
 		$usersResult = Records::getData([
 			'project_id' => $this->getUserProjectId(),
 			'return_format' => 'json-array',
-			'fields' => [$usersProject->table_pk,'vunet_id','first_name','last_name'],
+			'fields' => [$usersProject->table_pk,'vunet_id','email_address','first_name','last_name'],
 			'exportAsLabels' => true,
 			'combine_checkbox_values' => true,
 			'filterLogic' => $filterUserLogic,
@@ -256,7 +260,7 @@ class GrantRepository extends AbstractExternalModule
 
 		$vuNets = [];
 		foreach ($usersResult as $row) {
-			$vuNets[$this->escape($row['vunet_id'])] = ['first_name' => $this->escape($row['first_name']),"last_name" => $this->escape($row['last_name'])];
+			$vuNets[$this->escape($row['email_address'])] = ['first_name' => $this->escape($row['first_name']),"last_name" => $this->escape($row['last_name'])];
 		}
 
 		$logEventTable = method_exists('\Logging', 'getLogEventTable') ? \Logging::getLogEventTable($this->getGrantProjectId()) : "redcap_log_event";
@@ -346,7 +350,7 @@ class GrantRepository extends AbstractExternalModule
 
 		if (isset($_POST['submit']) && is_numeric($userStatus)) {
 			$saveData = [
-				"vunet_id" => htmlspecialchars($userid),
+				"email_address" => htmlspecialchars($userid),
 				"accessed" => '1',
 			];
 			$json = json_encode([$saveData]);
@@ -435,6 +439,12 @@ class GrantRepository extends AbstractExternalModule
 
 	public function processUserAccess(string $userid): string {
 		$userid = $this->escape($userid);
+		$alternateID = "";
+		if (stripos($userid, "@vanderbilt.edu")) {
+			$alternateID = preg_replace("/@vanderbilt.edu/i", "@vumc.org", $userid);
+		} elseif (stripos($userid, "@vumc.org")) {
+			$alternateID = preg_replace("/@vumc.org/i", "@vanderbilt.edu", $userid);
+		}
 		$timestamp = date('Y-m-d');
 		$returnStatus = "Unable to locate user $userid.";
 
@@ -442,12 +452,12 @@ class GrantRepository extends AbstractExternalModule
 			$result = \REDCap::getData([
 				'project_id' => $this->getUserProjectId(),
 				'return_format' => 'json-array',
-				'fields' => ['vunet_id', 'user_role', 'user_expiration'],
-				'filterLogic' => "[vunet_id] = '$userid'",
+				'fields' => ['vunet_id', 'email_address', 'user_role', 'user_expiration'],
+				'filterLogic' => "lower([email_address]) = '".strtolower($userid)."'".($alternateID != '' ? " OR lower([email_address]) = '".strtolower($alternateID)."'" : "")
 			]);
 
 			foreach ($result as $data) {
-				if ($data['vunet_id'] == $userid) {
+				if (strtolower($data['email_address']) == strtolower($userid) || strtolower($data['email_address']) == strtolower($alternateID)) {
 					if (in_array($data['user_role'], self::VALID_ROLES) && ($timestamp < $data['user_expiration'] || $data['user_expiration'] == "")) {
 						$returnStatus = $data['user_role'];
 					} elseif (!in_array($data['user_role'], self::VALID_ROLES)) {
@@ -464,18 +474,24 @@ class GrantRepository extends AbstractExternalModule
 
 	public function getUserNameById(string $userid) {
 		$userid = $this->escape($userid);
+		$alternateID = "";
+		if (stripos($userid, "@vanderbilt.edu")) {
+			$alternateID = preg_replace("/@vanderbilt.edu/i", "@vumc.org", $userid);
+		} elseif (stripos($userid, "@vumc.org")) {
+			$alternateID = preg_replace("/@vumc.org/i", "@vanderbilt.edu", $userid);
+		}
 		$name = $userid;
 
 		if ($userid != '') {
 			$result = \REDCap::getData([
 				'project_id' => $this->getUserProjectId(),
 				'return_format' => 'json-array',
-				'fields' => ['vunet_id', 'first_name', 'last_name'],
-				'filterLogic' => "[vunet_id] = '$userid'",
+				'fields' => ['vunet_id', 'email_address', 'first_name', 'last_name'],
+				'filterLogic' => "lower([email_address]) = '".strtolower($userid)."'".($alternateID != '' ? "OR lower([email_address]) = '".strtolower($alternateID)."'" : ""),
 			]);
 
 			foreach ($result as $data) {
-				if ($data['vunet_id'] == $userid) {
+				if (strtolower($data['email_address']) == strtolower($userid) || strtolower($data['email_address']) == strtolower($alternateID)) {
 					$name = $data['first_name']." ".$data['last_name'];
 				}
 			}
