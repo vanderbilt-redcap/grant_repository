@@ -714,16 +714,12 @@ class GrantRepository extends AbstractExternalModule
 					];
 				}
 
-                echo "Looking for: ".$projectData["project_num"]."<br/>";
-                echo "<pre>";
-                print_r($currentRecordArray["instances"]);
-                echo "</pre>";
 				if (isset($currentRecordArray["instances"]) && in_array($projectData["project_num"], $currentRecordArray["instances"])) {
 					$repeat_instance = array_search($projectData["project_num"], $currentRecordArray["instances"]);
 				} else {
 					$repeat_instance = "new";
 				}
-                echo "Repeat instance is now $repeat_instance<br/>";
+
 				$saveData[] = array_merge($processedData, [
 					'record_id' => $currentRecordArray["record"],
 					'redcap_repeat_instance' => $repeat_instance,
@@ -750,7 +746,8 @@ class GrantRepository extends AbstractExternalModule
             "PrincipalInvestigators","ProgramOfficers","AgencyIcFundings","Terms","PrefTerms",
             "BudgetStart","BudgetEnd","ProjectTitle"
           ],
-          "sort_field": "project_num"
+          "sort_field": "project_start_date",
+          "sort_order": "asc"
         }';
 		return $this->apiCurlRequest("https://api.reporter.nih.gov/v2/projects/search", $apiParams, $this->getGrantProjectId());
 	}
@@ -774,7 +771,7 @@ class GrantRepository extends AbstractExternalModule
 					//TODO Is there a safe length to be a lower limit on grant number?
 					preg_match("/[A-Z0-9]{2,}/", $record['grants_number'], $matches);
 
-					if ($matches) {
+					if ($matches && strlen($matches[0]) === 11) {
 						$grantToRecord[$record['record_id']] = $matches[0];
 						$returnArray[$grantToRecord[$record['record_id']]] = ['record' => $record['record_id']];
 					}
