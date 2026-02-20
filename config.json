@@ -46,7 +46,7 @@
       "cron_name": "nih_cron",
       "cron_description": "Retrieve NIH Data for Next Batch of Studies",
       "method": "nihCron",
-      "cron_frequency": "60",
+      "cron_frequency": "86400",
       "cron_max_run_time": "60"
     }
   ]
