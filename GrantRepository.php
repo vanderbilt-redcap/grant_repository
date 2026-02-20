@@ -763,25 +763,28 @@ class GrantRepository extends AbstractExternalModule
 			'project_id' => $this->getGrantProjectId(),
 			'return_format' => 'json-array',
 			'fields' => ['record_id','nih_last_update','grants_number','project_num','core_project_num'],
-			'filterLogic' => "length([grants_number]) = '11' AND ([nih_last_update] = '' OR datediff([nih_last_update], 'today', 'd') > '".$this->getNIHDelay()."')",
+			'filterLogic' => "([nih_last_update] = '' OR datediff([nih_last_update], 'today', 'd') > '".$this->getNIHDelay()."')",
 			'filterType' => 'RECORD',
-			'includeRepeatingFields' => true,
-			'rowLimit' => 40
+			'includeRepeatingFields' => true
 		]);
 
 		$grantToRecord = [];
+		$recordCount = 0;
 		if (!empty($recordData)) {
 			foreach ($recordData as $record) {
 				if ($record['record_id'] == "") {
 					continue;
 				}
 				if (!isset($grantToRecord[$record['record_id']])) {
-					//TODO Is there a safe length to be a lower limit on grant number?
+					if ($recordCount > 40) {
+						break;
+					}
 					preg_match("/[A-Z0-9]{2,}/", $record['grants_number'], $matches);
 
 					if ($matches && strlen($matches[0]) === 11) {
 						$grantToRecord[$record['record_id']] = $matches[0];
 						$returnArray[$grantToRecord[$record['record_id']]] = ['record' => $record['record_id']];
+						$recordCount++;
 					}
 				}
 				if (is_numeric($record['redcap_repeat_instance']) && isset($grantToRecord[$record['record_id']])) {
