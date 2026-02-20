@@ -313,7 +313,7 @@ class GrantRepository extends AbstractExternalModule
 			$delaySetting = $this->getSystemSetting('nih-refresh-days');
 			$this->nihDayDelay = (is_numeric($delaySetting) ? $delaySetting : 30);
 		}
-		return $this->nihdayDelay;
+		return (int)$this->nihdayDelay;
 	}
 
 	public function getAwards(): array {
@@ -763,7 +763,7 @@ class GrantRepository extends AbstractExternalModule
 			'project_id' => $this->getGrantProjectId(),
 			'return_format' => 'json-array',
 			'fields' => ['record_id','nih_last_update','grants_number','project_num','core_project_num'],
-			'filterLogic' => '[nih_last_update] = "" OR datediff([nih_last_update], "today", "d") > "'.$this->getNIHDelay().'"',
+			'filterLogic' => "length([grants_number]) = '11' AND ([nih_last_update] = '' OR datediff([nih_last_update], 'today', 'd') > '".$this->getNIHDelay()."')",
 			'filterType' => 'RECORD',
 			'includeRepeatingFields' => true,
 			'rowLimit' => 40
