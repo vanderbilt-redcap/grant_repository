@@ -310,7 +310,7 @@ class GrantRepository extends AbstractExternalModule
 
 	public function getNIHDelay() {
 		if (empty($this->nihDayDelay)) {
-			$delaySetting = $this->getSystemSetting('grant-project');
+			$delaySetting = $this->getSystemSetting('nih-refresh-days');
 			$this->nihDayDelay = (is_numeric($delaySetting) ? $delaySetting : 30);
 		}
 		return $this->nihdayDelay;
@@ -731,7 +731,7 @@ class GrantRepository extends AbstractExternalModule
 	}
 
 	public function retrieveNIHData($projectNums) {
-		if (empty($projectNums)) {
+		if ($projectNums == "") {
 			return [];
 		}
 		$apiParams = '{
@@ -763,7 +763,7 @@ class GrantRepository extends AbstractExternalModule
 			'project_id' => $this->getGrantProjectId(),
 			'return_format' => 'json-array',
 			'fields' => ['record_id','nih_last_update','grants_number','project_num','core_project_num'],
-			'filterLogic' => '[nih_last_update] = "" OR datediff([nih_last_update], "today", "d") > "'.$this->nihDayDelay.'"',
+			'filterLogic' => '[nih_last_update] = "" OR datediff([nih_last_update], "today", "d") > "'.$this->getNIHDelay().'"',
 			'filterType' => 'RECORD',
 			'includeRepeatingFields' => true,
 			'rowLimit' => 40
