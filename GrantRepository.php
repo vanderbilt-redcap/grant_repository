@@ -662,7 +662,7 @@ class GrantRepository extends AbstractExternalModule
 		if (curl_errno($ch)) {
 			$error_message = curl_error($ch);
 		}
-		curl_close($ch);
+
 		if ($error_message != "") {
 			\REDCap::logEvent("<b>NIH Error: </b>", $error_message, '', null, null, $project_id);
 			return false;
@@ -672,9 +672,8 @@ class GrantRepository extends AbstractExternalModule
 
 	public function saveNIHData() {
 		$redcapData = $this->getNIHInstances();
+		$nihData = $this->retrieveNIHData('"'.implode('","', array_keys($redcapData)).'"');
 		$nihFormFields = $this->framework->getFieldNames("nih_data", $this->getGrantProjectId());
-		//TODO May want to cap how many project nums get passed to this to avoid partial historical pulls, how many to be able to get through everything in a week/month?
-		$nihData = json_decode($this->retrieveNIHData('"'.implode('","', array_keys($redcapData)).'"'), true);
 		$loopFields = function ($data, $previousField) use ($nihFormFields, &$loopFields) {
 			$returnArray = [];
 			foreach ($data as $key => $value) {
@@ -699,32 +698,28 @@ class GrantRepository extends AbstractExternalModule
 		};
 
 		$saveData = [];
-		$currentRecordArray = [];
-		foreach ($nihData['results'] as $projectData) {
-			$processedData = $loopFields($projectData, "");
+		foreach ($redcapData as $coreProjectNum => $recordData) {
+			$saveData[] = [
+				'record_id' => $recordData["record"],
+				'redcap_repeat_instance' => '',
+				'redcap_repeat_instrument' => '',
+				'nih_last_update' => date("Y-m-d")
+			];
+			if (isset($nihData[$coreProjectNum])) {
+				foreach ($nihData[$coreProjectNum] as $projectData) {
+					$processedData = $loopFields($projectData, "");
+					if (isset($recordData["instances"]) && in_array($projectData["project_num"], $recordData["instances"])) {
+						$repeat_instance = array_search($projectData["project_num"], $recordData["instances"]);
+					} else {
+						$repeat_instance = "new";
+					}
 
-			if (isset($redcapData[$projectData["core_project_num"]])) {
-				if (empty($currentRecordArray) || $currentRecordArray != $redcapData[$projectData["core_project_num"]]) {
-					$currentRecordArray = $redcapData[$projectData["core_project_num"]];
-					$saveData[] = [
-						'record_id' => $currentRecordArray["record"],
-						'redcap_repeat_instance' => '',
-						'redcap_repeat_instrument' => '',
-						'nih_last_update' => date("Y-m-d")
-					];
+					$saveData[] = array_merge($processedData, [
+						'record_id' => $recordData["record"],
+						'redcap_repeat_instance' => $repeat_instance,
+						'redcap_repeat_instrument' => 'nih_data'
+					]);
 				}
-
-				if (isset($currentRecordArray["instances"]) && in_array($projectData["project_num"], $currentRecordArray["instances"])) {
-					$repeat_instance = array_search($projectData["project_num"], $currentRecordArray["instances"]);
-				} else {
-					$repeat_instance = "new";
-				}
-
-				$saveData[] = array_merge($processedData, [
-					'record_id' => $currentRecordArray["record"],
-					'redcap_repeat_instance' => $repeat_instance,
-					'redcap_repeat_instrument' => 'nih_data'
-				]);
 			}
 		}
 
@@ -734,6 +729,7 @@ class GrantRepository extends AbstractExternalModule
 			'data' => json_encode($saveData)
 		]);
 	}
+
 	public function retrieveNIHData($projectNums) {
 		$apiParams = '{
           "criteria": {
@@ -749,15 +745,24 @@ class GrantRepository extends AbstractExternalModule
           "sort_field": "project_start_date",
           "sort_order": "asc"
         }';
-		return $this->apiCurlRequest("https://api.reporter.nih.gov/v2/projects/search", $apiParams, $this->getGrantProjectId());
+		$returnData = [];
+		$nihResult = json_decode($this->apiCurlRequest("https://api.reporter.nih.gov/v2/projects/search", $apiParams, $this->getGrantProjectId()), true);
+		if (isset($nihResult["results"])) {
+			foreach ($nihResult["results"] as $result) {
+				$returnData[$result['core_project_num']][] = $result;
+			}
+		}
+		return $returnData;
 	}
 	public function getNIHInstances() {
 		$returnArray = [];
-		$recordData = \REDCap::getData([
+		$recordData = \Records::getData([
 			'project_id' => $this->getGrantProjectId(),
 			'return_format' => 'json-array',
-			'filterLogic' => '[nih_last_update] = "" OR [nih_last_update] > "'.date("Y-m-d", strtotime("-".$this->getNIHDelay()." days")).'"',
+			'fields' => ['record_id','nih_last_update','grants_number','project_num','core_project_num'],
+			'filterLogic' => '[nih_last_update] = "" OR datediff([nih_last_update], "today", "d") > "'.$this->nihDayDelay.'"',
 			'filterType' => 'RECORD',
+			'includeRepeatingFields' => true,
 			'rowLimit' => 40
 		]);
 
