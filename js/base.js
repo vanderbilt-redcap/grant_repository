@@ -59,15 +59,18 @@ function ajaxDataTable(ajax_function,payload,dest_id) {
                 scrollCollapse: true,
                 scrollX: false,
                 scrollY: 450,
-                bAutoWidth: false,
                 columnDefs: [
                     {
-                        targets: [4,7],
+                        targets: [7,10],
                         searchable: true,
                         visible: false
+                    },
+                    {
+                        sWidth: '375px',
+                        targets: [0]
                     }],
                 initComplete: function () {
-                    let column = this.api().column(4);
+                    let column = this.api().column(7);
                     //console.log(column);
                     let select = document.getElementById('award_select');
 

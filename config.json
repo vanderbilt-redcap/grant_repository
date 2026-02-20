@@ -29,11 +29,25 @@
       "key": "grant-project",
       "name": "Project ID of the Funded Grants Library Project",
       "type": "project-id"
+    },
+    {
+      "key": "nih-refresh-days",
+      "name": "Days before refreshing data from NIH for a study. Increase this if the list of records in the Grant Library becomes too large to keep updated with NIH data pull limits.",
+      "type": "text"
     }
   ],
   "log-file": "log.txt",
   "compatibility": {
     "php-version-min": "8.2.0",
     "php-version-max": ""
-  }
+  },
+  "crons": [
+    {
+      "cron_name": "nih_cron",
+      "cron_description": "Retrieve NIH Data for Next Batch of Studies",
+      "method": "nihCron",
+      "cron_frequency": "86400",
+      "cron_max_run_time": "60"
+    }
+  ]
 }
