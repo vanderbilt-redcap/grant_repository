@@ -746,7 +746,8 @@ class GrantRepository extends AbstractExternalModule
             "BudgetStart","BudgetEnd","ProjectTitle"
           ],
           "sort_field": "project_start_date",
-          "sort_order": "asc"
+          "sort_order": "asc",
+          "limit": 500
         }';
 		$returnData = [];
 		$nihResult = json_decode($this->apiCurlRequest("https://api.reporter.nih.gov/v2/projects/search", $apiParams, $this->getGrantProjectId()), true);
