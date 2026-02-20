@@ -731,6 +731,9 @@ class GrantRepository extends AbstractExternalModule
 	}
 
 	public function retrieveNIHData($projectNums) {
+		if (empty($projectNums)) {
+			return [];
+		}
 		$apiParams = '{
           "criteria": {
             project_nums: [
