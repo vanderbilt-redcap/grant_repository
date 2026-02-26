@@ -4,6 +4,7 @@ namespace Vanderbilt\GrantRepository;
 
 use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
+use phpDocumentor\Reflection\Types\Boolean;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf;
 use Records;
@@ -12,6 +13,8 @@ use Project;
 use Logging;
 use Twig\TwigFunction;
 use ZipArchive;
+
+use function Vanderbilt\REDCap\Tests\now;
 
 class GrantRepository extends AbstractExternalModule
 {
@@ -27,6 +30,9 @@ class GrantRepository extends AbstractExternalModule
 
 	public const DATA_TABLE_HEADERS = [
 		['title' => 'Title'],
+		['title' => 'Program Officers'],
+		['title' => 'Funding Institution / Agency'],
+		['title' => 'Study Section Name'],
 		['title' => 'PI'],
 		['title' => 'Grant Number'],
 		['title' => 'NIH Submission Number'],
@@ -35,8 +41,10 @@ class GrantRepository extends AbstractExternalModule
 		['title' => 'View'],
 		['title' => 'Abstract']
 	];
+
 	private $userProjectId;
 	private $grantProjectId;
+	private $nihDayDelay;
 
 	public function redcap_module_ajax($action, $payload) {
 		$result = ["errors" => ["No valid action"]];
@@ -55,7 +63,7 @@ class GrantRepository extends AbstractExternalModule
 		return $result;
 	}
 
-	public function addComment($record, $comment) {
+	public function addComment($record, $comment): array {
 		$grantProject = new Project($this->getGrantProjectId());
 
 		$userName = $this->getUserNameById(USERID);
@@ -79,7 +87,7 @@ class GrantRepository extends AbstractExternalModule
 		return $returnStatus;
 	}
 
-	public function getComments($recordId) {
+	public function getComments($recordId): array {
 		$grantProject = new Project($this->getGrantProjectId());
 		$returnArray = ['headers' => ['Author','Comment'],'rows' => []];
 		$result = Records::getData([
@@ -140,13 +148,14 @@ class GrantRepository extends AbstractExternalModule
 		$getDataParams = [
 			'project_id' => $this->getGrantProjectId(),
 			'return_format' => 'json-array',
-			'fields' => array_merge([$grantsProject->table_pk,'grants_title','grants_abstract','grants_pi','grants_file','grants_number','grants_date','nih_format','nih_submission_number'], array_keys(self::AWARDS)),
+			'fields' => array_merge([$grantsProject->table_pk,'grants_title','grants_abstract','grants_pi','grants_file','grants_number','grants_date','nih_format','nih_submission_number','program_officers_full_name','agency_ic_fundings_abbreviation','full_study_section_name'], array_keys(self::AWARDS)),
 			'exportAsLabels' => true,
 			'combine_checkbox_values' => true
 		];
 
 		if (!isset($searchParams['show_all'])) {
 			$getDataParams['filterLogic'] = "[grants_date] > '$thresholdDate'";
+			$getDataParams['filterType'] = "RECORD";
 		}
 
 		$result = Records::getData($getDataParams);
@@ -158,18 +167,30 @@ class GrantRepository extends AbstractExternalModule
 		// Names need filter to do proper casing (look for 1-2 letter all caps to be left alone as initials)
 		foreach ($result as $row) {
 			$grantProject = new Project($this->getGrantProjectId());
-			$formInstances = $this->getComments($row[$grantsProject->table_pk]);
-			$returnData['data'][] = [
-				(strtoupper($row['grants_title']) == $row['grants_title'] ? mb_convert_case($row['grants_title'], MB_CASE_TITLE, 'UTF-8') : $row['grants_title']),
-				$row['grants_pi'],
-				"<div style='display:inline;'>".$row['grants_number']."</div>&nbsp;<div class='comment_link' onclick='viewCommentModal(\"".$row[$grantsProject->table_pk]."\");'><img style='height:15px;' src='".(!empty($formInstances['rows'][0]['comment']) ? $this->getUrl('img/chat-fill.svg') : $this->getUrl('img/comment.svg'))."'/></div>",
-				$row['nih_submission_number'],
-				$this->processAwards($row),
-				($row['grants_date'] != "" ? date('Y-m', strtotime($row['grants_date'])) : ""),
-				(is_numeric($row['grants_file']) ? "<div class='textlink'><a href='".$this->getUrl('interfaces/download.php')."&id=".$row[$grantProject->table_pk]."&edoc_id=".$row['grants_file']."&grant=".$this->escape($row['grants_number'])."'>View</a></div>" : "<div class='textlink'>N/A</div>"),
-				$row['grants_abstract']
-			];
+			$recordID = $row[$grantsProject->table_pk];
+			$formInstances = $this->getComments($recordID);
+			if ($row['redcap_repeat_instance'] != "") {
+				$returnData['data'][$recordID][1] = $row['program_officers_full_name'];
+				$returnData['data'][$recordID][2] = $row['agency_ic_fundings_abbreviation'];
+				$returnData['data'][$recordID][3] = $row['full_study_section_name'];
+			} else {
+				$returnData['data'][$recordID] = [
+					(strtoupper($row['grants_title']) == $row['grants_title'] ? mb_convert_case($row['grants_title'], MB_CASE_TITLE, 'UTF-8') : $row['grants_title']),
+					$row['program_officers_full_name'],
+					$row['agency_ic_fundings_abbreviation'],
+					$row['full_study_section_name'],
+					$row['grants_pi'],
+					"<div style='display:inline;'>".$row['grants_number']."</div>&nbsp;<div class='comment_link' onclick='viewCommentModal(\"".$row[$grantsProject->table_pk]."\");'><img style='height:15px;' src='".(!empty($formInstances['rows'][0]['comment']) ? $this->getUrl('img/chat-fill.svg') : $this->getUrl('img/comment.svg'))."'/></div>",
+					$row['nih_submission_number'],
+					$this->processAwards($row),
+					($row['grants_date'] != "" ? date('Y-m', strtotime($row['grants_date'])) : ""),
+					(is_numeric($row['grants_file']) ? "<div class='textlink'><a href='".$this->getUrl('interfaces/download.php')."&id=".$row[$grantProject->table_pk]."&edoc_id=".$row['grants_file']."&grant=".$this->escape($row['grants_number'])."'>View</a></div>" : "<div class='textlink'>N/A</div>"),
+					$row['grants_abstract']
+				];
+			}
 		}
+		$returnData['data'] = array_values($returnData['data']);
+
 		return $returnData;
 	}
 
@@ -187,7 +208,7 @@ class GrantRepository extends AbstractExternalModule
 		return $returnString;
 	}
 
-	public function getStatResults($userid, array $searchParams) {
+	public function getStatResults($userid, array $searchParams): array {
 		$userid = $this->escape($userid);
 		$alternateID = "";
 		if (stripos($userid, "@vanderbilt.edu")) {
@@ -285,6 +306,14 @@ class GrantRepository extends AbstractExternalModule
 			$this->userProjectId = $this->getSystemSetting('user-project');
 		}
 		return $this->userProjectId;
+	}
+
+	public function getNIHDelay() {
+		if (empty($this->nihDayDelay)) {
+			$delaySetting = $this->getSystemSetting('nih-refresh-days');
+			$this->nihDayDelay = (is_numeric($delaySetting) ? $delaySetting : 30);
+		}
+		return (int)$this->nihdayDelay;
 	}
 
 	public function getAwards(): array {
@@ -471,7 +500,7 @@ class GrantRepository extends AbstractExternalModule
 		return $name;
 	}
 
-	public function processGrantsFile(int $edocid) {
+	public function processGrantsFile(int $edocid): array {
 		$returnArray = ['errors' => [], 'files' => []];
 
 		$sql = "select * from redcap_edocs_metadata where project_id = ? and doc_id = ?";
@@ -546,7 +575,7 @@ class GrantRepository extends AbstractExternalModule
 		return str_replace(APP_PATH_TEMP, "", $filename);
 	}
 
-	public function inspectDir($dir, $linkdir) {
+	public function inspectDir($dir, $linkdir): array {
 		$files = [];
 
 		$allFiles = scandir($dir);
@@ -563,7 +592,7 @@ class GrantRepository extends AbstractExternalModule
 		return $files;
 	}
 
-	public function convertFileToPDF($sourceFile, $output) {
+	public function convertFileToPDF($sourceFile, $output): string {
 		$pdfOut = str_replace(".", "_", $output)."_pdf.pdf";
 		$phpOfficeObj = null;
 
@@ -614,5 +643,162 @@ class GrantRepository extends AbstractExternalModule
 		$spreadsheet->getActiveSheet()->getPageMargins()->setRight(0.5);
 		$spreadsheet->getActiveSheet()->getPageMargins()->setLeft(0.5);
 		$spreadsheet->getActiveSheet()->getPageMargins()->setBottom(0.5);
+	}
+
+	private function apiCurlRequest($url, $data, $project_id): bool|string {
+		$error_message = "";
+		$ch = curl_init();
+		$headers = [
+			'Content-Type: application/json',
+			'Accept: application/json'
+		];
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+
+		$push_response = curl_exec($ch);
+		if (curl_errno($ch)) {
+			$error_message = curl_error($ch);
+		}
+
+		if ($error_message != "") {
+			\REDCap::logEvent("<b>NIH Error: </b>", $error_message, '', null, null, $project_id);
+			return false;
+		}
+		return $push_response;
+	}
+
+	public function saveNIHData() {
+		$redcapData = $this->getNIHInstances();
+		$nihData = $this->retrieveNIHData('"'.implode('","', array_keys($redcapData)).'"');
+		$nihFormFields = $this->framework->getFieldNames("nih_data", $this->getGrantProjectId());
+		$loopFields = function ($data, $previousField) use ($nihFormFields, &$loopFields) {
+			$returnArray = [];
+			foreach ($data as $key => $value) {
+				if (!is_numeric($key)) {
+					$currentField = $previousField.($previousField != "" ? "_" : "").$key;
+				} else {
+					$currentField = $previousField;
+				}
+				if (is_array($value)) {
+					$returnArray = array_merge($returnArray, $loopFields($value, $currentField));
+				} else {
+					$dateTime = \DateTime::createFromFormat('Y-m-d\TH:i:s', $value);
+					if (gettype($dateTime) == "object") {
+						$value = $dateTime->format("Y-m-d H:i:s");
+					}
+					if (in_array($currentField, $nihFormFields)) {
+						$returnArray[$currentField] = $value;
+					}
+				}
+			}
+			return $returnArray;
+		};
+
+		$saveData = [];
+		foreach ($redcapData as $coreProjectNum => $recordData) {
+			$saveData[] = [
+				'record_id' => $recordData["record"],
+				'redcap_repeat_instance' => '',
+				'redcap_repeat_instrument' => '',
+				'nih_last_update' => date("Y-m-d")
+			];
+			if (isset($nihData[$coreProjectNum])) {
+				foreach ($nihData[$coreProjectNum] as $projectData) {
+					$processedData = $loopFields($projectData, "");
+					if (isset($recordData["instances"]) && in_array($projectData["project_num"], $recordData["instances"])) {
+						$repeat_instance = array_search($projectData["project_num"], $recordData["instances"]);
+					} else {
+						$repeat_instance = "new";
+					}
+
+					$saveData[] = array_merge($processedData, [
+						'record_id' => $recordData["record"],
+						'redcap_repeat_instance' => $repeat_instance,
+						'redcap_repeat_instrument' => 'nih_data'
+					]);
+				}
+			}
+		}
+
+		$result = \REDCap::saveData([
+			'project_id' => $this->getGrantProjectId(),
+			'dataFormat' => 'json',
+			'data' => json_encode($saveData)
+		]);
+	}
+
+	public function retrieveNIHData($projectNums) {
+		if ($projectNums == "") {
+			return [];
+		}
+		$apiParams = '{
+          "criteria": {
+            project_nums: [
+                '.$projectNums.'
+            ]
+          },
+          "include_fields": [
+            "ProjectNum","CoreProjectNum","FullStudySection","ProjectStartDate","ProjectEndDate","AwardAmount",
+            "PrincipalInvestigators","ProgramOfficers","AgencyIcFundings","Terms","PrefTerms",
+            "BudgetStart","BudgetEnd","ProjectTitle"
+          ],
+          "sort_field": "project_start_date",
+          "sort_order": "asc",
+          "limit": 500
+        }';
+		$returnData = [];
+		$nihResult = json_decode($this->apiCurlRequest("https://api.reporter.nih.gov/v2/projects/search", $apiParams, $this->getGrantProjectId()), true);
+		if (isset($nihResult["results"])) {
+			foreach ($nihResult["results"] as $result) {
+				$returnData[$result['core_project_num']][] = $result;
+			}
+		}
+		return $returnData;
+	}
+	public function getNIHInstances() {
+		$returnArray = [];
+		$recordData = \Records::getData([
+			'project_id' => $this->getGrantProjectId(),
+			'return_format' => 'json-array',
+			'fields' => ['record_id','nih_last_update','grants_number','project_num','core_project_num'],
+			'filterLogic' => "([nih_last_update] = '' OR datediff([nih_last_update], 'today', 'd') > '".$this->getNIHDelay()."')",
+			'filterType' => 'RECORD',
+			'includeRepeatingFields' => true
+		]);
+
+		$grantToRecord = [];
+		$recordCount = 0;
+		if (!empty($recordData)) {
+			foreach ($recordData as $record) {
+				if ($record['record_id'] == "") {
+					continue;
+				}
+				if (!isset($grantToRecord[$record['record_id']])) {
+					if ($recordCount > 40) {
+						break;
+					}
+					preg_match("/[A-Z0-9]{2,}/", $record['grants_number'], $matches);
+
+					if ($matches && strlen($matches[0]) === 11) {
+						$grantToRecord[$record['record_id']] = $matches[0];
+						$returnArray[$grantToRecord[$record['record_id']]] = ['record' => $record['record_id']];
+						$recordCount++;
+					}
+				}
+				if (is_numeric($record['redcap_repeat_instance']) && isset($grantToRecord[$record['record_id']])) {
+					$returnArray[$grantToRecord[$record['record_id']]]['instances'][$record['redcap_repeat_instance']] = $record['project_num'];
+				}
+			}
+		}
+
+		return $returnArray;
+	}
+
+	public function nihCron($cronInfo) {
+		$this->saveNIHData();
+		return "Cron ".$cronInfo['cron_name']." ran to retrieve NIH data.";
 	}
 }
