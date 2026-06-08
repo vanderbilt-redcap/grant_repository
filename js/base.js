@@ -61,7 +61,7 @@ function ajaxDataTable(ajax_function,payload,dest_id) {
                 scrollY: 450,
                 columnDefs: [
                     {
-                        targets: [7,10],
+                        targets: [1,7,10],
                         searchable: true,
                         visible: false
                     },
