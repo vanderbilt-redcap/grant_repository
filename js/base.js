@@ -49,7 +49,7 @@ function ajaxDataTable(ajax_function,payload,dest_id) {
                         search: {},
                         buttons: [{
                             extend: 'colvis',
-                            text: 'Column Visibility'
+                            text: 'Add/Remove Columns'
                         }]
                     }
                 },
