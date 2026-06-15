@@ -57,7 +57,8 @@ function ajaxDataTable(ajax_function,payload,dest_id) {
                 fixedColumns: true,
                 paging: false,
                 scrollCollapse: true,
-                scrollX: false,
+                scrollX: true,
+                bAutoWidth: false,
                 scrollY: 450,
                 columnDefs: [
                     {
