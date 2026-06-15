@@ -275,16 +275,15 @@ class GrantRepository extends AbstractExternalModule
 
 		while ($row = $logsResult->fetch_assoc()) {
 			$user = $this->escape($row['user']);
-			$name = "";
 			if (isset($vuNets[$user])) {
 				if ($vuNets[$user]['first_name'] != "" && $vuNets[$user]['last_name'] != "") {
-					$name = $vuNets[$user]['first_name'] . " " . $vuNets[$user]['last_name']." (".$this->escape($user).")";
-				} else {
-					$name = $this->escape($user);
+					$user = $vuNets[$user]['first_name'] . " " . $vuNets[$user]['last_name'] . " (" . $user . ")";
 				}
 			}
 
-			$downloads[$this->escape($row['pk'])]['hits'][] = ['ts' => $this->escape(date("Y-m-d H:i:s", strtotime($row['ts']))), 'user' => $name];
+			if (isset($downloads[$this->escape($row['pk'])])) {
+				$downloads[$this->escape($row['pk'])]['hits'][] = ['ts' => $this->escape(date("Y-m-d H:i:s", strtotime($row['ts']))), 'user' => $user];
+			}
 		}
 
 		usort($downloads, function ($a, $b) {
